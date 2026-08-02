@@ -36,7 +36,7 @@ If a direct workspace process becomes stuck because of build locks or watcher st
 `tests/rendered-html.test.mjs` imports the generated worker, makes an in-memory request, and asserts:
 
 - correct title and map shell;
-- 112-mission count;
+- 212-mission count;
 - All-time calendar choice;
 - interaction guidance;
 - absence of starter content;
@@ -118,7 +118,7 @@ Inspect explicit schedules, Weekend fallback, browser date/time zone, selected c
 
 ## Performance notes
 
-- All 112 records are currently in the client bundle; this is acceptable at V1 scale.
+- All 212 records are currently in the client bundle; this is acceptable at V1 scale, but a live catalog should move the searchable record set behind an API and map viewport query.
 - MapLibre creates a significant client chunk and build tools may warn above 500 KiB. Lazy loading can improve initial shell cost later.
 - Filtering reconstructs small GeoJSON collections and calls `setData`; acceptable for hundreds of items, but thousands need server/window querying or indexed client state.
 - PMTiles dramatically reduces file count but requires efficient range caching.

@@ -49,9 +49,11 @@ button { color:inherit; }
 
 .mission-map-popup .maplibregl-popup-content { min-width:260px; padding:0; display:grid; grid-template-columns:74px 1fr; overflow:hidden; border:1px solid rgba(219,238,231,.2); border-radius:15px; background:rgba(20,30,27,.97); box-shadow:0 18px 48px rgba(0,0,0,.38); backdrop-filter:blur(16px); color:white; }
 .mission-map-popup .maplibregl-popup-tip { border-top-color:rgba(9,14,11,.95)!important; border-bottom-color:rgba(9,14,11,.95)!important; }
-.mission-map-popup .popup-art { min-height:84px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--popup-accent) 75%,white),var(--popup-accent) 42%,#263531); color:#15201d; }
+.mission-map-popup .popup-art { min-height:84px; padding:10px 13px; display:grid; grid-template-columns:26px 1fr; grid-template-areas:"glyph venue" "glyph neighborhood"; align-content:center; column-gap:8px; background:radial-gradient(circle at 18% 20%,color-mix(in srgb,var(--popup-accent) 75%,white),transparent 31%),linear-gradient(135deg,color-mix(in srgb,var(--popup-accent) 55%,#20312d),#1b2a27); color:#15201d; }
 .mission-map-popup .popup-art b { font-size:24px; }
-.mission-map-popup .popup-art i { font-size:7px; font-style:normal; text-transform:uppercase; letter-spacing:.12em; }
+.mission-map-popup .popup-art> b { grid-area:glyph; }
+.mission-map-popup .popup-art strong { grid-area:venue; overflow:hidden; color:#15201d; font-size:10px; line-height:1.12; letter-spacing:-.02em; text-overflow:ellipsis; white-space:nowrap; }
+.mission-map-popup .popup-art i { grid-area:neighborhood; overflow:hidden; color:rgba(21,32,29,.7); font-size:7px; font-style:normal; text-transform:uppercase; letter-spacing:.12em; text-overflow:ellipsis; white-space:nowrap; }
 .mission-map-popup .popup-art.has-photo { display:block; padding:0; }
 .mission-map-popup .popup-art.has-photo img { width:100%; height:100%; min-height:84px; display:block; object-fit:cover; }
 .mission-map-popup .popup-copy { padding:12px 13px; }
@@ -108,11 +110,13 @@ button { color:inherit; }
 .mission-tile small { overflow:hidden; color:var(--row-accent); font-size:7px; text-transform:uppercase; letter-spacing:.09em; text-overflow:ellipsis; white-space:nowrap; }
 .mission-tile strong { margin:5px 0 7px; color:#edf0eb; font-size:11px; line-height:1.24; letter-spacing:-.015em; }
 .mission-tile em { margin-top:auto; color:#8b9690; font-size:8px; line-height:1.35; font-style:normal; }
-.mission-tile-visual { --visual-accent:#8edcc4; position:relative; height:72px; overflow:hidden; display:flex; align-items:center; justify-content:center; gap:8px; background:radial-gradient(circle at 28% 25%,color-mix(in srgb,var(--visual-accent) 78%,white),transparent 32%),linear-gradient(135deg,color-mix(in srgb,var(--visual-accent) 52%,#20312d),#1c2a27); color:#13201c; }
-.mission-tile-visual::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(118deg,transparent 0 15px,rgba(255,255,255,.05) 16px 17px); }
-.mission-tile-visual b,.mission-tile-visual small { z-index:1; }
-.mission-tile-visual b { font-size:25px; }
-.mission-tile-visual small { color:#17231f; font-size:7px; font-weight:750; text-transform:uppercase; letter-spacing:.11em; }
+.mission-tile-visual { --visual-accent:#8edcc4; position:relative; height:78px; overflow:hidden; display:grid; grid-template-columns:38px minmax(0,1fr); grid-template-rows:1fr auto; grid-template-areas:"glyph venue" "glyph neighborhood"; align-content:center; gap:1px 8px; padding:11px 12px; background:radial-gradient(circle at 18% 18%,color-mix(in srgb,var(--visual-accent) 75%,white),transparent 29%),linear-gradient(135deg,color-mix(in srgb,var(--visual-accent) 56%,#20312d),#1c2a27); color:#13201c; }
+.mission-tile-visual::after { content:""; position:absolute; inset:0; opacity:.52; background:linear-gradient(118deg,transparent 0 38%,rgba(255,255,255,.11) 39% 40%,transparent 41% 100%),repeating-linear-gradient(90deg,transparent 0 22px,rgba(255,255,255,.035) 23px 24px); transform:translateX(-18%); transition:transform .5s ease; }
+.mission-tile:hover .mission-tile-visual::after { transform:translateX(0); }
+.mission-tile-visual b,.mission-tile-visual span,.mission-tile-visual small { z-index:1; }
+.mission-tile-visual b { grid-area:glyph; width:35px; height:35px; display:grid; place-items:center; border:1px solid rgba(19,32,28,.18); border-radius:50%; background:rgba(255,255,255,.22); font-size:20px; }
+.mission-tile-visual span { grid-area:venue; overflow:hidden; align-self:end; color:#15201d; font-size:10px; font-weight:760; line-height:1.1; letter-spacing:-.025em; text-overflow:ellipsis; white-space:nowrap; }
+.mission-tile-visual small { grid-area:neighborhood; overflow:hidden; color:rgba(21,32,29,.72); font-size:7px; font-weight:750; text-transform:uppercase; letter-spacing:.1em; text-overflow:ellipsis; white-space:nowrap; }
 .mission-tile-visual.has-image { display:block; }
 .mission-tile-visual img { object-fit:cover; }
 
@@ -122,6 +126,11 @@ button { color:inherit; }
 .lore-visual>span,.lore-visual>i { z-index:1; font-size:8px; font-style:normal; text-transform:uppercase; letter-spacing:.13em; }
 .lore-visual>img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .lore-visual>img+span { position:absolute; left:12px; bottom:10px; width:30px; height:30px; display:grid; place-items:center; border-radius:50%; background:rgba(20,30,27,.86); color:white; font-size:14px; }
+.lore-visual.place-visual { display:grid; grid-template-columns:40px minmax(0,1fr); grid-template-rows:auto auto auto; grid-template-areas:"glyph format" "glyph venue" "glyph neighborhood"; align-content:center; column-gap:11px; padding:16px; }
+.lore-visual.place-visual .place-glyph { grid-area:glyph; width:38px; height:38px; display:grid; place-items:center; border:1px solid rgba(21,33,29,.2); border-radius:50%; background:rgba(255,255,255,.22); color:#15211e; font-size:21px; }
+.lore-visual.place-visual>i { grid-area:format; color:rgba(21,33,29,.65); font-size:7px; font-weight:750; }
+.lore-visual.place-visual>strong { grid-area:venue; overflow:hidden; color:#16211e; font-size:16px; line-height:1.06; letter-spacing:-.035em; text-overflow:ellipsis; white-space:nowrap; }
+.lore-visual.place-visual>small { grid-area:neighborhood; overflow:hidden; color:rgba(21,33,29,.7); font-size:8px; font-weight:700; letter-spacing:.1em; text-overflow:ellipsis; text-transform:uppercase; white-space:nowrap; }
 .lore-visual.compact { width:48px; height:52px; margin:0; padding:6px; align-items:center; justify-content:center; border-radius:11px; }
 .lore-visual.compact>b { margin:0; font-size:20px; }
 .lore-visual.compact>span,.lore-visual.compact>i { display:none; }
@@ -129,7 +138,7 @@ button { color:inherit; }
 .lore-glyph { width:48px; height:52px; display:grid; place-items:center; border:1px solid color-mix(in srgb,var(--visual-accent) 55%,transparent); border-radius:11px; background:color-mix(in srgb,var(--visual-accent) 12%,transparent); color:var(--visual-accent); font-size:20px; }
 
 .activity-card { --accent:#f09b84; position:absolute; z-index:6; left:20px; bottom:20px; width:min(400px,calc(100vw - 40px)); border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line)); border-radius:19px; padding:18px; background:rgba(20,30,27,.95); backdrop-filter:blur(20px); box-shadow:0 24px 70px rgba(0,0,0,.4),inset 3px 0 0 var(--accent); overflow:hidden; }
-.activity-card.has-image { padding:0 18px 18px; }
+.activity-card.has-visual { padding:0 18px 18px; }
 .card-close { position:absolute; z-index:3; right:10px; top:10px; width:31px; height:31px; border:1px solid rgba(255,255,255,.15); border-radius:50%; background:rgba(20,30,27,.82); display:grid; place-items:center; cursor:pointer; color:#d7e2de; }
 .card-close svg { width:14px; }
 .card-place { color:var(--accent); text-transform:uppercase; letter-spacing:.14em; font-size:8px; font-weight:700; }
@@ -172,11 +181,11 @@ button { color:inherit; }
   .category-grid { grid-template-columns:repeat(3,1fr); }
   .mission-results { grid-template-columns:repeat(2,minmax(0,1fr)); padding:8px; gap:7px; }
   .mission-tile { min-height:154px; }
-  .mission-tile-visual { height:62px; }
+  .mission-tile-visual { height:68px; padding:9px 10px; }
   .filter-columns { grid-template-columns:1fr; }
   .filter-columns .filter-block:last-child { padding-top:7px; }
   .activity-card { left:10px; bottom:11px; width:calc(100vw - 20px); padding:15px; border-radius:16px; }
-  .activity-card.has-image { padding:0 15px 15px; }
+  .activity-card.has-visual { padding:0 15px 15px; }
   .activity-card>.lore-visual { height:92px; margin:-1px -1px 12px; }
   .activity-card h2 { font-size:22px; }
   .card-description,.card-why { display:none; }

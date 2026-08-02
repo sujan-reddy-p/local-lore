@@ -72,7 +72,7 @@ Keep the previous deployment artifact/commit available. Because catalog and map 
 - Map ready/source loaded with no `data-map-error`.
 - 3D buildings, labels, water, parks, roads, clusters, and zones visible.
 - Pan/zoom/rotate/tilt/whole-city work.
-- All time shows 112 missions.
+- All time shows 212 missions.
 - Hover/select maps to the correct mission.
 - Mission browser and mobile sheet work.
 - Source links and seed disclosure work.

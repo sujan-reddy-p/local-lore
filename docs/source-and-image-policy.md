@@ -57,7 +57,7 @@ Every image record must preserve:
 
 The source registry’s `allowsImageReuse` must be independently true for automated media collection. Even then, preserve per-image metadata and comply with hotlinking/download/transform requirements.
 
-When rights are unclear, omit the image. The interface’s category glyph and accent treatment are the intended fallback; do not generate or search for a visually similar substitute.
+When rights are unclear, omit the image. The interface’s venue-and-neighborhood visual panel, with its category glyph and accent treatment, is the intended fallback; do not generate or search for a visually similar substitute.
 
 ## Current images
 

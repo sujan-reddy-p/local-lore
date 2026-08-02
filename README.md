@@ -1,6 +1,6 @@
 # Local Lore
 
-Local Lore is a map-first San Francisco discovery experience. It answers one question: **what is a memorable way to spend my time in the city?** The current V1 presents 112 curated seed “missions” across outdoor routes, movement, making, live music, food rituals, culture, community, pets, scenic drives, and after-dark plans.
+Local Lore is a map-first San Francisco discovery experience. It answers one question: **what is a memorable way to spend my time in the city?** The current V1 presents 212 curated seed “missions” across outdoor routes, movement, making, live music, food rituals, culture, community, pets, scenic drives, and after-dark plans.
 
 The map is the product. There are no accounts, feeds, or calendar dashboards. A visitor can pan, pinch, scroll, rotate, tilt, browse visually, choose a date, select an editorial prompt, or open the mission browser. Every recommendation links to its original organizer or authoritative source.
 
@@ -47,7 +47,7 @@ npm test
 ```text
 app/                          App Router shell, metadata, and global design
 components/local-lore-app.tsx Map, discovery controls, browser, hover, details
-lib/seed-data.ts              Static 112-mission V1 catalog
+lib/seed-data.ts              Static 212-mission V1 catalog
 lib/types.ts                  Publish-boundary data contract
 lib/availability.ts           Availability and seven-day logic
 lib/activity-zones.ts         Point and polygon GeoJSON
@@ -89,7 +89,7 @@ Future coding agents should read [AGENTS.md](AGENTS.md) before changing the proj
 - The adapter and pipeline are scaffolding; there is no scheduled fetch worker, live adapter, review UI, or automated publisher yet.
 - Labels use the Protomaps glyph CDN. The vector archive is local, but labels still require network access until glyphs are self-hosted.
 - The PMTiles asset must be served with HTTP byte-range support. See the deployment guide before changing hosting.
-- Only three missions currently include photographs, all from Wikimedia Commons with credit, source page, and license stored in the record. No images were generated for this project.
+- Only three missions currently include photographs, all from Wikimedia Commons with credit, source page, and license stored in the record. The other missions use a venue-and-neighborhood visual treatment instead of unlicensed imagery. No images were generated for this project.
 - The app is dark-mode-only in the current implementation. Light-mode support remains future work.
 - `shadcn/ui`, PostgreSQL, and Supabase are not active dependencies in V1.
 

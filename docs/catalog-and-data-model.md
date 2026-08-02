@@ -2,7 +2,7 @@
 
 ## Current catalog
 
-`lib/seed-data.ts` exports 112 `LoreItem` records. They are compiled into the app and filtered client-side. The file uses a shared helper to stamp every source with status `curated-seed` and checked date `2026-08-02`.
+`lib/seed-data.ts` exports 212 `LoreItem` records. They are compiled into the app and filtered client-side. The file uses a shared helper to stamp every source with status `curated-seed` and checked date `2026-08-02`. The 100-mission expansion is authored through the local `mission()` helper in the same file so the full publish boundary remains `LoreItem`.
 
 The catalog spans eight categories: Outside, Move, Make, Listen, Eat, Learn, Community, and After dark. Formats provide a second axis: Adventure, Class, Culture, Food, Live, Market, Meetup, and Volunteer. Traits support high-intent discovery such as dog-friendly, photogenic, date idea, family, weird, cozy, scenic, drive, romantic, and social.
 
@@ -88,9 +88,9 @@ Date values are ISO strings but the helper uses `toISOString`, while display and
 - Conditions-based missions need a trustworthy conditions source in the future, not a fabricated prediction.
 - A single venue can support multiple missions only when the editorial activity and geographic footprint are meaningfully distinct.
 
-## Image record
+## Image record and visual fallback
 
-`MissionImage` requires URL, alt text, credit, original source URL, and optional license. The optional type does not mean licensing is optional in product policy: if reuse permission cannot be established, do not add the image. The UI intentionally falls back to category styling rather than creating a substitute.
+`MissionImage` requires URL, alt text, credit, original source URL, and optional license. The optional type does not mean licensing is optional in product policy: if reuse permission cannot be established, do not add the image. The UI uses a venue-and-neighborhood visual panel with the existing category glyph as the fallback; it must not use a copied organizer photo merely to fill the space.
 
 ## Future database mapping
 

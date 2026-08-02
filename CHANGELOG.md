@@ -5,7 +5,9 @@
 ### Product
 
 - Built a standalone, account-free San Francisco map discovery experience.
-- Added 112 realistic curated seed missions across eight categories and numerous traits and formats.
+- Added an initial 112 realistic curated seed missions across eight categories and numerous traits and formats.
+- Expanded the static catalog by 100 source-attributed curated-seed missions, bringing the total to 212, with much broader food, live music, parks, culture, movement, volunteering, and after-dark coverage.
+- Replaced generic category-only preview art with venue-and-neighborhood visual panels; retained licensed Wikimedia imagery only where complete attribution and licensing metadata exists.
 - Added editorial prompts, search, category, time, budget, trait, quick, date, and All-time discovery.
 - Synchronized every filter to both map GeoJSON sources so non-matching zones, icons, and clusters vanish together.
 - Added hover previews, rich mission details, source links, attribution, schedule reminders, and optional licensed imagery.

@@ -2,7 +2,7 @@
 
 ## Project snapshot
 
-Local Lore V1 is a standalone Next.js App Router project in active portfolio condition. It is a single-page, full-viewport map experience with 112 static San Francisco and nearby Bay missions. The map, catalog filters, hover previews, mission drawer/card, responsive layout, source attribution, local vector tiles, and both production build targets are implemented.
+Local Lore V1 is a standalone Next.js App Router project in active portfolio condition. It is a single-page, full-viewport map experience with 212 static San Francisco and nearby Bay missions. The map, catalog filters, hover previews, mission drawer/card, responsive layout, source attribution, local vector tiles, and both production build targets are implemented.
 
 No deployment was performed as part of the original build. Persistence, scheduled ingestion, live feeds, and an AI review system are designed but not activated.
 
@@ -13,7 +13,8 @@ No deployment was performed as part of the original build. Persistence, schedule
 - Removed MapLibre’s native plus/minus controls. Scroll, pinch, double-click, keyboard, and box zoom remain available.
 - Grouped exactly three right-side map controls: rotate, cycle tilt/top-down, and restore the whole-city view.
 - Increased curiosity-filter type size and added Lucide icons.
-- Added an All-time calendar choice. All time passes `null` to the matcher and intentionally skips `isAvailableOn`, exposing all 112 missions.
+- Added an All-time calendar choice. All time passes `null` to the matcher and intentionally skips `isAvailableOn`, exposing all 212 missions.
+- Replaced generic category-only card art with venue-and-neighborhood visual previews. Licensed Wikimedia images remain in place where their metadata is complete; all other previews intentionally avoid third-party photography.
 
 ## Known-good behavior
 
@@ -31,7 +32,7 @@ No deployment was performed as part of the original build. Persistence, schedule
 
 ## Truth about the data
 
-- `lib/seed-data.ts` contains exactly 112 hand-authored seed records.
+- `lib/seed-data.ts` contains exactly 212 hand-authored seed records: the initial 112 and a 100-mission expansion assembled from official organizer, agency, institution, and venue pages.
 - The shared source-check date is `2026-08-02`.
 - Every record’s status is `curated-seed`; none is verified live.
 - Every record contains a source name and direct HTTPS URL.

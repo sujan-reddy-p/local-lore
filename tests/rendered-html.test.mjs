@@ -48,7 +48,7 @@ test("keeps map interaction and source attribution in the product code", async (
   assert.match(app, /Food ritual/);
   assert.match(app, /icon:Utensils/);
   assert.match(app, /source checked/);
-  assert.equal((seed.match(/\{ id:/g) ?? []).length, 112);
+  assert.equal((seed.match(/\{ id:/g) ?? []).length + (seed.match(/\bmission\("/g) ?? []).length, 212);
   assert.match(seed, /status:\s*"curated-seed"/);
   assert.match(seed, /https:\/\//);
   assert.match(zones, /zoneRadiusM/);

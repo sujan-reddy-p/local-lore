@@ -221,7 +221,7 @@ export function LocalLoreApp() {
       hoverPopupRef.current?.remove();
       hoverPopupRef.current = new maplibregl.Popup({ closeButton:false, closeOnClick:false, offset:18, className:"mission-map-popup" })
         .setLngLat(item.coordinates)
-        .setHTML(`${item.image?`<div class="popup-art has-photo"><img src="${item.image.url}" alt=""></div>`:`<div class="popup-art" style="--popup-accent:${item.accent}"><b>${categoryGlyph[item.category]}</b><i>${item.category}</i></div>`}<div class="popup-copy"><span>${formatOf(item)} · ${item.neighborhood}</span><strong>${item.title}</strong><small>${item.time} · ${item.price ? `$${item.price}` : "Free"}</small></div>`)
+        .setHTML(`${item.image?`<div class="popup-art has-photo"><img src="${item.image.url}" alt=""></div>`:`<div class="popup-art" style="--popup-accent:${item.accent}"><b>${categoryGlyph[item.category]}</b><strong>${item.venue}</strong><i>${item.neighborhood}</i></div>`}<div class="popup-copy"><span>${formatOf(item)} · ${item.neighborhood}</span><strong>${item.title}</strong><small>${item.time} · ${item.price ? `$${item.price}` : "Free"}</small></div>`)
         .addTo(map);
       hoveredMissionRef.current = item.id;
     };
@@ -402,7 +402,7 @@ function MissionBrowser({items,query,setQuery,category,setCategory,time,setTime,
 
 function ActivityCard({item,onClose}:{item:LoreItem|null;onClose:()=>void}) {
   const reduce = useReducedMotion();
-  return <AnimatePresence>{item&&<motion.aside className={`activity-card${item.image?" has-image":""}`} initial={reduce?false:{opacity:0,y:18}} animate={{opacity:1,y:0}} exit={{opacity:0,y:14}} transition={{duration:.3}} style={{"--accent":item.accent} as React.CSSProperties}>
+  return <AnimatePresence>{item&&<motion.aside className="activity-card has-visual" initial={reduce?false:{opacity:0,y:18}} animate={{opacity:1,y:0}} exit={{opacity:0,y:14}} transition={{duration:.3}} style={{"--accent":item.accent} as React.CSSProperties}>
     <LoreVisual item={item}/>
     <button className="card-close" onClick={onClose} aria-label="Close activity"><X/></button>
     <span className="card-place">{item.hotspot?"Hotspot · ":""}{item.neighborhood} · {formatOf(item)}</span>
@@ -418,12 +418,14 @@ function ActivityCard({item,onClose}:{item:LoreItem|null;onClose:()=>void}) {
 
 function LoreVisual({item,compact=false}:{item:LoreItem;compact?:boolean}) {
   if (item.image) return <div className={compact?"lore-visual compact":"lore-visual"}><Image src={item.image.url} alt={item.image.alt} fill unoptimized sizes={compact?"48px":"400px"}/><span>{categoryGlyph[item.category]}</span></div>;
-  if (!compact) return null;
-  return <div className="lore-glyph" style={{"--visual-accent":item.accent} as React.CSSProperties}>{categoryGlyph[item.category]}</div>;
+  if (compact) return <div className="lore-glyph" style={{"--visual-accent":item.accent} as React.CSSProperties}>{categoryGlyph[item.category]}</div>;
+  return <div className="lore-visual place-visual" style={{"--visual-accent":item.accent} as React.CSSProperties}>
+    <span className="place-glyph">{categoryGlyph[item.category]}</span><i>{formatOf(item)}</i><strong>{item.venue}</strong><small>{item.neighborhood}</small>
+  </div>;
 }
 
 function MissionTileVisual({item}:{item:LoreItem}) {
   return <div className={`mission-tile-visual${item.image?" has-image":""}`} style={{"--visual-accent":item.accent} as React.CSSProperties}>
-    {item.image?<Image src={item.image.url} alt="" fill unoptimized sizes="220px"/>:<><b>{categoryGlyph[item.category]}</b><small>{item.category}</small></>}
+    {item.image?<Image src={item.image.url} alt="" fill unoptimized sizes="220px"/>:<><b>{categoryGlyph[item.category]}</b><span>{item.venue}</span><small>{item.neighborhood}</small></>}
   </div>;
 }
