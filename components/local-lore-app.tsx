@@ -58,6 +58,9 @@ const fallbackFormat: Record<Category,MissionFormat> = {
 };
 
 function formatOf(item:LoreItem) { return item.format ?? fallbackFormat[item.category]; }
+function sourceHost(url:string) {
+  try { return new URL(url).hostname.replace(/^www\./,""); } catch { return "source link"; }
+}
 
 function curiosityMatch(item:LoreItem, curiosity:CuriosityFilter|null) {
   if (!curiosity) return true;
@@ -426,6 +429,9 @@ function LoreVisual({item,compact=false}:{item:LoreItem;compact?:boolean}) {
 
 function MissionTileVisual({item}:{item:LoreItem}) {
   return <div className={`mission-tile-visual${item.image?" has-image":""}`} style={{"--visual-accent":item.accent} as React.CSSProperties}>
-    {item.image?<Image src={item.image.url} alt="" fill unoptimized sizes="220px"/>:<><b>{categoryGlyph[item.category]}</b><span>{item.venue}</span><small>{item.neighborhood}</small></>}
+    {item.image?<Image src={item.image.url} alt="" fill unoptimized sizes="220px"/>:<div className="source-site-preview" aria-label={`Official source preview: ${item.source.name}`}>
+      <div className="source-browser-bar"><i/><i/><i/><small>{sourceHost(item.source.url)}</small></div>
+      <div className="source-browser-body"><b>{categoryGlyph[item.category]}</b><div><span>{item.source.name}</span><small>Official source · open to plan</small></div><em>{item.venue}</em></div>
+    </div>}
   </div>;
 }

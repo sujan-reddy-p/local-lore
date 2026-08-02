@@ -57,7 +57,7 @@ Every image record must preserve:
 
 The source registry’s `allowsImageReuse` must be independently true for automated media collection. Even then, preserve per-image metadata and comply with hotlinking/download/transform requirements.
 
-When rights are unclear, omit the image. The interface’s venue-and-neighborhood visual panel, with its category glyph and accent treatment, is the intended fallback; do not generate or search for a visually similar substitute.
+When rights are unclear, omit the image. In the mission browser, the fallback is a compact source-site preview containing only the stored source name, hostname, venue, glyph, and Local Lore styling—not copied page content or an embedded third-party page. The detail view uses the venue-and-neighborhood visual panel. Do not generate or search for a visually similar substitute.
 
 ## Current images
 

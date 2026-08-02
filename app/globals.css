@@ -110,13 +110,19 @@ button { color:inherit; }
 .mission-tile small { overflow:hidden; color:var(--row-accent); font-size:7px; text-transform:uppercase; letter-spacing:.09em; text-overflow:ellipsis; white-space:nowrap; }
 .mission-tile strong { margin:5px 0 7px; color:#edf0eb; font-size:11px; line-height:1.24; letter-spacing:-.015em; }
 .mission-tile em { margin-top:auto; color:#8b9690; font-size:8px; line-height:1.35; font-style:normal; }
-.mission-tile-visual { --visual-accent:#8edcc4; position:relative; height:78px; overflow:hidden; display:grid; grid-template-columns:38px minmax(0,1fr); grid-template-rows:1fr auto; grid-template-areas:"glyph venue" "glyph neighborhood"; align-content:center; gap:1px 8px; padding:11px 12px; background:radial-gradient(circle at 18% 18%,color-mix(in srgb,var(--visual-accent) 75%,white),transparent 29%),linear-gradient(135deg,color-mix(in srgb,var(--visual-accent) 56%,#20312d),#1c2a27); color:#13201c; }
+.mission-tile-visual { --visual-accent:#8edcc4; position:relative; height:78px; overflow:hidden; display:block; padding:7px; background:radial-gradient(circle at 18% 18%,color-mix(in srgb,var(--visual-accent) 75%,white),transparent 29%),linear-gradient(135deg,color-mix(in srgb,var(--visual-accent) 56%,#20312d),#1c2a27); color:#13201c; }
 .mission-tile-visual::after { content:""; position:absolute; inset:0; opacity:.52; background:linear-gradient(118deg,transparent 0 38%,rgba(255,255,255,.11) 39% 40%,transparent 41% 100%),repeating-linear-gradient(90deg,transparent 0 22px,rgba(255,255,255,.035) 23px 24px); transform:translateX(-18%); transition:transform .5s ease; }
 .mission-tile:hover .mission-tile-visual::after { transform:translateX(0); }
-.mission-tile-visual b,.mission-tile-visual span,.mission-tile-visual small { z-index:1; }
-.mission-tile-visual b { grid-area:glyph; width:35px; height:35px; display:grid; place-items:center; border:1px solid rgba(19,32,28,.18); border-radius:50%; background:rgba(255,255,255,.22); font-size:20px; }
-.mission-tile-visual span { grid-area:venue; overflow:hidden; align-self:end; color:#15201d; font-size:10px; font-weight:760; line-height:1.1; letter-spacing:-.025em; text-overflow:ellipsis; white-space:nowrap; }
-.mission-tile-visual small { grid-area:neighborhood; overflow:hidden; color:rgba(21,32,29,.72); font-size:7px; font-weight:750; text-transform:uppercase; letter-spacing:.1em; text-overflow:ellipsis; white-space:nowrap; }
+.source-site-preview { position:relative; z-index:1; height:100%; overflow:hidden; border:1px solid rgba(20,32,28,.2); border-radius:7px; background:rgba(246,248,241,.94); box-shadow:0 6px 16px rgba(0,0,0,.14); color:#19231f; }
+.source-browser-bar { height:17px; display:flex; align-items:center; gap:3px; padding:0 6px; border-bottom:1px solid rgba(19,31,27,.1); background:rgba(20,31,27,.075); }
+.source-browser-bar i { width:4px; height:4px; border-radius:50%; background:color-mix(in srgb,var(--visual-accent) 65%,#1a2823); }
+.source-browser-bar small { overflow:hidden; min-width:0; margin-left:3px; color:#526058; font-size:6px; font-style:normal; letter-spacing:.015em; text-overflow:ellipsis; white-space:nowrap; }
+.source-browser-body { height:calc(100% - 17px); display:grid; grid-template-columns:27px minmax(0,1fr); grid-template-rows:auto auto; grid-template-areas:"glyph source" "venue venue"; align-content:center; gap:3px 7px; padding:7px 9px; }
+.source-browser-body b { grid-area:glyph; width:25px; height:25px; display:grid; place-items:center; border-radius:6px; background:color-mix(in srgb,var(--visual-accent) 35%,white); color:#17231f; font-size:15px; }
+.source-browser-body div { grid-area:source; min-width:0; display:grid; gap:1px; }
+.source-browser-body span { overflow:hidden; color:#1b2621; font-size:9px; font-weight:780; line-height:1.08; letter-spacing:-.025em; text-overflow:ellipsis; white-space:nowrap; }
+.source-browser-body small { overflow:hidden; color:#65716a; font-size:6px; font-weight:650; letter-spacing:.025em; text-overflow:ellipsis; text-transform:uppercase; white-space:nowrap; }
+.source-browser-body em { grid-area:venue; overflow:hidden; color:#44524b; font-size:7px; font-style:normal; text-overflow:ellipsis; white-space:nowrap; }
 .mission-tile-visual.has-image { display:block; }
 .mission-tile-visual img { object-fit:cover; }
 
