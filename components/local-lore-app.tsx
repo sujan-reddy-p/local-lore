@@ -115,7 +115,6 @@ export function LocalLoreApp() {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<LoreItem | null>(null);
   const [discoverOpen, setDiscoverOpen] = useState(false);
-  const [hasMovedMap, setHasMovedMap] = useState(false);
   const mapNode = useRef<HTMLDivElement>(null);
   const searchNode = useRef<HTMLInputElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -210,11 +209,6 @@ export function LocalLoreApp() {
       animationFrame = requestAnimationFrame(animateCenters);
     };
     if (!reducedMotion) animationFrame = requestAnimationFrame(animateCenters);
-
-    const acknowledgeMovement = () => setHasMovedMap(true);
-    map.once("dragstart",acknowledgeMovement);
-    map.once("rotatestart",acknowledgeMovement);
-    map.once("pitchstart",acknowledgeMovement);
 
     const itemFromEvent = (event:MapMouseEvent & { features?:maplibregl.MapGeoJSONFeature[] }) => {
       const id = event.features?.[0]?.properties?.id as string|undefined;
@@ -330,7 +324,7 @@ export function LocalLoreApp() {
         <div className="map-brand"><span>L</span><div><strong>Local Lore</strong><small>San Francisco · {dateContext}</small></div></div>
         <h1>Where next?</h1>
         <div className="intent-actions">
-          <button className="find-missions" onClick={() => { setDiscoverOpen(true); requestAnimationFrame(() => searchNode.current?.focus()); }}><Search/><span>Explore all missions</span><ChevronRight/></button>
+          <button className="find-missions" onClick={() => { setDiscoverOpen(true); requestAnimationFrame(() => searchNode.current?.focus()); }}><Search/><span className="explore-label-wide">Explore all missions</span><span className="explore-label-short">Explore</span><ChevronRight/></button>
           <div className="intent-filters" aria-label="Quick activity filters">
             {quickFilters.map(filter => <button key={filter} className={activeQuick.includes(filter)?"active":""} onClick={() => toggleQuick(filter)}>{filter}</button>)}
           </div>
@@ -351,17 +345,13 @@ export function LocalLoreApp() {
         <button onClick={resetMap} aria-label="Show the whole San Francisco map" data-label="Whole city"><LocateFixed/></button>
       </div>
 
-      <div className={`zone-key${hasMovedMap?" has-moved":""}`}>
-        <span className="gesture-desktop">Drag to pan · right-drag to look around</span>
-        <span className="gesture-mobile">One finger pans · two fingers tilt + rotate</span>
-        <span className="zone-meaning">Every icon is locked to its activity zone</span><i/>
-      </div>
-
       <AnimatePresence>
         {discoverOpen && <MissionBrowser
           items={visible} query={query} setQuery={setQuery} category={selectedCategory} setCategory={setSelectedCategory}
           time={timeFilter} setTime={setTimeFilter} budget={budgetFilter} setBudget={setBudgetFilter}
           traits={activeTraits} onTrait={toggleTrait}
+          activeQuick={activeQuick} onQuick={toggleQuick} curiosity={curiosityFilter} setCuriosity={setCuriosityFilter}
+          calendar={calendar} selectedDateKey={selectedDateKey} setSelectedDateKey={setSelectedDateKey}
           filterCount={filterCount} onClear={clearFilters} onClose={() => setDiscoverOpen(false)} onChoose={choose} searchRef={searchNode}
         />}
       </AnimatePresence>
@@ -372,10 +362,12 @@ export function LocalLoreApp() {
   </main>;
 }
 
-function MissionBrowser({items,query,setQuery,category,setCategory,time,setTime,budget,setBudget,traits,onTrait,filterCount,onClear,onClose,onChoose,searchRef}:{
+function MissionBrowser({items,query,setQuery,category,setCategory,time,setTime,budget,setBudget,traits,onTrait,activeQuick,onQuick,curiosity,setCuriosity,calendar,selectedDateKey,setSelectedDateKey,filterCount,onClear,onClose,onChoose,searchRef}:{
   items:LoreItem[]; query:string; setQuery:(value:string)=>void; category:Category|"All"; setCategory:(value:Category|"All")=>void;
   time:TimeFilter; setTime:(value:TimeFilter)=>void; budget:BudgetFilter; setBudget:(value:BudgetFilter)=>void;
   traits:MissionTrait[]; onTrait:(value:MissionTrait)=>void;
+  activeQuick:QuickFilter[]; onQuick:(value:QuickFilter)=>void; curiosity:CuriosityFilter|null; setCuriosity:(value:CuriosityFilter|null)=>void;
+  calendar:Date[]; selectedDateKey:string; setSelectedDateKey:(value:string)=>void;
   filterCount:number; onClear:()=>void; onClose:()=>void; onChoose:(item:LoreItem)=>void; searchRef:React.RefObject<HTMLInputElement|null>;
 }) {
   const reduce = useReducedMotion();
@@ -384,6 +376,11 @@ function MissionBrowser({items,query,setQuery,category,setCategory,time,setTime,
     <label className="mission-search"><Search/><input ref={searchRef} value={query} onChange={event => setQuery(event.target.value)} placeholder="Try “sunset”, “dogs”, or “live music”" aria-label="Describe the kind of mission you want"/><kbd>/</kbd></label>
     <div className="prompt-row" aria-label="Discovery prompts">
       {["quiet and scenic","dog-friendly","a little weird","live","photogenic"].map(prompt => <button key={prompt} className={query===prompt?"active":""} onClick={() => setQuery(query===prompt?"":prompt)}>{prompt}</button>)}
+    </div>
+    <div className="mobile-discovery" aria-label="Mobile discovery controls">
+      <div><span>Quick pick</span><div className="mobile-filter-row">{quickFilters.map(filter => <button key={filter} className={activeQuick.includes(filter)?"active":""} onClick={() => onQuick(filter)}>{filter}</button>)}</div></div>
+      <div><span>Follow a thread</span><div className="mobile-filter-row">{curiosityFilters.map(({label,icon:Icon}) => <button key={label} className={curiosity===label?"active":""} onClick={() => setCuriosity(curiosity===label?null:label)}><Icon/><b>{label}</b></button>)}</div></div>
+      <div><span>Plan by date</span><div className="mobile-filter-row mobile-date-row"><button className={selectedDateKey==="all"?"active":""} onClick={() => setSelectedDateKey("all")}>All time</button>{calendar.map((date,index) => <button key={dateKey(date)} className={selectedDateKey===dateKey(date)?"active":""} onClick={() => setSelectedDateKey(dateKey(date))}>{dateLabel(date,index)} {date.getDate()}</button>)}</div></div>
     </div>
     <div className="filter-block category-block"><span>Pick a world</span><div className="category-grid">
       <button className={category==="All"?"active":""} onClick={() => setCategory("All")}><SlidersHorizontal/><em>Surprise me</em></button>

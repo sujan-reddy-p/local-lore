@@ -67,8 +67,8 @@ Panels use dark green translucency and `backdrop-filter` to remain legible over 
 
 At 720 px and below:
 
-- brand and headline tighten;
-- quick, curiosity, and date rows scroll horizontally;
+- brand remains compact while the headline and map-overlay filter rows are removed;
+- one Explore button opens the mission sheet, where quick, curiosity, and date rows scroll horizontally;
 - control stack moves to 12 px from top/right;
 - mission browser becomes a bottom sheet;
 - activity details condense and hide the two longer prose paragraphs;

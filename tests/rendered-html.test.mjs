@@ -26,8 +26,7 @@ test("server-renders the Local Lore map shell", async () => {
   assert.match(html, /class="all-time"/i);
   assert.match(html, />All<\/span><b>time<\/b>/i);
   assert.match(html, /aria-label="Interactive mission map of San Francisco and the Bay"/i);
-  assert.match(html, /Drag to pan · right-drag to look around/i);
-  assert.match(html, /One finger pans · two fingers tilt \+ rotate/i);
+  assert.doesNotMatch(html, /Every icon is locked to its activity zone/i);
   assert.doesNotMatch(html, /starter|taking shape|Building your site/i);
 });
 
@@ -64,6 +63,7 @@ test("keeps map interaction and source attribution in the product code", async (
   assert.match(app, /dateChoices/);
   assert.match(app, /What sounds good\?/);
   assert.match(app, /mission-tile/);
+  assert.match(app, /mobile-discovery/);
   assert.doesNotMatch(app, /ideas on the map/);
   assert.match(seed, /dog-friendly/);
   assert.match(seed, /Scenic route/);

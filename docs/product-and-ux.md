@@ -61,8 +61,9 @@ Every filter is also a map filter. The same filtered ID set replaces both activi
 ## Mobile layout
 
 - The map remains full-screen and touch-first.
-- Discovery controls horizontally scroll instead of shrinking to unreadable type.
+- The top overlay is deliberately reduced to the compact brand and a single Explore button; the headline and map-overlay filters are removed.
 - The mission browser becomes a bottom-positioned sheet-like overlay.
+- The sheet contains horizontally scrollable Quick pick, Follow a thread, and Plan by date rows before the structured filters and card gallery.
 - The detail card spans the screen with safe margins and hides long explanatory copy to preserve map access.
 - Map attribution is currently hidden at the smallest layout to prevent obstruction; this should be revisited before public release so attribution remains accessible through an alternative compact affordance.
 
