@@ -39,7 +39,7 @@ npm test
 - Large icon-led curiosity prompts such as Food ritual, Live music, Sunset, After dark, Odd & local, and Scenic drive.
 - Search and structured discovery by category, time, budget, traits, vibe, and quick filters.
 - Desktop and responsive mobile details with source attribution, accessibility, cost, schedule reminder, and optional licensed photography.
-- A 1200×630 Open Graph/Twitter share image that echoes the initial dark San Francisco map view and activity zones; it is generated from code at `/opengraph-image` so it works on Vercel without a WebGL screenshot step.
+- A 1200×630 Open Graph/Twitter share image that echoes the initial dark San Francisco map view and activity zones; it is generated from code at `/opengraph-image` in the Node.js runtime so it works on Vercel Hobby without a WebGL screenshot step.
 - A Neon/Postgres catalog foundation with source freshness state, structured-event extraction, automated publish/discard logging, and a protected Vercel daily-refresh route. Existing source links start in link-only mode until automated access is explicitly approved.
 - Vite/vinext + Cloudflare build support and a separate Next.js/Vercel build path.
 

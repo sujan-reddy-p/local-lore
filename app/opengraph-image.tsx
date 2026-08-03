@@ -1,6 +1,9 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
+// This illustration has a larger dependency graph than Vercel Hobby's 1 MB
+// Edge Function allowance. Node.js supports ImageResponse and keeps the
+// share-card route within the serverless function limit.
+export const runtime = "nodejs";
 export const alt = "Local Lore — a curated map of memorable things to do in San Francisco";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
