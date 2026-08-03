@@ -38,6 +38,7 @@ type TimeFilter = "Any time" | "Now" | "Tonight" | "Weekend";
 type CuriosityFilter = "Food ritual" | "Live music" | "Sunset" | "After dark" | "Make something" | "Odd & local" | "Scenic drive";
 const quickFilters: QuickFilter[] = ["Today", "Free", "Outside", "Social"];
 const timeFilters: TimeFilter[] = ["Any time", "Now", "Tonight", "Weekend"];
+const galleryCategoryPriority: Record<Category,number> = { Listen:0, Make:1, Eat:2, "After dark":3, Move:4, Outside:5, Learn:6, Community:7 };
 const curiosityFilters = [
   { label:"Food ritual", icon:Utensils },
   { label:"Live music", icon:Music2 },
@@ -89,6 +90,12 @@ function matches(item:LoreItem, quick:QuickFilter[], query:string, category:Cate
   return true;
 }
 
+function galleryOrder(left:LoreItem, right:LoreItem) {
+  const visualDifference = Number(Boolean(right.image)) - Number(Boolean(left.image));
+  if (visualDifference) return visualDifference;
+  return galleryCategoryPriority[left.category] - galleryCategoryPriority[right.category];
+}
+
 function makeMissionIcon(glyph:string) {
   const canvas = document.createElement("canvas");
   canvas.width = 64;
@@ -126,7 +133,7 @@ export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
   const hoveredMissionRef = useRef<string | null>(null);
 
   const selectedDate = selectedDateKey === "all" ? null : calendar.find(date => dateKey(date) === selectedDateKey) ?? calendar[0];
-  const visible = useMemo(() => catalog.filter(item => matches(item,activeQuick,query,selectedCategory,timeFilter,budgetMax,curiosityFilter,activeTraits,selectedDate)), [catalog,activeQuick,query,selectedCategory,timeFilter,budgetMax,curiosityFilter,activeTraits,selectedDate]);
+  const visible = useMemo(() => catalog.filter(item => matches(item,activeQuick,query,selectedCategory,timeFilter,budgetMax,curiosityFilter,activeTraits,selectedDate)).sort(galleryOrder), [catalog,activeQuick,query,selectedCategory,timeFilter,budgetMax,curiosityFilter,activeTraits,selectedDate]);
   const filterCount = activeQuick.length + activeTraits.length + (curiosityFilter ? 1 : 0) + (selectedCategory === "All" ? 0 : 1) + (timeFilter === "Any time" ? 0 : 1) + (budgetMax === null ? 0 : 1) + (query ? 1 : 0);
 
   const choose = (item:LoreItem, zoom = 14.6) => {
