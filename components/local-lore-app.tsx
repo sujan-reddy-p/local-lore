@@ -319,15 +319,16 @@ export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
   const orbitMap = () => { const map=mapRef.current; if (map) map.easeTo({ bearing:map.getBearing()+35, pitch:Math.max(48,map.getPitch()), duration:650, essential:true }); };
   const cycleTilt = () => { const map=mapRef.current; if (!map) return; const pitch=map.getPitch(); map.easeTo({ pitch:pitch<20?46:pitch<61?70:0, duration:600, essential:true }); };
 
-  const dateContext = selectedDate ? new Intl.DateTimeFormat("en-US",{weekday:"short",month:"short",day:"numeric"}).format(selectedDate) : "All time";
-
   return <main className="lore-app">
     <section className="lore-map" aria-label="Interactive mission map of San Francisco and the Bay">
       <div ref={mapNode} className="map-canvas"/>
       <div className="map-vignette"/>
 
       <div className="intent-panel">
-        <div className="map-brand"><span>L</span><div><strong>Local Lore</strong><small>San Francisco · {dateContext}</small></div></div>
+        <div className="map-brand">
+          <span className="brand-agent-face" aria-hidden="true"><Bot/></span>
+          <div><strong>Local Lore</strong><small>Curated by Claude, the Lore agent</small></div>
+        </div>
         <h1>Where next?</h1>
         <div className="intent-actions">
           <button className="find-missions" onClick={() => { setDiscoverOpen(true); requestAnimationFrame(() => searchNode.current?.focus()); }}><Search/><span className="explore-label-wide">Explore all missions</span><span className="explore-label-short">Explore</span><ChevronRight/></button>

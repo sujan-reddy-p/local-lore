@@ -18,10 +18,11 @@ button { color:inherit; }
 
 .intent-panel { position:absolute; z-index:4; left:22px; top:22px; pointer-events:none; }
 .map-brand { display:flex; align-items:center; gap:9px; margin-bottom:13px; }
-.map-brand>span { display:grid; place-items:center; width:31px; height:31px; border-radius:50% 48% 46% 54%; background:var(--lime); color:#10150e; font-family:var(--font-serif); font-size:20px; transform:rotate(-5deg); box-shadow:0 9px 24px rgba(0,0,0,.22); }
+.map-brand>span { display:grid; place-items:center; width:31px; height:31px; border-radius:50% 48% 46% 54%; background:var(--lime); color:#10150e; transform:rotate(-5deg); box-shadow:0 9px 24px rgba(0,0,0,.22); }
+.map-brand .brand-agent-face svg { width:17px; transform:rotate(5deg); }
 .map-brand>div { display:flex; flex-direction:column; gap:1px; }
 .map-brand strong { color:#f1f4ef; font-size:14px; letter-spacing:-.025em; }
-.map-brand small { color:#b4c1bc; font-size:11px; }
+.map-brand small { color:#b4c1bc; font-size:11px; letter-spacing:.01em; }
 .agent-disclaimer { position:absolute; z-index:4; left:18px; bottom:16px; margin:0; max-width:270px; color:#d5dfd8; font-size:11px; line-height:1.35; text-shadow:0 1px 8px rgba(0,0,0,.72); pointer-events:none; }
 .intent-panel h1 { margin:4px 0 13px; max-width:430px; font-size:clamp(38px,4.8vw,62px); line-height:.9; letter-spacing:-.06em; font-weight:570; }
 .intent-panel h1 em { font-family:var(--font-serif); font-weight:400; color:#e3e5dc; }
