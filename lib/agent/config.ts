@@ -10,7 +10,10 @@ export function agentConfig(): AgentConfig {
 }
 
 export function validCronRequest(request: Request) {
-  const secret = process.env.CRON_SECRET;
+  // `CRON_SECRET` is the value Vercel's scheduler sends as a Bearer token.
+  // The project-specific mirror avoids a platform-reserved variable ambiguity
+  // while preserving Vercel's standard cron behavior.
+  const secret = process.env.LOCAL_LORE_CRON_SECRET ?? process.env.CRON_SECRET;
   if (!secret) return false;
   const authorization = request.headers.get("authorization");
   return authorization === `Bearer ${secret}`;
