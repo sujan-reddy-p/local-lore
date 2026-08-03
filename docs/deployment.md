@@ -2,13 +2,11 @@
 
 ## Status
 
-The Vercel production path uses Next.js and Neon Postgres. The application has a safe static-seed fallback if Neon is unavailable, while the agentic catalog reads published database records when available. Treat every new hosted release as a PMTiles compatibility test, especially for HTTP byte ranges.
+The Vercel production path is a static Next.js map product. It has no database, scheduled job, source fetch, or AI dependency. Treat every hosted release as a PMTiles compatibility test, especially for HTTP byte ranges.
 
 ## Vercel path
 
-`vercel.json` declares framework `nextjs`, build command `npm run build:vercel`, and the daily `/api/cron/ingest` job. That command runs `next build --webpack`. The map uses no Mapbox token.
-
-Required Vercel environment variables (set separately in Development, Preview, and Production) are `DATABASE_URL`, `CRON_SECRET`, and `LOCAL_LORE_CRON_SECRET`. The two cron variables must contain the same value: Vercel sends `CRON_SECRET`, while the route uses the project-specific mirror. Keep their values out of Git and application logs. OpenRouter is not used in the production refresh path.
+`vercel.json` declares the Next.js framework and `npm run build:vercel`. The map uses no map token or required runtime environment variable.
 
 Expected deployment inputs include application source, lockfile, and `public/maps/san-francisco.pmtiles`. The archive is below GitHub’s normal 100 MiB per-file limit but large enough to affect clone and deploy transfer time.
 
@@ -60,18 +58,9 @@ A future Content Security Policy must include these exact needs or self-host the
 - HTML: standard revalidation appropriate for releases.
 - Glyphs: follow upstream caching or self-host with long immutable cache.
 
-## Database and scheduled jobs
+## Catalog updates
 
-Neon Postgres is the active server-side catalog store. Apply each Drizzle migration before a release that depends on it:
-
-```bash
-npm run db:generate
-npm run db:migrate
-```
-
-Vercel invokes `/api/cron/ingest` once daily at 15:00 UTC. The route requires Vercel's `CRON_SECRET` authorization header, bootstraps the seed directory idempotently, and checks only due sources with documented automated-fetch permission. It does not crawl every organizer link in the catalog.
-
-Use separate database resources for development, preview, and production before handling non-seed data at meaningful scale. Monitor ingestion runs, source failures, decision counts, and database connection errors after every release.
+Catalog updates happen outside Vercel. A local catalog agent checks approved sources, edits the typed seed catalog, validates the repository, and commits to GitHub. Vercel deploys that commit. Follow `docs/local-agent-playbook.md`; do not add a Vercel cron or runtime ingestion route.
 
 ## Rollback
 

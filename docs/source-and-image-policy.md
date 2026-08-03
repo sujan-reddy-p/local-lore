@@ -71,13 +71,13 @@ Three legacy seed missions reference Wikimedia Commons through `Special:Redirect
 
 Recheck each source page before a public launch because attribution and file status can change. If a source cannot be confirmed, remove the image field; the mission remains fully usable.
 
-## Initial automated source
+## Local-agent source checks
 
-The first enabled automated source is San Francisco Recreation & Parks' Golden Gate Bandshell iCalendar feed. The agency publishes the feed for calendar subscription from its [iCalendar page](https://sfrecpark.org/iCalendar.aspx), so Local Lore checks the feed no more than once per day and does not reuse any source images. All other initial source-directory records remain link-only until an equivalent public-feed or automation policy is recorded.
+The SF Recreation & Parks Golden Gate Bandshell iCalendar feed is an approved lead for the local catalog agent because the agency publishes it for calendar subscription from its [iCalendar page](https://sfrecpark.org/iCalendar.aspx). The agent may check it no more than once per day and may not reuse its source images. The deployed website never fetches this or any other source at runtime.
 
 ## AI and source trust
 
-AI can summarize normalized facts into original short framing, categorize, tag, and propose duplicates. It cannot create provenance, permissions, licenses, dates, prices, coordinates, or accessibility facts. A model’s confidence is not evidence.
+AI may help a local agent summarize already-normalized facts or propose duplicates. It is not part of the deployed product or publishing path. It cannot create provenance, permissions, licenses, dates, prices, coordinates, or accessibility facts. A model’s confidence is not evidence.
 
 ## Takedown and correction design
 
