@@ -370,7 +370,7 @@ export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
           items={visible} query={query} setQuery={setQuery} category={selectedCategory} setCategory={setSelectedCategory}
           time={timeFilter} setTime={setTimeFilter} budgetMax={budgetMax} setBudgetMax={setBudgetMax}
           traits={activeTraits} onTrait={toggleTrait}
-          activeQuick={activeQuick} isQuickActive={quickFilterActive} onQuick={toggleQuick} curiosity={curiosityFilter} setCuriosity={setCuriosityFilter}
+          isQuickActive={quickFilterActive} onQuick={toggleQuick} curiosity={curiosityFilter} setCuriosity={setCuriosityFilter}
           calendar={calendar} selectedDateKey={selectedDateKey} setSelectedDateKey={setSelectedDateKey}
           filterCount={filterCount} onClear={clearFilters} onClose={() => setDiscoverOpen(false)} onChoose={choose} searchRef={searchNode}
         />}
