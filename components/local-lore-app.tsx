@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import ArrowUpRight from "lucide-react/dist/esm/icons/arrow-up-right.mjs";
+import Bot from "lucide-react/dist/esm/icons/bot.mjs";
 import ChevronRight from "lucide-react/dist/esm/icons/chevron-right.mjs";
 import Clock3 from "lucide-react/dist/esm/icons/clock-3.mjs";
 import CalendarDays from "lucide-react/dist/esm/icons/calendar-days.mjs";
@@ -115,10 +116,11 @@ export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
   const [curiosityFilter, setCuriosityFilter] = useState<CuriosityFilter|null>(null);
   const [activeTraits, setActiveTraits] = useState<MissionTrait[]>([]);
   const [calendar] = useState(() => dateChoices());
-  const [selectedDateKey, setSelectedDateKey] = useState(() => dateKey(dateChoices()[0]));
+  const [selectedDateKey, setSelectedDateKey] = useState("all");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<LoreItem | null>(null);
   const [discoverOpen, setDiscoverOpen] = useState(false);
+  const [agentOpen, setAgentOpen] = useState(false);
   const mapNode = useRef<HTMLDivElement>(null);
   const searchNode = useRef<HTMLInputElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -344,10 +346,20 @@ export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
       </div>
 
       <div className="camera-actions" aria-label="Map view controls">
+        <button className={`lore-agent-button${agentOpen?" active":""}`} onClick={() => setAgentOpen(open => !open)} aria-label="How Local Lore works" aria-expanded={agentOpen} data-label="About the Lore agent"><Bot/></button>
         <button onClick={orbitMap} aria-label="Rotate map 35 degrees" data-label="Rotate"><Compass/></button>
         <button onClick={cycleTilt} aria-label="Cycle map tilt" data-label="Tilt / top-down"><Layers3/></button>
         <button onClick={resetMap} aria-label="Show the whole San Francisco map" data-label="Whole city"><LocateFixed/></button>
       </div>
+      <AnimatePresence>
+        {agentOpen && <motion.aside className="lore-agent-popover" role="dialog" aria-label="About the Local Lore agent" initial={{opacity:0,y:-8,scale:.96}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:-8,scale:.96}} transition={{duration:.18}}>
+          <div className="lore-agent-mark"><Bot/><span>LORE AGENT</span></div>
+          <strong>A living field guide, not a feed.</strong>
+          <p>Local Lore keeps a rolling directory of memorable ways into San Francisco. A local research agent checks approved sources, curates what is worth finding, and publishes catalog updates through GitHub.</p>
+          <p className="lore-agent-note">Always confirm details with the original organizer.</p>
+          <button onClick={() => setAgentOpen(false)} aria-label="Close Lore agent message"><X/>Got it</button>
+        </motion.aside>}
+      </AnimatePresence>
       <p className="agent-disclaimer">Agent-maintained directory · confirm details with the organizer</p>
 
       <AnimatePresence>

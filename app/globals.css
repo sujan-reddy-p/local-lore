@@ -66,9 +66,22 @@ button { color:inherit; }
 .camera-actions { position:absolute; z-index:5; right:18px; top:20px; display:grid; gap:6px; }
 .camera-actions button { position:relative; width:38px; height:38px; padding:0; display:grid; place-items:center; border:1px solid var(--line); border-radius:11px; background:rgba(10,15,12,.84); box-shadow:0 8px 24px rgba(0,0,0,.2); backdrop-filter:blur(10px); cursor:pointer; }
 .camera-actions button:hover { background:var(--lime); border-color:var(--lime); color:#11160f; }
+.camera-actions .lore-agent-button { border-color:rgba(142,220,196,.58); color:var(--lime); overflow:visible; }
+.camera-actions .lore-agent-button::after { content:""; position:absolute; inset:-4px; border:1px solid rgba(142,220,196,.42); border-radius:14px; animation:lore-agent-ping 2.8s ease-out infinite; pointer-events:none; }
+.camera-actions .lore-agent-button.active,.camera-actions .lore-agent-button:hover { color:#11160f; }
+.camera-actions .lore-agent-button.active::after { animation:none; opacity:0; }
 .camera-actions svg { width:16px; }
 .camera-actions button::before { content:attr(data-label); position:absolute; right:45px; white-space:nowrap; padding:6px 8px; border-radius:7px; background:#111713; color:#dce2dd; font-size:10px; opacity:0; transform:translateX(4px); pointer-events:none; transition:.15s; }
 .camera-actions button:hover::before,.camera-actions button:focus-visible::before { opacity:1; transform:none; }
+.lore-agent-popover { position:absolute; z-index:8; top:18px; right:68px; width:min(330px,calc(100vw - 104px)); padding:16px; border:1px solid rgba(167,224,199,.3); border-radius:16px; background:rgba(8,22,18,.94); box-shadow:0 20px 48px rgba(0,0,0,.38); backdrop-filter:blur(18px); }
+.lore-agent-mark { display:flex; align-items:center; gap:7px; color:var(--lime); font-size:10px; font-weight:800; letter-spacing:.13em; }
+.lore-agent-mark svg { width:15px; }
+.lore-agent-popover strong { display:block; margin:10px 0 7px; color:#f2f4e8; font-size:17px; line-height:1.15; }
+.lore-agent-popover p { margin:0; color:#c4d1c9; font-size:13px; line-height:1.45; }
+.lore-agent-popover .lore-agent-note { margin-top:9px; color:#91b3a5; font-size:11px; }
+.lore-agent-popover button { display:flex; align-items:center; gap:6px; margin-top:13px; padding:7px 9px; border:1px solid rgba(167,224,199,.25); border-radius:8px; background:transparent; color:#e8eee8; font-size:12px; cursor:pointer; }
+.lore-agent-popover button svg { width:13px; }
+@keyframes lore-agent-ping { 0%{opacity:.85;transform:scale(.85)} 65%,100%{opacity:0;transform:scale(1.35)} }
 
 .mission-browser { position:absolute; z-index:9; right:17px; top:17px; bottom:17px; width:min(720px,calc(100vw - 34px)); display:flex; flex-direction:column; overflow:hidden; border:1px solid rgba(219,238,231,.17); border-radius:22px; background:rgba(20,30,27,.96); box-shadow:0 28px 90px rgba(0,0,0,.42); backdrop-filter:blur(22px); }
 .browser-head { min-height:65px; padding:14px 14px 11px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); }
@@ -175,6 +188,7 @@ button { color:inherit; }
   .explore-label-short { display:inline; }
   .camera-actions { right:12px; top:12px; }
   .camera-actions button { width:36px; height:36px; }
+  .lore-agent-popover { top:12px; right:57px; width:min(302px,calc(100vw - 78px)); padding:14px; }
   .mission-browser { left:8px; right:8px; top:auto; bottom:8px; width:auto; height:min(72dvh,620px); border-radius:19px; }
   .mobile-discovery { display:grid; gap:8px; padding:9px 13px 5px; border-top:1px solid rgba(255,255,255,.07); }
   .mobile-discovery>div { display:grid; gap:5px; }
@@ -207,6 +221,7 @@ button { color:inherit; }
 }
 
 @media(prefers-reduced-motion:reduce) {
+  .camera-actions .lore-agent-button::after { animation:none; }
   *,*::before,*::after { animation-duration:.01ms!important; transition-duration:.01ms!important; scroll-behavior:auto!important; }
 }
 
