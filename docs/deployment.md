@@ -8,7 +8,7 @@ The Vercel production path uses Next.js and Neon Postgres. The application has a
 
 `vercel.json` declares framework `nextjs`, build command `npm run build:vercel`, and the daily `/api/cron/ingest` job. That command runs `next build --webpack`. The map uses no Mapbox token.
 
-Required Vercel environment variables (set separately in Development, Preview, and Production) are `DATABASE_URL`, `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, `CRON_SECRET`, and `LOCAL_LORE_CRON_SECRET`. The two cron variables must contain the same value: Vercel sends `CRON_SECRET`, while the route uses the project-specific mirror. Keep their values out of Git and application logs. `OPENROUTER_API_KEY` is only used by the server-side ingestion route.
+Required Vercel environment variables (set separately in Development, Preview, and Production) are `DATABASE_URL`, `CRON_SECRET`, and `LOCAL_LORE_CRON_SECRET`. The two cron variables must contain the same value: Vercel sends `CRON_SECRET`, while the route uses the project-specific mirror. Keep their values out of Git and application logs. OpenRouter is not used in the production refresh path.
 
 Expected deployment inputs include application source, lockfile, and `public/maps/san-francisco.pmtiles`. The archive is below GitHub’s normal 100 MiB per-file limit but large enough to affect clone and deploy transfer time.
 

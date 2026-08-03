@@ -1,5 +1,4 @@
 import { bootstrapSeedCatalog, createIngestionRun, finishIngestionRun, listDueSources, recordCandidateDecision, recordSourceObservation, upsertAgentMission } from "@/db/repository";
-import { proposeEditorialCopy } from "@/lib/ingestion/ai";
 import { normalizeStructuredEvent } from "@/lib/ingestion/normalize-event";
 import { checkPublicPage } from "@/lib/ingestion/page-check";
 
@@ -16,7 +15,6 @@ export async function runDailyRefresh() {
   let normalized = 0;
   let rejected = 0;
   let published = 0;
-  let aiRequests = 0;
   try {
     const due = await listDueSources(new Date(), 20);
     for (const source of due) {
@@ -33,24 +31,10 @@ export async function runDailyRefresh() {
             await recordCandidateDecision({ sourceId: source.id, runId, decision: "discarded", reasons: [candidate.reason], candidate: event });
             continue;
           }
-          let mission = candidate.mission;
-          if (aiRequests < 8) {
-            aiRequests += 1;
-            const proposal = await proposeEditorialCopy({ title: event.title, description: event.description, venue: event.venue, startsAt: event.startsAt, endsAt: event.endsAt, price: event.price, source: source.name });
-            if (proposal && proposal.useful && proposal.confidence >= 0.55) {
-              mission = {
-                ...mission,
-                title: proposal.title ?? mission.title,
-                kicker: proposal.kicker ?? mission.kicker,
-                description: proposal.description ?? mission.description,
-                why: proposal.why ?? mission.why,
-                category: proposal.category ?? mission.category,
-                format: proposal.format ?? mission.format,
-                traits: proposal.traits ?? mission.traits,
-              };
-            }
-          }
-          await upsertAgentMission({ sourceId: source.id, externalId: candidate.mission.externalId, mission, runId });
+          // Refreshes preserve deterministic source facts and Local Lore's
+          // existing venue framing. AI is intentionally not on this critical
+          // path: a slow/free model must never delay a city update.
+          await upsertAgentMission({ sourceId: source.id, externalId: candidate.mission.externalId, mission: candidate.mission, runId });
           await recordCandidateDecision({ sourceId: source.id, runId, externalId: candidate.mission.externalId, decision: "published", reasons: [], candidate: event });
           published += 1;
         }

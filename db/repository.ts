@@ -7,6 +7,20 @@ import type { LoreItem, MissionSourceStatus } from "@/lib/types";
 
 type StoredMission = typeof missions.$inferSelect;
 
+// Accent is a presentation token, not source data. Persisted catalog rows use
+// this stable category palette so database-backed missions retain the same
+// expressive map-zone language as the static seed catalog.
+const categoryAccents: Record<LoreItem["category"], string> = {
+  Outside: "#78cfe8",
+  Move: "#ff9b72",
+  Make: "#67c8ff",
+  Listen: "#f6c766",
+  Eat: "#ff7866",
+  Learn: "#a890ff",
+  Community: "#70daa0",
+  "After dark": "#df9bd8",
+};
+
 function missionFromRow(row: StoredMission): LoreItem {
   return {
     id: row.id,
@@ -33,7 +47,7 @@ function missionFromRow(row: StoredMission): LoreItem {
       status: row.sourceStatus as MissionSourceStatus,
       checkedAt: row.sourceCheckedAt,
     },
-    accent: "#78cfe8",
+    accent: categoryAccents[row.category as LoreItem["category"]] ?? "#78cfe8",
     distance: "Check source",
     schedule: row.schedule as LoreItem["schedule"],
     image: row.image as LoreItem["image"],

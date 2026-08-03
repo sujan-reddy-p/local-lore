@@ -91,7 +91,7 @@ Future coding agents should read [AGENTS.md](AGENTS.md) before changing the proj
 
 - The Next.js/Vercel page reads the Neon catalog server-side and falls back to `lib/seed-data.ts` during an outage. It bootstraps the static seed catalog idempotently when Neon is empty.
 - A protected Vercel daily cron checks only due, explicitly permissioned sources. One official SF Recreation & Parks iCalendar feed is enabled; existing organizer links remain link-only until their automation policy is documented.
-- The agentic directory has no human review flow by product decision. Deterministic validation publishes or discards candidates; OpenRouter may propose short editorial framing but cannot provide factual fields.
+- The agentic directory has no human review flow by product decision. Deterministic validation publishes or discards candidates; AI is deliberately outside the production refresh path so source updates cannot degrade or delay the map experience.
 - Labels use the Protomaps glyph CDN. The vector archive is local, but labels still require network access until glyphs are self-hosted.
 - The PMTiles asset must be served with HTTP byte-range support. See the deployment guide before changing hosting.
 - 117 mission primaries are served locally from `public/images/missions/` through the typed image manifest; alternate candidates use `-2` and `-3` suffixes. Three legacy Wikimedia Commons images remain externally hosted. No images were generated for this project.
