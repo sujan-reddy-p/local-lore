@@ -14,7 +14,7 @@ No deployment was performed as part of the original build. Persistence, schedule
 - Grouped exactly three right-side map controls: rotate, cycle tilt/top-down, and restore the whole-city view.
 - Increased curiosity-filter type size and added Lucide icons.
 - Added an All-time calendar choice. All time passes `null` to the matcher and intentionally skips `isAvailableOn`, exposing all 212 missions.
-- Replaced generic category-only card art with venue-and-neighborhood visual previews. Licensed Wikimedia images remain in place where their metadata is complete; all other previews intentionally avoid third-party photography.
+- Replaced generic category-only card art with venue-and-neighborhood visual previews, then added a 117-mission local-primary image manifest. The browser and detail card use the local primary where available; unsuffixed files are primary and `-2`/`-3` files are retained alternates.
 
 ## Known-good behavior
 
@@ -36,7 +36,7 @@ No deployment was performed as part of the original build. Persistence, schedule
 - The shared source-check date is `2026-08-02`.
 - Every record’s status is `curated-seed`; none is verified live.
 - Every record contains a source name and direct HTTPS URL.
-- Three records include externally hosted Wikimedia Commons images with stored credit, source page, and license. No generated images are used.
+- 117 records receive local primary images through `lib/mission-images.ts`; creator permission was confirmed by the project owner. Three records retain externally hosted Wikimedia Commons images with stored credit, source page, and license. No generated images are used.
 - Recurring and evergreen availability is partly inferred from `timeSlot` when a record has no explicit schedule. This is acceptable for a prototype but must be replaced by source-accurate schedules in a live catalog.
 
 ## Architecture status
@@ -66,7 +66,7 @@ Designed but not connected:
 
 - The vector archive and favicon are local.
 - Protomaps glyph PBF files come from `https://protomaps.github.io/basemaps-assets/fonts/…`; labels require network access.
-- Three optional mission photos come from Wikimedia Commons redirects.
+- Local mission primary images are served from the application. Three legacy optional mission photos come from Wikimedia Commons redirects.
 - Mission source links go to external organizers/agencies only when the visitor chooses them.
 - There is no private Mapbox token, API key, analytics SDK, authentication, or backend call in the core V1 path.
 

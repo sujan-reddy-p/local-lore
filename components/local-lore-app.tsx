@@ -415,7 +415,7 @@ function ActivityCard({item,onClose}:{item:LoreItem|null;onClose:()=>void}) {
     <p className="card-description">{item.description}</p>
     <p className="card-why">Why it is worth it · {item.why}</p>
     <a href={item.source.url} target="_blank" rel="noreferrer">Open {item.source.name} <ArrowUpRight/></a>
-    <small>Curated seed · source checked {item.source.checkedAt} · confirm schedule{item.image?` · photo ${item.image.credit}`:""}</small>
+    <small>Curated seed · source checked {item.source.checkedAt} · confirm schedule</small>
   </motion.aside>}</AnimatePresence>;
 }
 

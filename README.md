@@ -77,6 +77,7 @@ docs/                         Product and engineering handoff guides
 - [Development and testing](docs/development-and-testing.md) — commands, environments, tests, browser QA, and troubleshooting.
 - [Deployment](docs/deployment.md) — Vercel and Cloudflare paths, PMTiles byte ranges, and release checklist.
 - [Source and image policy](docs/source-and-image-policy.md) — attribution, automation permission, licensing, and prohibited behavior.
+- [Mission image workflow](docs/mission-image-workflow.md) — exact naming, primary-versus-alternate rules, and the image manifest for future mission additions.
 - [Roadmap and decisions](docs/roadmap-and-decisions.md) — phased future work and decisions already made.
 - [Contribution guide](CONTRIBUTING.md) — safe change workflow and review checklist.
 - [Changelog](CHANGELOG.md) — concise record of the implemented V1.
@@ -89,7 +90,7 @@ Future coding agents should read [AGENTS.md](AGENTS.md) before changing the proj
 - The adapter and pipeline are scaffolding; there is no scheduled fetch worker, live adapter, review UI, or automated publisher yet.
 - Labels use the Protomaps glyph CDN. The vector archive is local, but labels still require network access until glyphs are self-hosted.
 - The PMTiles asset must be served with HTTP byte-range support. See the deployment guide before changing hosting.
-- Only three missions currently include photographs, all from Wikimedia Commons with credit, source page, and license stored in the record. The other missions use a venue-and-neighborhood visual treatment instead of unlicensed imagery. No images were generated for this project.
+- 117 mission primaries are served locally from `public/images/missions/` through the typed image manifest; alternate candidates use `-2` and `-3` suffixes. Three legacy Wikimedia Commons images remain externally hosted. No images were generated for this project.
 - The app is dark-mode-only in the current implementation. Light-mode support remains future work.
 - `shadcn/ui`, PostgreSQL, and Supabase are not active dependencies in V1.
 

@@ -46,7 +46,7 @@ The deployed browser needs access to:
 
 - same-origin application assets and PMTiles archive;
 - `protomaps.github.io` for label glyphs;
-- Wikimedia Commons only for the three optional licensed photos;
+- Local `/images/missions/` assets for the manifest-backed primary photos, plus Wikimedia Commons for the three legacy optional licensed photos;
 - organizer sites only after the user opens a source link.
 
 A future Content Security Policy must include these exact needs or self-host the glyphs/images where permitted.

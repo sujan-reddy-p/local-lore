@@ -61,7 +61,9 @@ When rights are unclear, omit the image. In the mission browser, the fallback is
 
 ## Current images
 
-Three seed missions reference Wikimedia Commons through `Special:Redirect/file` and store a Commons file page, credit, license, and alt text:
+The project owner has confirmed creator permission for the local primary mission images listed in `lib/mission-images.ts`. These files are served from `public/images/missions/`; the `MissionImage` record keeps the permission basis internally without adding a visible credit treatment.
+
+Three legacy seed missions reference Wikimedia Commons through `Special:Redirect/file` and store a Commons file page, credit, license, and alt text:
 
 - Ferry Building — CC BY-SA 2.5.
 - 16th Avenue Tiled Steps — CC BY 4.0.

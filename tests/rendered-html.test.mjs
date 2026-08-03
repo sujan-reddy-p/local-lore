@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
 async function render() {
@@ -31,12 +31,13 @@ test("server-renders the Local Lore map shell", async () => {
 });
 
 test("keeps map interaction and source attribution in the product code", async () => {
-  const [app, seed, zones, style, css] = await Promise.all([
+  const [app, seed, zones, style, css, imageManifest] = await Promise.all([
     readFile(new URL("../components/local-lore-app.tsx", import.meta.url), "utf8"),
     readFile(new URL("../lib/seed-data.ts", import.meta.url), "utf8"),
     readFile(new URL("../lib/activity-zones.ts", import.meta.url), "utf8"),
     readFile(new URL("../lib/map-style.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+    readFile(new URL("../lib/mission-images.ts", import.meta.url), "utf8"),
   ]);
 
   assert.match(app, /dragPan:\s*true/);
@@ -68,6 +69,14 @@ test("keeps map interaction and source attribution in the product code", async (
   assert.match(seed, /dog-friendly/);
   assert.match(seed, /Scenic route/);
   assert.match(seed, /Wikimedia Commons/);
+  assert.match(seed, /attachMissionImages/);
+  assert.doesNotMatch(seed, /mission\("dogpatch-boulders",/);
+  assert.doesNotMatch(seed, /mission\("exploratorium",/);
+  const manifestSection = imageManifest.match(/localMissionImageIds = \[([\s\S]*?)\] as const/);
+  assert.ok(manifestSection);
+  const localImageIds = [...manifestSection[1].matchAll(/"([^"]+)"/g)].map((match) => match[1]);
+  assert.ok(localImageIds.length >= 100);
+  await Promise.all(localImageIds.map((id) => access(new URL(`../public/images/missions/${id}.jpg`, import.meta.url))));
   assert.match(css, /\.mission-browser/);
   assert.match(css, /\.mission-results[^}]*grid-template-columns/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
