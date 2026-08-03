@@ -19,6 +19,7 @@
   "dependencies": {
     "@protomaps/basemaps": "^5.7.2",
     "@types/pg": "^8.20.3",
+    "@vercel/analytics": "^2.0.1",
     "drizzle-orm": "^0.45.2",
     "framer-motion": "^12.43.0",
     "lucide-react": "^1.28.0",
