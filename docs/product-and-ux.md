@@ -62,8 +62,8 @@ Every filter is also a map filter. The same filtered ID set replaces both activi
 
 - The map remains full-screen and touch-first.
 - The top overlay is deliberately reduced to the compact brand and a single Explore button; the headline and map-overlay filters are removed.
-- The mission browser becomes a bottom-positioned sheet-like overlay with one vertical scroll surface, so every filter and mission card remains reachable on short phone screens.
-- The sheet contains horizontally scrollable Quick pick, Follow a thread, and Plan by date rows before the structured filters and card gallery.
+- The mission browser becomes a compact bottom sheet designed separately from desktop: a search field, one horizontal Quick pick row, and immediately visible, independently scrollable mission cards.
+- A single Refine action opens a focused full-sheet controls view for curiosity, date, category, traits, time, and budget. This keeps the main mobile surface low-friction while retaining the complete desktop filter capability.
 - The detail card spans the screen with safe margins and hides long explanatory copy to preserve map access.
 - Map attribution is currently hidden at the smallest layout to prevent obstruction; this should be revisited before public release so attribution remains accessible through an alternative compact affordance.
 

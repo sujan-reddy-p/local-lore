@@ -391,6 +391,7 @@ function MissionBrowser({items,query,setQuery,category,setCategory,time,setTime,
   filterCount:number; onClear:()=>void; onClose:()=>void; onChoose:(item:LoreItem)=>void; searchRef:React.RefObject<HTMLInputElement|null>;
 }) {
   const reduce = useReducedMotion();
+  const [mobileRefineOpen, setMobileRefineOpen] = useState(false);
   return <motion.aside className="mission-browser" initial={reduce?false:{opacity:0,x:24}} animate={{opacity:1,x:0}} exit={{opacity:0,x:24}} transition={{duration:.24}} aria-label="Browse missions">
     <div className="browser-head"><div><small>Browse the city</small><strong>What sounds good?</strong></div><button onClick={onClose} aria-label="Close mission browser"><X/></button></div>
     <label className="mission-search"><Search/><input ref={searchRef} value={query} onChange={event => setQuery(event.target.value)} placeholder="Try “sunset”, “dogs”, or “live music”" aria-label="Describe the kind of mission you want"/><kbd>/</kbd></label>
@@ -398,18 +399,18 @@ function MissionBrowser({items,query,setQuery,category,setCategory,time,setTime,
       {["quiet and scenic","dog-friendly","a little weird","live","photogenic"].map(prompt => <button key={prompt} className={query===prompt?"active":""} onClick={() => setQuery(query===prompt?"":prompt)}>{prompt}</button>)}
     </div>
     <div className="mobile-discovery" aria-label="Mobile discovery controls">
-      <div><span>Quick pick</span><div className="mobile-filter-row">{quickFilters.map(filter => <button key={filter} className={isQuickActive(filter)?"active":""} onClick={() => onQuick(filter)}>{filter}</button>)}</div></div>
-      <div><span>Follow a thread</span><div className="mobile-filter-row">{curiosityFilters.map(({label,icon:Icon}) => <button key={label} className={curiosity===label?"active":""} onClick={() => setCuriosity(curiosity===label?null:label)}><Icon/><b>{label}</b></button>)}</div></div>
-      <div><span>Plan by date</span><div className="mobile-filter-row mobile-date-row"><button className={selectedDateKey==="all"?"active":""} onClick={() => setSelectedDateKey("all")}>All time</button>{calendar.map((date,index) => <button key={dateKey(date)} className={selectedDateKey===dateKey(date)?"active":""} onClick={() => setSelectedDateKey(dateKey(date))}>{dateLabel(date,index)} {date.getDate()}</button>)}</div></div>
+      <div className="mobile-discovery-row"><div className="mobile-filter-row">{quickFilters.map(filter => <button key={filter} className={isQuickActive(filter)?"active":""} onClick={() => onQuick(filter)}>{filter}</button>)}</div><button className="mobile-refine-button" onClick={() => setMobileRefineOpen(true)} aria-label="Refine mission results"><SlidersHorizontal/><span>Refine</span>{filterCount>0&&<b>{filterCount}</b>}</button></div>
     </div>
-    <div className="filter-block category-block"><span>Pick a world</span><div className="category-grid">
-      <button className={category==="All"?"active":""} onClick={() => setCategory("All")}><SlidersHorizontal/><em>Surprise me</em></button>
-      {categories.map(value => <button key={value} className={category===value?"active":""} onClick={() => setCategory(value)}><b>{categoryGlyph[value]}</b><em>{value}</em></button>)}
-    </div></div>
-    <div className="filter-block"><span>Make it feel like</span><div className="trait-pills">{traitFilters.map(({label,value}) => <button key={value} className={traits.includes(value)?"active":""} onClick={() => onTrait(value)}>{value==="dog-friendly"&&<PawPrint/>}{label}</button>)}</div></div>
-    <div className="filter-columns">
-      <div className="filter-block"><span>When</span><div className="filter-pills">{timeFilters.map(value => <button key={value} className={time===value?"active":""} onClick={() => setTime(value)}>{value}</button>)}</div></div>
-      <div className="filter-block budget-slider"><span>Budget</span><label><input type="range" min="0" max="100" step="5" value={budgetMax ?? 100} onChange={event => setBudgetMax(Number(event.target.value) >= 100 ? null : Number(event.target.value))} aria-label="Maximum mission budget"/><b>{budgetMax === null ? "Any price" : budgetMax === 0 ? "Free only" : `Up to $${budgetMax}`}</b></label><div><small>Free</small><small>Any price</small></div></div>
+    <div className="desktop-refine">
+      <div className="filter-block category-block"><span>Pick a world</span><div className="category-grid">
+        <button className={category==="All"?"active":""} onClick={() => setCategory("All")}><SlidersHorizontal/><em>Surprise me</em></button>
+        {categories.map(value => <button key={value} className={category===value?"active":""} onClick={() => setCategory(value)}><b>{categoryGlyph[value]}</b><em>{value}</em></button>)}
+      </div></div>
+      <div className="filter-block"><span>Make it feel like</span><div className="trait-pills">{traitFilters.map(({label,value}) => <button key={value} className={traits.includes(value)?"active":""} onClick={() => onTrait(value)}>{value==="dog-friendly"&&<PawPrint/>}{label}</button>)}</div></div>
+      <div className="filter-columns">
+        <div className="filter-block"><span>When</span><div className="filter-pills">{timeFilters.map(value => <button key={value} className={time===value?"active":""} onClick={() => setTime(value)}>{value}</button>)}</div></div>
+        <div className="filter-block budget-slider"><span>Budget</span><label><input type="range" min="0" max="100" step="5" value={budgetMax ?? 100} onChange={event => setBudgetMax(Number(event.target.value) >= 100 ? null : Number(event.target.value))} aria-label="Maximum mission budget"/><b>{budgetMax === null ? "Any price" : budgetMax === 0 ? "Free only" : `Up to $${budgetMax}`}</b></label><div><small>Free</small><small>Any price</small></div></div>
+      </div>
     </div>
     {filterCount>0&&<div className="result-bar"><span>Your current mix</span><button onClick={onClear}>View all missions</button></div>}
     <div className="mission-results">
@@ -417,6 +418,18 @@ function MissionBrowser({items,query,setQuery,category,setCategory,time,setTime,
         <MissionTileVisual item={item}/><span><small>{item.hotspot?"Hotspot · ":""}{item.neighborhood} · {formatOf(item)}</small><strong>{item.title}</strong><em>{item.time} · {item.price?`$${item.price}`:"Free"}</em></span>
       </button>)}
     </div>
+    <AnimatePresence>{mobileRefineOpen&&<motion.div className="mobile-refine-sheet" initial={reduce?false:{opacity:0,y:16}} animate={{opacity:1,y:0}} exit={{opacity:0,y:16}} transition={{duration:.2}} aria-label="Refine mission results">
+      <div className="mobile-refine-head"><div><small>Tune the map</small><strong>Make a plan</strong></div><button onClick={() => setMobileRefineOpen(false)} aria-label="Close refine options"><X/></button></div>
+      <div className="mobile-refine-content">
+        <div className="filter-block"><span>Follow a thread</span><div className="trait-pills">{curiosityFilters.map(({label,icon:Icon}) => <button key={label} className={curiosity===label?"active":""} onClick={() => setCuriosity(curiosity===label?null:label)}><Icon/>{label}</button>)}</div></div>
+        <div className="filter-block"><span>Plan by date</span><div className="filter-pills"><button className={selectedDateKey==="all"?"active":""} onClick={() => setSelectedDateKey("all")}>All time</button>{calendar.map((date,index) => <button key={dateKey(date)} className={selectedDateKey===dateKey(date)?"active":""} onClick={() => setSelectedDateKey(dateKey(date))}>{dateLabel(date,index)} {date.getDate()}</button>)}</div></div>
+        <div className="filter-block"><span>Pick a world</span><div className="category-grid"><button className={category==="All"?"active":""} onClick={() => setCategory("All")}><SlidersHorizontal/><em>Surprise me</em></button>{categories.map(value => <button key={value} className={category===value?"active":""} onClick={() => setCategory(value)}><b>{categoryGlyph[value]}</b><em>{value}</em></button>)}</div></div>
+        <div className="filter-block"><span>Make it feel like</span><div className="trait-pills">{traitFilters.map(({label,value}) => <button key={value} className={traits.includes(value)?"active":""} onClick={() => onTrait(value)}>{value==="dog-friendly"&&<PawPrint/>}{label}</button>)}</div></div>
+        <div className="filter-block"><span>When</span><div className="filter-pills">{timeFilters.map(value => <button key={value} className={time===value?"active":""} onClick={() => setTime(value)}>{value}</button>)}</div></div>
+        <div className="filter-block budget-slider"><span>Budget</span><label><input type="range" min="0" max="100" step="5" value={budgetMax ?? 100} onChange={event => setBudgetMax(Number(event.target.value) >= 100 ? null : Number(event.target.value))} aria-label="Maximum mission budget"/><b>{budgetMax === null ? "Any price" : budgetMax === 0 ? "Free only" : `Up to $${budgetMax}`}</b></label><div><small>Free</small><small>Any price</small></div></div>
+      </div>
+      <div className="mobile-refine-footer">{filterCount>0&&<button onClick={onClear}>Clear filters</button>}<button className="mobile-refine-done" onClick={() => setMobileRefineOpen(false)}>See missions</button></div>
+    </motion.div>}</AnimatePresence>
   </motion.aside>;
 }
 
