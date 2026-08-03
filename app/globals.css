@@ -208,7 +208,7 @@ button { color:inherit; }
   .mobile-refine-button { height:32px; padding:0 9px; display:flex; flex:none; align-items:center; gap:5px; border:1px solid rgba(142,220,196,.36); border-radius:999px; background:rgba(142,220,196,.08); color:#d7fff3; font-size:10px; cursor:pointer; }
   .mobile-refine-button svg { width:12px; height:12px; }
   .mobile-refine-button b { min-width:15px; height:15px; display:grid; place-items:center; border-radius:50%; background:var(--lime); color:#102019; font-size:9px; }
-  .mission-results { min-height:0; flex:1; grid-template-columns:repeat(2,minmax(0,1fr)); padding:8px 8px calc(8px + env(safe-area-inset-bottom)); gap:7px; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
+  .mission-results { height:0; min-height:0; flex:1; grid-template-columns:repeat(2,minmax(0,1fr)); padding:8px 8px calc(8px + env(safe-area-inset-bottom)); gap:7px; overflow-y:scroll; overscroll-behavior:contain; touch-action:pan-y; -webkit-overflow-scrolling:touch; }
   .mission-tile { min-height:154px; }
   .mission-tile-visual { height:68px; padding:9px 10px; }
   .mobile-refine-sheet { position:absolute; z-index:2; inset:0; display:flex; flex-direction:column; overflow:hidden; background:rgba(20,30,27,.99); }
