@@ -1,100 +1,57 @@
 # Agent handoff
 
-## Project snapshot
+## Current production truth
 
-Local Lore V1 is a standalone Next.js App Router project in active portfolio condition. It is a single-page, full-viewport map experience with 212 static San Francisco and nearby Bay missions. The map, catalog filters, hover previews, mission drawer/card, responsive layout, source attribution, local vector tiles, and both production build targets are implemented.
+Local Lore is a deployed, single-page Next.js map experience for San Francisco. The public site is intentionally static at runtime: it reads `lib/seed-data.ts`, renders a local PMTiles map, and does not fetch sources, write a database, or call AI.
 
-No deployment was performed as part of the original build. Persistence, scheduled ingestion, live feeds, and an AI review system are designed but not activated.
+Catalog freshness is a separate local-agent workflow. The local agent checks approved sources, updates typed Git-tracked records, validates the app, and pushes a commit. GitHub/Vercel then deploy the catalog update.
 
-## Last implemented product changes
+## First reading order
 
-- Removed the full-width top bar so the map uses the complete viewport.
-- Preserved identity in a compact map-overlay brand block.
-- Removed MapLibre’s native plus/minus controls. Scroll, pinch, double-click, keyboard, and box zoom remain available.
-- Grouped exactly three right-side map controls: rotate, cycle tilt/top-down, and restore the whole-city view.
-- Increased curiosity-filter type size and added Lucide icons.
-- Added an All-time calendar choice. All time passes `null` to the matcher and intentionally skips `isAvailableOn`, exposing all 212 missions.
-- Replaced generic category-only card art with venue-and-neighborhood visual previews, then added a 117-mission local-primary image manifest. The browser and detail card use the local primary where available; unsuffixed files are primary and `-2`/`-3` files are retained alternates.
-- Added a native 1200×630 Open Graph/Twitter image route. It recreates the opening dark map character and activity-zone halos with code, so sharing is reliable without attempting to capture MapLibre WebGL on the server.
+1. `README.md`
+2. `AGENTS.md`
+3. this file
+4. `docs/local-agent-playbook.md` for catalog work
+5. `docs/source-and-image-policy.md` before changing sources, facts, or images
+6. the focused map, UX, analytics, or deployment guide
 
-## Known-good behavior
+## What works
 
-- Initial camera: center `[-122.425, 37.78]`, zoom `11.8`, pitch `44`, bearing `-12`.
-- Bounds: southwest `[-122.61, 37.61]`, northeast `[-122.26, 37.93]`.
-- Map style and local PMTiles load in Next development mode.
-- 3D building extrusion appears beginning at zoom 11 and reaches data height by zoom 12.7.
-- Mission clusters operate through zoom 13; individual detailed zones begin near zoom 12.2.
-- Mission symbols are anchored to geographic coordinates but aligned to the viewport, so they stay upright and centered while the map pitches or rotates.
-- Hover updates the zone-hover filter and opens a compact source-derived preview.
-- Clicking a zone or glyph selects the corresponding `LoreItem` and eases the camera to it.
-- Mobile supports one-finger pan and two-finger zoom, pitch, and rotation.
-- Reduced-motion mode disables the pulse loop and compresses interface animation durations.
-- Filter synchronization targets the two MapLibre GeoJSON source objects directly. Do not reintroduce a separate React load-state gate; it previously allowed counts to update while map features stayed stale.
+- Full-viewport MapLibre map with local `public/maps/san-francisco.pmtiles`.
+- San Francisco bounds, 3D buildings, pan, zoom, rotate, tilt, whole-city reset, clusters, zones, hover previews, and source links.
+- 212 curated-seed missions, map-driven filtering, All time default, mobile map-first layout, reduced-motion support, and source disclosure.
+- Category-specific zone colors: Outside blue, Move coral, Make blue, Listen gold, Eat orange-red, Learn purple, Community green, After dark pink.
+- Compact Claude/Lore-agent identity and an explanatory map control.
+- PostHog browser provider: automatic capture and session replay activate only when `NEXT_PUBLIC_POSTHOG_KEY` is configured at build time.
 
-## Truth about the data
+## Architecture invariants
 
-- `lib/seed-data.ts` contains exactly 212 hand-authored seed records: the initial 112 and a 100-mission expansion assembled from official organizer, agency, institution, and venue pages.
-- The shared source-check date is `2026-08-02`.
-- Every record’s status is `curated-seed`; none is verified live.
-- Every record contains a source name and direct HTTPS URL.
-- 117 records receive local primary images through `lib/mission-images.ts`; creator permission was confirmed by the project owner. Three records retain externally hosted Wikimedia Commons images with stored credit, source page, and license. No generated images are used.
-- Recurring and evergreen availability is partly inferred from `timeSlot` when a record has no explicit schedule. This is acceptable for a prototype but must be replaced by source-accurate schedules in a live catalog.
+- Missions are geographic zones, never generic pins.
+- Keep glyphs centered through pan, zoom, rotation, and pitch.
+- Do not widen `SF_BOUNDS` without a deliberate product decision.
+- The page must keep working without runtime credentials.
+- Never label a `curated-seed` record as live.
+- Do not scrape or reuse images without a documented permission basis.
+- Preserve keyboard, touch, contrast, focus, and reduced-motion behavior.
 
-## Agentic catalog status
+## Key files
 
-The Neon/Postgres schema is active locally and contains tables for sources, missions, runs, source observations, decisions, and revisions. A protected daily Vercel cron route (`/api/cron/ingest`) bootstraps the seed catalog, selects only sources due for a check, sends conditional page requests using ETag/Last-Modified values, records change snapshots, extracts JSON-LD Event records, and publishes only records that resolve to an existing known Local Lore venue.
+| Area | File |
+|---|---|
+| Map and UI state | `components/local-lore-app.tsx` |
+| Visual system | `app/globals.css` |
+| Map style/layers | `lib/map-style.ts` |
+| GeoJSON zones | `lib/activity-zones.ts` |
+| Catalog contract | `lib/types.ts` |
+| Published catalog | `lib/seed-data.ts` |
+| Image manifest | `lib/mission-images.ts` |
+| Analytics bootstrapping | `components/posthog-provider.tsx` |
+| Source directory | `lib/sources/source-directory.ts` |
 
-OpenRouter is used only for optional short editorial framing after factual normalization. It receives a small, bounded batch of changed events and cannot supply coordinates, dates, pricing, source identity, or image rights. The deterministic publisher controls identity, location matching, expiry, and final visibility.
+## Deployment and verification
 
-All existing source-directory entries are initially link-only (`allowsAutomatedFetch: false`). This is deliberate: a normal organizer URL is not permission to automate. Promote a source only after documenting a public feed/API or permissioned public page-check policy.
+Vercel deploys pushes to `master`. Before a risky release run lint, strict TypeScript, `npm run build:vercel`, and tests. Confirm the PMTiles range request returns `206` and inspect desktop/mobile map behavior. See `docs/deployment.md` and `docs/development-and-testing.md`.
 
-## Architecture status
+## Intentionally inactive / historical code
 
-Implemented now:
-
-- Typed `LoreItem` and schedule/image/source contracts.
-- Approved-source policy and adapter interface.
-- Pure adapter-run pipeline with normalization, stable IDs, confidence threshold, bounds validation, dedupe, expiry, and review output.
-- Drizzle Postgres schema, Neon connection, and applied migrations in `drizzle/postgres/`.
-
-Designed but not connected:
-
-- Concrete permissioned source adapters and source-policy records.
-- A source-directory management interface.
-- Full feed formats beyond JSON-LD events.
-- Freshness display backed by the latest successful run.
-
-## Important hosting risk
-
-`public/maps/san-francisco.pmtiles` is 30,915,385 bytes and MapLibre reads it through HTTP range requests. A host that omits or mishandles `Content-Length`, `Content-Range`, or byte ranges will produce a blank map even when the application JavaScript works. The Next/Vercel build succeeds, but the deployed range response must still be smoke-tested. A previous local vinext production-server attempt exposed a range/content-length incompatibility; Next development mode worked. Follow `docs/deployment.md` exactly.
-
-## External dependencies and network behavior
-
-- The vector archive and favicon are local.
-- Protomaps glyph PBF files come from `https://protomaps.github.io/basemaps-assets/fonts/…`; labels require network access.
-- Local mission primary images are served from the application. Three legacy optional mission photos come from Wikimedia Commons redirects.
-- Mission source links go to external organizers/agencies only when the visitor chooses them.
-- There is no private Mapbox token, API key, analytics SDK, authentication, or backend call in the core V1 path.
-
-## Recommended next work
-
-1. Deploy a preview and prove PMTiles range behavior on the exact host.
-2. Add a lightweight automated map smoke test in a real browser.
-3. Self-host Protomaps glyphs for a fully local visual base.
-4. Implement one permissioned official-feed adapter end-to-end before increasing architecture surface.
-5. Add persistence and a review queue only after the one-adapter flow is trustworthy.
-6. Add freshness and live/seed badges at the catalog boundary.
-7. Improve date precision and time-zone handling.
-8. Split or lazy-load the MapLibre client path if bundle size becomes a release concern.
-9. Design and implement the requested light theme without weakening map contrast.
-
-## Do not accidentally regress
-
-- Do not restore the full-width header or native plus/minus map controls.
-- Do not convert zones back into ordinary pins.
-- Do not show mission titles permanently on the map; titles appear on hover/select.
-- Do not put source-specific data parsing in the React component.
-- Do not call a seed record live because it has an organizer link.
-- Do not silently substitute generated or unlicensed imagery.
-- Do not remove map attribution.
-- Do not widen bounds so far that the city becomes a small island in an empty backdrop.
+`db/`, `drizzle/`, `lib/ingestion/`, `lib/agent/`, and `scripts/migrate-postgres.mjs` are retained historical prototypes. They are not imported by the deployed page and must not be reactivated casually. The current catalog publication path is documented in `docs/local-agent-playbook.md`.

@@ -73,6 +73,7 @@ docs/                         Product and engineering handoff guides
 - [Catalog and data model](docs/catalog-and-data-model.md) — fields, scheduling behavior, seed conventions, and content QA.
 - [Ingestion and AI](docs/ingestion-and-ai.md) — adapters, agent boundaries, validation, review, refresh, and expiry.
 - [Local catalog agent playbook](docs/local-agent-playbook.md) — daily source checks, catalog updates, validation, and GitHub publishing.
+- [Analytics](docs/analytics.md) — PostHog setup, current collection, dashboard usage, and future event rules.
 - [Storage](docs/storage.md) — current static state, future schema, migrations, and activation plan.
 - [Design system](docs/design-system.md) — visual language, tokens, overlays, motion, and mobile rules.
 - [Development and testing](docs/development-and-testing.md) — commands, environments, tests, browser QA, and troubleshooting.

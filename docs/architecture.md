@@ -11,7 +11,7 @@
 | Map | MapLibre GL JS 5.24 |
 | Basemap | Protomaps dark flavor over OpenStreetMap-derived vector data |
 | Local vector transport | PMTiles 4.4 protocol and checked-in archive |
-| Persistence design | Drizzle ORM with SQLite/D1 schema; inactive in V1 |
+| Analytics | PostHog browser provider with automatic capture and session replay |
 | Cloudflare build | vinext, Vite, Cloudflare Vite plugin, Worker entry |
 | Vercel build | Native Next build with webpack |
 | Quality | ESLint, strict TypeScript, Node test runner, rendered HTML assertions |
@@ -108,7 +108,8 @@ The repository has two supported production compilations:
 
 ## Security and privacy posture
 
-- No authentication, user database, cookies, analytics, or tracking.
+- No authentication or application user database.
+- PostHog browser analytics and session replay are enabled when public build configuration is present; see `docs/analytics.md`.
 - No location permission is requested; the “whole city” control restores a fixed camera and is not GPS tracking.
 - External links use `target="_blank"` and `rel="noreferrer"`.
 - No application secrets are required in V1.
