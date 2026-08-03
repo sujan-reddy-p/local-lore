@@ -4,6 +4,8 @@
 
 The local catalog agent is separate from the deployed website. Its job is to maintain the Git-tracked catalog, not to run inside Vercel, alter the visitor experience, or depend on a runtime database.
 
+For the daily scheduled workflow, operational boundaries, publish gate, and run-summary format, read `docs/local-agent-automation.md` immediately after this playbook.
+
 ```text
 approved source directory → local agent → validate + edit seed catalog → tests → GitHub commit → Vercel static deploy
 ```
