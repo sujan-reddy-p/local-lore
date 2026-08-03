@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PostHogProvider } from "@/components/posthog-provider";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./globals.css";
 
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body><PostHogProvider>{children}</PostHogProvider></body>
     </html>
   );
 }
