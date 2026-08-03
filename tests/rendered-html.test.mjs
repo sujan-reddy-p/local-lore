@@ -81,3 +81,17 @@ test("keeps map interaction and source attribution in the product code", async (
   assert.match(css, /\.mission-results[^}]*grid-template-columns/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
 });
+
+test("declares a Vercel-safe social share image", async () => {
+  const [layout, shareImage] = await Promise.all([
+    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/opengraph-image.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(layout, /metadataBase/);
+  assert.match(layout, /opengraph-image/);
+  assert.match(layout, /summary_large_image/);
+  assert.match(shareImage, /ImageResponse/);
+  assert.match(shareImage, /width: 1200, height: 630/);
+  assert.match(shareImage, /San Francisco/);
+});

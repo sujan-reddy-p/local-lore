@@ -78,3 +78,8 @@ Keep the previous deployment artifact/commit available. Because catalog and map 
 - Source links and seed disclosure work.
 - PMTiles range and cache headers pass.
 - No secrets, console exceptions, hydration errors, or 404 assets.
+# Share preview metadata
+
+The App Router special route `app/opengraph-image.tsx` generates the 1200×630 PNG used by Open Graph and Twitter cards. It is a code-rendered, static representation of the opening Local Lore map (not a live MapLibre screenshot), which keeps previews reliable in Vercel’s serverless/edge runtime.
+
+Before publishing under a real domain, set `NEXT_PUBLIC_SITE_URL` to that canonical HTTPS origin (for example, `https://locallore.example`). `app/layout.tsx` uses it as `metadataBase` so relative card image URLs resolve correctly for external crawlers. The Vercel fallback is `https://local-lore.vercel.app`.

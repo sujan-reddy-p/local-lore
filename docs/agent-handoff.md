@@ -15,6 +15,7 @@ No deployment was performed as part of the original build. Persistence, schedule
 - Increased curiosity-filter type size and added Lucide icons.
 - Added an All-time calendar choice. All time passes `null` to the matcher and intentionally skips `isAvailableOn`, exposing all 212 missions.
 - Replaced generic category-only card art with venue-and-neighborhood visual previews, then added a 117-mission local-primary image manifest. The browser and detail card use the local primary where available; unsuffixed files are primary and `-2`/`-3` files are retained alternates.
+- Added a native 1200×630 Open Graph/Twitter image route. It recreates the opening dark map character and activity-zone halos with code, so sharing is reliable without attempting to capture MapLibre WebGL on the server.
 
 ## Known-good behavior
 
