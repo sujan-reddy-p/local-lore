@@ -40,7 +40,7 @@ npm test
 - Search and structured discovery by category, time, budget, traits, vibe, and quick filters.
 - Desktop and responsive mobile details with source attribution, accessibility, cost, schedule reminder, and optional licensed photography.
 - A 1200×630 Open Graph/Twitter share image that echoes the initial dark San Francisco map view and activity zones; it is generated from code at `/opengraph-image` so it works on Vercel without a WebGL screenshot step.
-- A typed source-adapter boundary, deterministic validation pipeline, and storage-ready Drizzle/SQLite schema.
+- A Neon/Postgres catalog foundation with source freshness state, structured-event extraction, automated publish/discard logging, and a protected Vercel daily-refresh route. Existing source links start in link-only mode until automated access is explicitly approved.
 - Vite/vinext + Cloudflare build support and a separate Next.js/Vercel build path.
 
 ## Repository map
@@ -53,10 +53,12 @@ lib/types.ts                  Publish-boundary data contract
 lib/availability.ts           Availability and seven-day logic
 lib/activity-zones.ts         Point and polygon GeoJSON
 lib/map-style.ts              OSM style, 3D buildings, clusters, zones
-lib/adapters/                 Approved-source adapter contract
-lib/ingestion/pipeline.ts     Validation, dedupe, confidence, review boundary
-db/schema.ts                  Future sources, missions, schedules, runs, review
-drizzle/                      Generated SQLite migration metadata
+lib/sources/                  Approved source directory and policy records
+lib/ingestion/                Fetch, extraction, normalization, AI copy, refresh
+lib/agent/                    Server-only agent configuration and cron auth
+db/schema.ts                  Postgres sources, missions, runs, observations, decisions
+db/repository.ts              Server-side LoreItem repository and seed bootstrap
+drizzle/postgres/             Generated Neon/Postgres migrations
 public/maps/                  Local PMTiles vector archive
 worker/index.ts               vinext Cloudflare Worker entry
 build/sites-vite-plugin.ts    Build-time hosting metadata packager
@@ -87,13 +89,14 @@ Future coding agents should read [AGENTS.md](AGENTS.md) before changing the proj
 
 ## Current constraints
 
-- Persistence is designed but disabled. `.openai/hosting.json` has no D1 or R2 binding, and the UI reads directly from `lib/seed-data.ts`.
-- The adapter and pipeline are scaffolding; there is no scheduled fetch worker, live adapter, review UI, or automated publisher yet.
+- The Next.js/Vercel page reads the Neon catalog server-side and falls back to `lib/seed-data.ts` during an outage. It bootstraps the static seed catalog idempotently when Neon is empty.
+- A protected Vercel daily cron checks only due, explicitly permissioned sources. One official SF Recreation & Parks iCalendar feed is enabled; existing organizer links remain link-only until their automation policy is documented.
+- The agentic directory has no human review flow by product decision. Deterministic validation publishes or discards candidates; OpenRouter may propose short editorial framing but cannot provide factual fields.
 - Labels use the Protomaps glyph CDN. The vector archive is local, but labels still require network access until glyphs are self-hosted.
 - The PMTiles asset must be served with HTTP byte-range support. See the deployment guide before changing hosting.
 - 117 mission primaries are served locally from `public/images/missions/` through the typed image manifest; alternate candidates use `-2` and `-3` suffixes. Three legacy Wikimedia Commons images remain externally hosted. No images were generated for this project.
 - The app is dark-mode-only in the current implementation. Light-mode support remains future work.
-- `shadcn/ui`, PostgreSQL, and Supabase are not active dependencies in V1.
+- `shadcn/ui` and Supabase are not active dependencies. Neon Postgres is the active server-side catalog store.
 
 ## License and source responsibility
 

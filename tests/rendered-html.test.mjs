@@ -27,6 +27,7 @@ test("server-renders the Local Lore map shell", async () => {
   assert.match(html, />All<\/span><b>time<\/b>/i);
   assert.match(html, /aria-label="Interactive mission map of San Francisco and the Bay"/i);
   assert.doesNotMatch(html, /Every icon is locked to its activity zone/i);
+  assert.match(html, /Agent-maintained directory/i);
   assert.doesNotMatch(html, /starter|taking shape|Building your site/i);
 });
 
@@ -80,6 +81,23 @@ test("keeps map interaction and source attribution in the product code", async (
   assert.match(css, /\.mission-browser/);
   assert.match(css, /\.mission-results[^}]*grid-template-columns/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
+});
+
+test("keeps the autonomous catalog behind deterministic boundaries", async () => {
+  const [refresh, checker, normalizer, cron, directory] = await Promise.all([
+    readFile(new URL("../lib/ingestion/daily-refresh.ts", import.meta.url), "utf8"),
+    readFile(new URL("../lib/ingestion/page-check.ts", import.meta.url), "utf8"),
+    readFile(new URL("../lib/ingestion/normalize-event.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/cron/ingest/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../lib/sources/source-directory.ts", import.meta.url), "utf8"),
+  ]);
+  assert.match(refresh, /listDueSources/);
+  assert.match(refresh, /recordCandidateDecision/);
+  assert.match(checker, /If-None-Match/);
+  assert.match(checker, /If-Modified-Since/);
+  assert.match(normalizer, /unknown-or-ambiguous-venue/);
+  assert.match(cron, /validCronRequest/);
+  assert.match(directory, /allowsAutomatedFetch: false/);
 });
 
 test("declares a Vercel-safe social share image", async () => {

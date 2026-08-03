@@ -1,6 +1,6 @@
 import type { Feature, FeatureCollection, Point, Polygon } from "geojson";
 import { loreItems } from "./seed-data";
-import type { Category } from "./types";
+import type { Category, LoreItem } from "./types";
 
 type Coordinate = [number, number];
 
@@ -29,9 +29,9 @@ export const featuredLore = loreItems;
 
 export const categoryKey = (category:Category) => category.toLowerCase().replaceAll(" ","-");
 
-export function activityZoneCollection(ids:string[]): FeatureCollection<Polygon> {
+export function activityZoneCollection(items:LoreItem[], ids:string[]): FeatureCollection<Polygon> {
   const allowed = new Set(ids);
-  const features = featuredLore.filter(item => allowed.has(item.id)).map<Feature<Polygon>>(item => ({
+  const features = items.filter(item => allowed.has(item.id)).map<Feature<Polygon>>(item => ({
     type:"Feature",
     id:item.id,
     properties:{ id:item.id, title:item.title, category:item.category, accent:item.accent, glyph:categoryGlyph[item.category], hotspot:item.hotspot === true },
@@ -40,9 +40,9 @@ export function activityZoneCollection(ids:string[]): FeatureCollection<Polygon>
   return { type:"FeatureCollection", features };
 }
 
-export function missionPointCollection(ids:string[]): FeatureCollection<Point> {
+export function missionPointCollection(items:LoreItem[], ids:string[]): FeatureCollection<Point> {
   const allowed = new Set(ids);
-  const features = featuredLore.filter(item => allowed.has(item.id)).map<Feature<Point>>(item => ({
+  const features = items.filter(item => allowed.has(item.id)).map<Feature<Point>>(item => ({
     type:"Feature",
     id:item.id,
     properties:{ id:item.id, title:item.title, category:item.category, accent:item.accent, iconKey:categoryKey(item.category), neighborhood:item.neighborhood },

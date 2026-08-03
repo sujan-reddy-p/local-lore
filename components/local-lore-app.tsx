@@ -106,7 +106,8 @@ function makeMissionIcon(glyph:string) {
   return context.getImageData(0,0,64,64);
 }
 
-export function LocalLoreApp() {
+export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
+  const catalog = initialMissions?.length ? initialMissions : featuredLore;
   const [activeQuick, setActiveQuick] = useState<QuickFilter[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category|"All">("All");
   const [timeFilter, setTimeFilter] = useState<TimeFilter>("Any time");
@@ -125,7 +126,7 @@ export function LocalLoreApp() {
   const hoveredMissionRef = useRef<string | null>(null);
 
   const selectedDate = selectedDateKey === "all" ? null : calendar.find(date => dateKey(date) === selectedDateKey) ?? calendar[0];
-  const visible = useMemo(() => featuredLore.filter(item => matches(item,activeQuick,query,selectedCategory,timeFilter,budgetFilter,curiosityFilter,activeTraits,selectedDate)), [activeQuick,query,selectedCategory,timeFilter,budgetFilter,curiosityFilter,activeTraits,selectedDate]);
+  const visible = useMemo(() => catalog.filter(item => matches(item,activeQuick,query,selectedCategory,timeFilter,budgetFilter,curiosityFilter,activeTraits,selectedDate)), [catalog,activeQuick,query,selectedCategory,timeFilter,budgetFilter,curiosityFilter,activeTraits,selectedDate]);
   const filterCount = activeQuick.length + activeTraits.length + (curiosityFilter ? 1 : 0) + (selectedCategory === "All" ? 0 : 1) + (timeFilter === "Any time" ? 0 : 1) + (budgetFilter === "Any budget" ? 0 : 1) + (query ? 1 : 0);
 
   const choose = (item:LoreItem, zoom = 14.6) => {
@@ -139,10 +140,10 @@ export function LocalLoreApp() {
     const protocol = new Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
     const archiveUrl = new URL("/maps/san-francisco.pmtiles?v=20260722-padded-2", window.location.href).href;
-    const allIds = featuredLore.map(item => item.id);
+    const allIds = catalog.map(item => item.id);
     const map = new maplibregl.Map({
       container:mapNode.current,
-      style:createMapStyle(archiveUrl,activityZoneCollection(allIds),missionPointCollection(allIds)),
+      style:createMapStyle(archiveUrl,activityZoneCollection(catalog,allIds),missionPointCollection(catalog,allIds)),
       ...SF_HOME,
       maxBounds:SF_BOUNDS,
       minZoom:10.25,
@@ -215,7 +216,7 @@ export function LocalLoreApp() {
 
     const itemFromEvent = (event:MapMouseEvent & { features?:maplibregl.MapGeoJSONFeature[] }) => {
       const id = event.features?.[0]?.properties?.id as string|undefined;
-      return featuredLore.find(candidate => candidate.id === id);
+      return catalog.find(candidate => candidate.id === id);
     };
     const showMission = (event:MapMouseEvent & { features?:maplibregl.MapGeoJSONFeature[] }) => {
       const item = itemFromEvent(event);
@@ -270,8 +271,8 @@ export function LocalLoreApp() {
       const zones = map.getSource("activity-zones") as GeoJSONSource|undefined;
       const points = map.getSource("mission-points") as GeoJSONSource|undefined;
       if (!zones || !points) return false;
-      zones.setData(activityZoneCollection(visibleIds));
-      points.setData(missionPointCollection(visibleIds));
+      zones.setData(activityZoneCollection(catalog,visibleIds));
+      points.setData(missionPointCollection(catalog,visibleIds));
       hoverPopupRef.current?.remove();
       hoverPopupRef.current = null;
       hoveredMissionRef.current = null;
@@ -282,7 +283,7 @@ export function LocalLoreApp() {
     if (syncVisibleMissions()) return;
     map.once("styledata",syncVisibleMissions);
     return () => { map.off("styledata",syncVisibleMissions); };
-  },[visible]);
+  },[catalog,visible]);
 
   useEffect(() => {
     if (!selected || visible.some(item => item.id === selected.id)) return;
@@ -347,6 +348,7 @@ export function LocalLoreApp() {
         <button onClick={cycleTilt} aria-label="Cycle map tilt" data-label="Tilt / top-down"><Layers3/></button>
         <button onClick={resetMap} aria-label="Show the whole San Francisco map" data-label="Whole city"><LocateFixed/></button>
       </div>
+      <p className="agent-disclaimer">Agent-maintained directory · confirm details with the organizer</p>
 
       <AnimatePresence>
         {discoverOpen && <MissionBrowser

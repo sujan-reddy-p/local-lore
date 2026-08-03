@@ -2,13 +2,13 @@
 
 ## Current state
 
-The production UI does not read or write a database. The catalog is a TypeScript array compiled into the client. `.openai/hosting.json` contains `d1: null` and `r2: null`, so Vite creates no database or object-storage binding.
+The Vercel/Next.js page reads published missions from Neon Postgres on the server. If the database is empty it idempotently bootstraps the static seed catalog; if the database is unavailable, it renders the same static seed catalog as a safe fallback. Browser code never receives database credentials.
 
-The schema and migration are intentional forward architecture, not evidence that persistence is live.
+The Cloudflare/vinext path remains a static-build option and does not use Neon.
 
 ## Database choice
 
-V1 scaffolding uses Drizzle with SQLite syntax so it can map naturally to Cloudflare D1. The original concept allowed PostgreSQL/Supabase later; moving to Postgres remains possible because source IDs, mission IDs, status fields, and relational boundaries are portable, but the generated migration is SQLite-specific.
+The active server-side store is Neon Postgres, accessed through Drizzle and `pg`. The typed schema in `db/schema.ts` and generated migrations in `drizzle/postgres/` are Postgres-specific. The original concept allowed Supabase; it could be introduced later only through the same repository boundary.
 
 ## Tables
 
@@ -22,23 +22,19 @@ Stores normalized content and facts, location/radius, time label/duration/price,
 
 Indexes support status/category, neighborhood/status, and freshness queries.
 
-### `mission_schedules`
-
-Separates mission lifecycle from schedule windows and recurrence rules. It defaults to `America/Los_Angeles`, indexes time windows and mission ID, and cascades when a mission is removed.
-
 ### `ingestion_runs`
 
 Tracks source run status, fetched/normalized/review counts, start/end, and error. This table is the operational audit surface and should be written even if a run publishes nothing.
 
-### `review_queue`
+### `source_observations`, `candidate_decisions`, and `mission_revisions`
 
-Stores mission-linked reasons, open/approved/rejected state, timestamps, and reviewer note. A real implementation should also record reviewer identity or system actor and immutable before/after patches.
+Source observations store HTTP freshness details and extraction counts. Candidate decisions record deterministic publish/discard outcomes and reasons. Mission revisions retain agent before/after snapshots when an existing mission changes. The current product deliberately has no human-review queue.
 
 ## Migration files
 
 - `db/schema.ts` is the typed source of truth.
-- `drizzle.config.ts` targets SQLite and writes to `drizzle/`.
-- `drizzle/0000_mighty_tony_stark.sql` creates the five tables and indexes.
+- `drizzle.config.ts` targets Postgres and writes to `drizzle/postgres/`.
+- `drizzle/postgres/` contains the applied migration history for Neon.
 - `npm run db:generate` generates future migrations after schema changes.
 
 Never edit migration metadata casually after it has been applied to a shared environment. Create a new migration.
@@ -58,22 +54,19 @@ Conversion code should parse JSON columns, resolve schedules, and return the exi
 
 ## Activation plan
 
-1. Provision a development database only.
-2. Apply migrations and verify bindings in local and preview environments.
-3. Add repository tests with isolated data.
-4. Persist one adapter’s runs and review items without changing the public UI.
-5. Add an admin-only review path with authentication and audit logging.
-6. Add a server read path and compare its output against the static catalog.
-7. Switch the public page behind a feature flag.
-8. Keep the seed fallback until rollback has been exercised.
+1. Add more explicitly permissioned public feeds to the source directory.
+2. Add repository tests with isolated data.
+3. Confirm freshness and expiry behavior with live feed fixtures.
+4. Expand source observation monitoring and rollback instructions.
+5. Keep the static seed fallback for database outages.
 
 ## Data integrity rules
 
 - Source plus external ID is the ingestion identity.
-- Published records require canonical source, valid coordinates, and review-approved status.
+- Published records require a canonical source, valid coordinates, valid schedule/location normalization, and deterministic acceptance.
 - Source facts and AI editorial proposals should be separable in audit history.
 - Expiry should change visibility/status, not destroy provenance.
-- Run writes and mission/review writes should be transactional when possible.
+- Run writes and mission/decision writes should be transactional when possible.
 - Never expose a D1 or database binding to browser code.
 
 ## Object storage

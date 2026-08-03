@@ -13,8 +13,7 @@ source registry
 → deterministic normalization
 → optional AI editorial proposal
 → validation and dedupe
-→ review queue
-→ publish transaction
+→ deterministic publish/discard decision
 → refresh, miss handling, and expiry
 ```
 
@@ -99,9 +98,9 @@ Store model name/version, prompt version, input record hash, proposed patch, con
 8. detects within-run duplicates using normalized title, venue, and coordinates rounded to three decimals;
 9. generates an 18-character SHA-256-derived ID from source key plus external ID for publishable records.
 
-Records with any reason enter review; otherwise the adapter metadata fields are removed and the record becomes `LoreItem`.
+In the automated-directory implementation, records with a rejection reason are stored in `candidate_decisions` and remain private. They do not appear in the map. A record becomes `LoreItem` only after deterministic validation completes.
 
-## Review reasons
+## Rejection reasons
 
 - `low-confidence`
 - `missing-source`
@@ -109,7 +108,7 @@ Records with any reason enter review; otherwise the adapter metadata fields are 
 - `duplicate`
 - `expired`
 
-A production review system should add source schema change, ambiguous time zone, material factual conflict, license uncertainty, accessibility uncertainty, and significant content change.
+The current system is intentionally review-free. Add source schema change, ambiguous time zone, material factual conflict, license uncertainty, accessibility uncertainty, and significant content change as private discard/hold reasons rather than publishing them.
 
 ## Dedupe strategy evolution
 
@@ -136,7 +135,7 @@ Never discard alternate provenance merely because two records merge.
 
 ## Scheduling and operations
 
-Start with one daily permissioned adapter. Record run start/end, counts, error, source ID, and review count. Add idempotency so retrying the same source snapshot cannot duplicate missions. Apply rate limits, timeouts, backoff, and a descriptive user agent where source terms require it.
+Start with one daily permissioned adapter. Record run start/end, counts, errors, source ID, HTTP status, ETag, Last-Modified, content hash, and extracted-event count. The daily run checks only due sources, never the complete directory. Add idempotency so retrying the same source snapshot cannot duplicate missions. Apply rate limits, timeouts, backoff, and a descriptive user agent where source terms require it.
 
 Operational alerts should cover consecutive failures, a major count drop/spike, parsing rejection rate, abnormal review volume, expired-but-visible records, and broken canonical URLs.
 

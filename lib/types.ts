@@ -22,6 +22,8 @@ export type MissionImage = {
   license?: string;
 };
 
+export type MissionSourceStatus = "curated-seed" | "verified-live" | "agentic-directory";
+
 export type LoreItem = {
   id: string;
   title: string;
@@ -39,7 +41,7 @@ export type LoreItem = {
   price: number;
   vibe: ("solo" | "friends" | "outdoors" | "quiet" | "social")[];
   accessibility: string;
-  source: { name: string; url: string; status: "curated-seed"; checkedAt: string };
+  source: { name: string; url: string; status: MissionSourceStatus; checkedAt: string };
   accent: string;
   distance: string;
   format?: MissionFormat;

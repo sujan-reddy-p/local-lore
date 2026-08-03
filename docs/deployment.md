@@ -2,11 +2,13 @@
 
 ## Status
 
-Both production compilation paths are configured and validated locally. A public production deployment is not part of the documented V1 state. Treat the first hosted preview as a hosting compatibility test, especially for PMTiles.
+The Vercel production path uses Next.js and Neon Postgres. The application has a safe static-seed fallback if Neon is unavailable, while the agentic catalog reads published database records when available. Treat every new hosted release as a PMTiles compatibility test, especially for HTTP byte ranges.
 
 ## Vercel path
 
-`vercel.json` declares framework `nextjs` and build command `npm run build:vercel`. That command runs `next build --webpack`. The app uses no required environment variables or Mapbox token.
+`vercel.json` declares framework `nextjs`, build command `npm run build:vercel`, and the daily `/api/cron/ingest` job. That command runs `next build --webpack`. The map uses no Mapbox token.
+
+Required Vercel environment variables (set separately in Development, Preview, and Production) are `DATABASE_URL`, `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, and `CRON_SECRET`. Keep their values out of Git and application logs. `OPENROUTER_API_KEY` is only used by the server-side ingestion route.
 
 Expected deployment inputs include application source, lockfile, and `public/maps/san-francisco.pmtiles`. The archive is below GitHub’s normal 100 MiB per-file limit but large enough to affect clone and deploy transfer time.
 
@@ -60,7 +62,16 @@ A future Content Security Policy must include these exact needs or self-host the
 
 ## Database and scheduled jobs
 
-There are no live bindings. Do not set D1/R2 IDs merely to make config appear complete. When storage activates, use separate development/preview/production resources, apply migrations intentionally, restrict admin routes, add backups/rollback, and document scheduled triggers.
+Neon Postgres is the active server-side catalog store. Apply each Drizzle migration before a release that depends on it:
+
+```bash
+npm run db:generate
+npm run db:migrate
+```
+
+Vercel invokes `/api/cron/ingest` once daily at 15:00 UTC. The route requires Vercel's `CRON_SECRET` authorization header, bootstraps the seed directory idempotently, and checks only due sources with documented automated-fetch permission. It does not crawl every organizer link in the catalog.
+
+Use separate database resources for development, preview, and production before handling non-seed data at meaningful scale. Monitor ingestion runs, source failures, decision counts, and database connection errors after every release.
 
 ## Rollback
 
@@ -72,10 +83,10 @@ Keep the previous deployment artifact/commit available. Because catalog and map 
 - Map ready/source loaded with no `data-map-error`.
 - 3D buildings, labels, water, parks, roads, clusters, and zones visible.
 - Pan/zoom/rotate/tilt/whole-city work.
-- All time shows 212 missions.
+- All time shows the seed catalog plus any published database missions.
 - Hover/select maps to the correct mission.
 - Mission browser and mobile sheet work.
-- Source links and seed disclosure work.
+- Source links, seed disclosure, and agent-maintained-directory disclaimer work.
 - PMTiles range and cache headers pass.
 - No secrets, console exceptions, hydration errors, or 404 assets.
 # Share preview metadata

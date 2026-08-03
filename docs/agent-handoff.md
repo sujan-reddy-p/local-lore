@@ -40,6 +40,14 @@ No deployment was performed as part of the original build. Persistence, schedule
 - 117 records receive local primary images through `lib/mission-images.ts`; creator permission was confirmed by the project owner. Three records retain externally hosted Wikimedia Commons images with stored credit, source page, and license. No generated images are used.
 - Recurring and evergreen availability is partly inferred from `timeSlot` when a record has no explicit schedule. This is acceptable for a prototype but must be replaced by source-accurate schedules in a live catalog.
 
+## Agentic catalog status
+
+The Neon/Postgres schema is active locally and contains tables for sources, missions, runs, source observations, decisions, and revisions. A protected daily Vercel cron route (`/api/cron/ingest`) bootstraps the seed catalog, selects only sources due for a check, sends conditional page requests using ETag/Last-Modified values, records change snapshots, extracts JSON-LD Event records, and publishes only records that resolve to an existing known Local Lore venue.
+
+OpenRouter is used only for optional short editorial framing after factual normalization. It receives a small, bounded batch of changed events and cannot supply coordinates, dates, pricing, source identity, or image rights. The deterministic publisher controls identity, location matching, expiry, and final visibility.
+
+All existing source-directory entries are initially link-only (`allowsAutomatedFetch: false`). This is deliberate: a normal organizer URL is not permission to automate. Promote a source only after documenting a public feed/API or permissioned public page-check policy.
+
 ## Architecture status
 
 Implemented now:
@@ -47,16 +55,13 @@ Implemented now:
 - Typed `LoreItem` and schedule/image/source contracts.
 - Approved-source policy and adapter interface.
 - Pure adapter-run pipeline with normalization, stable IDs, confidence threshold, bounds validation, dedupe, expiry, and review output.
-- Drizzle SQLite schema and initial migration.
+- Drizzle Postgres schema, Neon connection, and applied migrations in `drizzle/postgres/`.
 
 Designed but not connected:
 
-- Concrete official-feed adapters.
-- Scheduler or cron trigger.
-- Persistent adapter runs and missions.
-- Review/admin interface.
-- AI invocation.
-- Publish/unpublish transaction.
+- Concrete permissioned source adapters and source-policy records.
+- A source-directory management interface.
+- Full feed formats beyond JSON-LD events.
 - Freshness display backed by the latest successful run.
 
 ## Important hosting risk
