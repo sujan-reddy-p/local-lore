@@ -118,6 +118,7 @@ export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
   const [selected, setSelected] = useState<LoreItem | null>(null);
   const [discoverOpen, setDiscoverOpen] = useState(false);
   const [agentOpen, setAgentOpen] = useState(false);
+  const [mobileMapMenuOpen, setMobileMapMenuOpen] = useState(false);
   const mapNode = useRef<HTMLDivElement>(null);
   const searchNode = useRef<HTMLInputElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -353,6 +354,26 @@ export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
         <button onClick={orbitMap} aria-label="Rotate map 35 degrees" data-label="Rotate"><Compass/></button>
         <button onClick={cycleTilt} aria-label="Cycle map tilt" data-label="Tilt / top-down"><Layers3/></button>
         <button onClick={resetMap} aria-label="Show the whole San Francisco map" data-label="Whole city"><LocateFixed/></button>
+      </div>
+      <div className="mobile-map-menu">
+        <button className={`mobile-map-menu-trigger${mobileMapMenuOpen?" active":""}`} onClick={() => setMobileMapMenuOpen(open => !open)} aria-label="Open mobile map menu" aria-expanded={mobileMapMenuOpen}><SlidersHorizontal/></button>
+        <AnimatePresence>{mobileMapMenuOpen&&<motion.aside className="mobile-map-menu-panel" initial={{opacity:0,y:-8,scale:.96}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:-8,scale:.96}} transition={{duration:.18}} aria-label="Mobile discovery and map controls">
+          <span>Pick a thread</span>
+          <div className="mobile-map-menu-grid">
+            <button className={activeTraits.includes("date-idea")?"active":""} onClick={() => { toggleTrait("date-idea"); setMobileMapMenuOpen(false); }}><CalendarDays/><b>Date idea</b></button>
+            <button className={activeTraits.includes("dog-friendly")?"active":""} onClick={() => { toggleTrait("dog-friendly"); setMobileMapMenuOpen(false); }}><PawPrint/><b>Bring the dog</b></button>
+            <button className={curiosityFilter==="Food ritual"?"active":""} onClick={() => { setCuriosityFilter(current => current==="Food ritual"?null:"Food ritual"); setMobileMapMenuOpen(false); }}><Utensils/><b>Food ritual</b></button>
+            <button className={curiosityFilter==="Live music"?"active":""} onClick={() => { setCuriosityFilter(current => current==="Live music"?null:"Live music"); setMobileMapMenuOpen(false); }}><Music2/><b>Live music</b></button>
+            <button className={quickFilterActive("Free")?"active":""} onClick={() => { toggleQuick("Free"); setMobileMapMenuOpen(false); }}><Wallet/><b>Free</b></button>
+            <button onClick={() => { setAgentOpen(true); setMobileMapMenuOpen(false); }}><Bot/><b>About Claude</b></button>
+          </div>
+          <span>Map view</span>
+          <div className="mobile-map-tools">
+            <button onClick={() => { orbitMap(); setMobileMapMenuOpen(false); }} aria-label="Rotate map"><Compass/><b>Rotate</b></button>
+            <button onClick={() => { cycleTilt(); setMobileMapMenuOpen(false); }} aria-label="Tilt map"><Layers3/><b>Tilt</b></button>
+            <button onClick={() => { resetMap(); setMobileMapMenuOpen(false); }} aria-label="Show whole city"><LocateFixed/><b>City</b></button>
+          </div>
+        </motion.aside>}</AnimatePresence>
       </div>
       <AnimatePresence>
         {agentOpen && <motion.aside className="lore-agent-popover" role="dialog" aria-label="About the Local Lore agent" initial={{opacity:0,y:-8,scale:.96}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:-8,scale:.96}} transition={{duration:.18}}>

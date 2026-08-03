@@ -74,6 +74,7 @@ button { color:inherit; }
 .camera-actions svg { width:16px; }
 .camera-actions button::before { content:attr(data-label); position:absolute; right:45px; white-space:nowrap; padding:6px 8px; border-radius:7px; background:#111713; color:#dce2dd; font-size:10px; opacity:0; transform:translateX(4px); pointer-events:none; transition:.15s; }
 .camera-actions button:hover::before,.camera-actions button:focus-visible::before { opacity:1; transform:none; }
+.mobile-map-menu { display:none; }
 .lore-agent-popover { position:absolute; z-index:8; top:18px; right:68px; width:min(330px,calc(100vw - 104px)); padding:16px; border:1px solid rgba(167,224,199,.3); border-radius:16px; background:rgba(8,22,18,.94); box-shadow:0 20px 48px rgba(0,0,0,.38); backdrop-filter:blur(18px); }
 .lore-agent-mark { display:flex; align-items:center; gap:7px; color:var(--lime); font-size:10px; font-weight:800; letter-spacing:.13em; }
 .lore-agent-mark svg { width:15px; }
@@ -192,8 +193,21 @@ button { color:inherit; }
   .find-missions { width:126px; height:36px; padding:0 11px; border-radius:11px; font-size:10px; }
   .explore-label-wide { display:none; }
   .explore-label-short { display:inline; }
-  .camera-actions { right:12px; top:12px; }
-  .camera-actions button { width:36px; height:36px; }
+  .camera-actions { display:none; }
+  .mobile-map-menu { position:absolute; z-index:10; top:12px; right:12px; display:block; }
+  .mobile-map-menu-trigger { width:36px; height:36px; display:grid; place-items:center; border:1px solid var(--line); border-radius:11px; background:rgba(10,15,12,.88); box-shadow:0 8px 24px rgba(0,0,0,.2); color:#d8eee6; backdrop-filter:blur(10px); cursor:pointer; }
+  .mobile-map-menu-trigger.active { border-color:var(--lime); background:var(--lime); color:#102019; }
+  .mobile-map-menu-trigger svg { width:16px; }
+  .mobile-map-menu-panel { position:absolute; top:44px; right:0; width:min(276px,calc(100vw - 32px)); padding:12px; border:1px solid rgba(167,224,199,.28); border-radius:15px; background:rgba(10,23,19,.97); box-shadow:0 20px 50px rgba(0,0,0,.38); backdrop-filter:blur(18px); transform-origin:top right; }
+  .mobile-map-menu-panel>span { display:block; margin:1px 2px 7px; color:#91a79c; font-size:9px; font-weight:700; letter-spacing:.11em; text-transform:uppercase; }
+  .mobile-map-menu-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:12px; }
+  .mobile-map-menu-grid button,.mobile-map-tools button { min-height:43px; display:flex; align-items:center; gap:7px; padding:7px 8px; border:1px solid var(--line); border-radius:10px; background:rgba(255,255,255,.035); color:#d8e3dd; text-align:left; cursor:pointer; }
+  .mobile-map-menu-grid button.active { border-color:var(--lime); background:rgba(142,220,196,.14); color:#dcfff4; }
+  .mobile-map-menu-grid svg,.mobile-map-tools svg { width:14px; height:14px; flex:none; color:var(--lime); }
+  .mobile-map-menu-grid b,.mobile-map-tools b { font-size:10px; font-weight:650; line-height:1.1; }
+  .mobile-map-tools { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+  .mobile-map-tools button { min-height:39px; justify-content:center; gap:4px; padding:6px; text-align:center; }
+  .mobile-map-tools b { font-size:9px; }
   .lore-agent-popover { top:12px; right:57px; width:min(302px,calc(100vw - 78px)); padding:14px; }
   .mission-browser { left:8px; right:8px; top:auto; bottom:8px; width:auto; height:min(76dvh,620px); max-height:calc(100dvh - 16px); overflow:hidden; border-radius:19px; }
   .prompt-row,.desktop-refine,.result-bar { display:none; }
