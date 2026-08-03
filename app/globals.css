@@ -113,6 +113,10 @@ button { color:inherit; }
 .trait-pills button svg { width:11px; }
 .trait-pills button.active { border-color:var(--lime); background:rgba(142,220,196,.12); color:#cefff1; }
 .filter-columns { display:grid; grid-template-columns:1.2fr 1fr; }
+.budget-slider label { display:flex; align-items:center; gap:8px; }
+.budget-slider input { width:100%; accent-color:var(--lime); cursor:pointer; }
+.budget-slider b { min-width:64px; color:#e7eee5; font-size:11px; text-align:right; white-space:nowrap; }
+.budget-slider>div { display:flex; justify-content:space-between; margin-top:3px; color:#88978e; font-size:9px; }
 .filter-pills { display:flex; flex-wrap:wrap; gap:5px; }
 .filter-pills button { height:28px; padding:0 10px; border:1px solid var(--line); border-radius:999px; background:transparent; color:#c3ccc6; cursor:pointer; font-size:9px; }
 .filter-pills button.active { background:#e8eee6; border-color:#e8eee6; color:#111713; }

@@ -31,7 +31,7 @@ The unit of value is a **mission**: a place or event plus a small way to engage 
 - **Quick filters:** Today, Free, Outside, Social. Multiple quick filters combine with AND semantics.
 - **Curiosity filters:** Food ritual, Live music, Sunset, After dark, Make something, Odd & local, Scenic drive. These are mutually exclusive in the map overlay.
 - **Calendar:** All time plus seven dates starting today. Date-specific choices enforce mission availability; All time deliberately disables that check.
-- **Mission browser:** query prompts, category grid, traits, time slot, budget, reset action, and a three-column desktop/two-column mobile card gallery. Records with licensed imagery show that photo; every other card uses a compact source-site preview displaying the original organizer name and hostname, not an unreliable embedded third-party page.
+- **Mission browser:** query prompts, category grid, traits, time slot, a budget slider from Free through Any price, reset action, and a three-column desktop/two-column mobile card gallery. Setting the slider to Free visibly activates the shared Free quick filter; either Free control clears that constraint. Records with licensed imagery show that photo; every other card uses a compact source-site preview displaying the original organizer name and hostname, not an unreliable embedded third-party page.
 - **Search:** lower-cased token AND match over title, kicker, description, why, neighborhood, venue, category, format, vibes, and traits. Words shorter than three characters and a small stop-word list are ignored.
 
 All selected dimensions combine with AND semantics. A no-results overlay offers a one-click reset.

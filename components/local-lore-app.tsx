@@ -35,11 +35,9 @@ import { categories, type Category, type LoreItem, type MissionFormat, type Miss
 
 type QuickFilter = "Today" | "Free" | "Outside" | "Social";
 type TimeFilter = "Any time" | "Now" | "Tonight" | "Weekend";
-type BudgetFilter = "Any budget" | "Free" | "Under $20";
 type CuriosityFilter = "Food ritual" | "Live music" | "Sunset" | "After dark" | "Make something" | "Odd & local" | "Scenic drive";
 const quickFilters: QuickFilter[] = ["Today", "Free", "Outside", "Social"];
 const timeFilters: TimeFilter[] = ["Any time", "Now", "Tonight", "Weekend"];
-const budgetFilters: BudgetFilter[] = ["Any budget", "Free", "Under $20"];
 const curiosityFilters = [
   { label:"Food ritual", icon:Utensils },
   { label:"Live music", icon:Music2 },
@@ -74,15 +72,14 @@ function curiosityMatch(item:LoreItem, curiosity:CuriosityFilter|null) {
   return item.traits?.includes("drive") ?? false;
 }
 
-function matches(item:LoreItem, quick:QuickFilter[], query:string, category:Category|"All", time:TimeFilter, budget:BudgetFilter, curiosity:CuriosityFilter|null, traits:MissionTrait[], date:Date|null) {
+function matches(item:LoreItem, quick:QuickFilter[], query:string, category:Category|"All", time:TimeFilter, budgetMax:number|null, curiosity:CuriosityFilter|null, traits:MissionTrait[], date:Date|null) {
   if (quick.includes("Today") && item.timeSlot === "Weekend") return false;
   if (quick.includes("Free") && item.price !== 0) return false;
   if (quick.includes("Outside") && !item.vibe.includes("outdoors")) return false;
   if (quick.includes("Social") && !item.vibe.includes("social")) return false;
   if (category !== "All" && item.category !== category) return false;
   if (time !== "Any time" && item.timeSlot !== time) return false;
-  if (budget === "Free" && item.price !== 0) return false;
-  if (budget === "Under $20" && item.price > 20) return false;
+  if (budgetMax !== null && item.price > budgetMax) return false;
   if (!curiosityMatch(item,curiosity)) return false;
   if (traits.length && !traits.every(trait => item.traits?.includes(trait))) return false;
   if (date && !isAvailableOn(item,date)) return false;
@@ -112,7 +109,7 @@ export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
   const [activeQuick, setActiveQuick] = useState<QuickFilter[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category|"All">("All");
   const [timeFilter, setTimeFilter] = useState<TimeFilter>("Any time");
-  const [budgetFilter, setBudgetFilter] = useState<BudgetFilter>("Any budget");
+  const [budgetMax, setBudgetMax] = useState<number|null>(null);
   const [curiosityFilter, setCuriosityFilter] = useState<CuriosityFilter|null>(null);
   const [activeTraits, setActiveTraits] = useState<MissionTrait[]>([]);
   const [calendar] = useState(() => dateChoices());
@@ -128,8 +125,8 @@ export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
   const hoveredMissionRef = useRef<string | null>(null);
 
   const selectedDate = selectedDateKey === "all" ? null : calendar.find(date => dateKey(date) === selectedDateKey) ?? calendar[0];
-  const visible = useMemo(() => catalog.filter(item => matches(item,activeQuick,query,selectedCategory,timeFilter,budgetFilter,curiosityFilter,activeTraits,selectedDate)), [catalog,activeQuick,query,selectedCategory,timeFilter,budgetFilter,curiosityFilter,activeTraits,selectedDate]);
-  const filterCount = activeQuick.length + activeTraits.length + (curiosityFilter ? 1 : 0) + (selectedCategory === "All" ? 0 : 1) + (timeFilter === "Any time" ? 0 : 1) + (budgetFilter === "Any budget" ? 0 : 1) + (query ? 1 : 0);
+  const visible = useMemo(() => catalog.filter(item => matches(item,activeQuick,query,selectedCategory,timeFilter,budgetMax,curiosityFilter,activeTraits,selectedDate)), [catalog,activeQuick,query,selectedCategory,timeFilter,budgetMax,curiosityFilter,activeTraits,selectedDate]);
+  const filterCount = activeQuick.length + activeTraits.length + (curiosityFilter ? 1 : 0) + (selectedCategory === "All" ? 0 : 1) + (timeFilter === "Any time" ? 0 : 1) + (budgetMax === null ? 0 : 1) + (query ? 1 : 0);
 
   const choose = (item:LoreItem, zoom = 14.6) => {
     setSelected(item);
@@ -310,11 +307,16 @@ export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
   },[]);
 
   const toggleQuick = (filter:QuickFilter) => {
+    if (filter === "Free" && !activeQuick.includes("Free") && budgetMax === 0) {
+      setBudgetMax(null);
+      return;
+    }
     if (filter === "Today" && !activeQuick.includes(filter)) setSelectedDateKey(dateKey(calendar[0]));
     setActiveQuick(current => current.includes(filter) ? current.filter(value => value !== filter) : [...current,filter]);
   };
+  const quickFilterActive = (filter:QuickFilter) => activeQuick.includes(filter) || (filter === "Free" && budgetMax === 0);
   const toggleTrait = (trait:MissionTrait) => setActiveTraits(current => current.includes(trait) ? current.filter(value => value !== trait) : [...current,trait]);
-  const clearFilters = () => { setActiveQuick([]); setSelectedCategory("All"); setTimeFilter("Any time"); setBudgetFilter("Any budget"); setCuriosityFilter(null); setActiveTraits([]); setQuery(""); };
+  const clearFilters = () => { setActiveQuick([]); setSelectedCategory("All"); setTimeFilter("Any time"); setBudgetMax(null); setCuriosityFilter(null); setActiveTraits([]); setQuery(""); };
   const resetMap = () => mapRef.current?.easeTo({ ...SF_HOME, duration:850, essential:true });
   const orbitMap = () => { const map=mapRef.current; if (map) map.easeTo({ bearing:map.getBearing()+35, pitch:Math.max(48,map.getPitch()), duration:650, essential:true }); };
   const cycleTilt = () => { const map=mapRef.current; if (!map) return; const pitch=map.getPitch(); map.easeTo({ pitch:pitch<20?46:pitch<61?70:0, duration:600, essential:true }); };
@@ -333,7 +335,7 @@ export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
         <div className="intent-actions">
           <button className="find-missions" onClick={() => { setDiscoverOpen(true); requestAnimationFrame(() => searchNode.current?.focus()); }}><Search/><span className="explore-label-wide">Explore all missions</span><span className="explore-label-short">Explore</span><ChevronRight/></button>
           <div className="intent-filters" aria-label="Quick activity filters">
-            {quickFilters.map(filter => <button key={filter} className={activeQuick.includes(filter)?"active":""} onClick={() => toggleQuick(filter)}>{filter}</button>)}
+            {quickFilters.map(filter => <button key={filter} className={quickFilterActive(filter)?"active":""} onClick={() => toggleQuick(filter)}>{filter}</button>)}
           </div>
           <div className="curiosity-filters" aria-label="Browse curious plans">
             {curiosityFilters.map(({label,icon:Icon}) => <button key={label} className={curiosityFilter===label?"active":""} onClick={() => setCuriosityFilter(current => current===label?null:label)}><Icon/><span>{label}</span></button>)}
@@ -366,9 +368,9 @@ export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
       <AnimatePresence>
         {discoverOpen && <MissionBrowser
           items={visible} query={query} setQuery={setQuery} category={selectedCategory} setCategory={setSelectedCategory}
-          time={timeFilter} setTime={setTimeFilter} budget={budgetFilter} setBudget={setBudgetFilter}
+          time={timeFilter} setTime={setTimeFilter} budgetMax={budgetMax} setBudgetMax={setBudgetMax}
           traits={activeTraits} onTrait={toggleTrait}
-          activeQuick={activeQuick} onQuick={toggleQuick} curiosity={curiosityFilter} setCuriosity={setCuriosityFilter}
+          activeQuick={activeQuick} isQuickActive={quickFilterActive} onQuick={toggleQuick} curiosity={curiosityFilter} setCuriosity={setCuriosityFilter}
           calendar={calendar} selectedDateKey={selectedDateKey} setSelectedDateKey={setSelectedDateKey}
           filterCount={filterCount} onClear={clearFilters} onClose={() => setDiscoverOpen(false)} onChoose={choose} searchRef={searchNode}
         />}
@@ -380,11 +382,11 @@ export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
   </main>;
 }
 
-function MissionBrowser({items,query,setQuery,category,setCategory,time,setTime,budget,setBudget,traits,onTrait,activeQuick,onQuick,curiosity,setCuriosity,calendar,selectedDateKey,setSelectedDateKey,filterCount,onClear,onClose,onChoose,searchRef}:{
+function MissionBrowser({items,query,setQuery,category,setCategory,time,setTime,budgetMax,setBudgetMax,traits,onTrait,isQuickActive,onQuick,curiosity,setCuriosity,calendar,selectedDateKey,setSelectedDateKey,filterCount,onClear,onClose,onChoose,searchRef}:{
   items:LoreItem[]; query:string; setQuery:(value:string)=>void; category:Category|"All"; setCategory:(value:Category|"All")=>void;
-  time:TimeFilter; setTime:(value:TimeFilter)=>void; budget:BudgetFilter; setBudget:(value:BudgetFilter)=>void;
+  time:TimeFilter; setTime:(value:TimeFilter)=>void; budgetMax:number|null; setBudgetMax:(value:number|null)=>void;
   traits:MissionTrait[]; onTrait:(value:MissionTrait)=>void;
-  activeQuick:QuickFilter[]; onQuick:(value:QuickFilter)=>void; curiosity:CuriosityFilter|null; setCuriosity:(value:CuriosityFilter|null)=>void;
+  isQuickActive:(value:QuickFilter)=>boolean; onQuick:(value:QuickFilter)=>void; curiosity:CuriosityFilter|null; setCuriosity:(value:CuriosityFilter|null)=>void;
   calendar:Date[]; selectedDateKey:string; setSelectedDateKey:(value:string)=>void;
   filterCount:number; onClear:()=>void; onClose:()=>void; onChoose:(item:LoreItem)=>void; searchRef:React.RefObject<HTMLInputElement|null>;
 }) {
@@ -396,7 +398,7 @@ function MissionBrowser({items,query,setQuery,category,setCategory,time,setTime,
       {["quiet and scenic","dog-friendly","a little weird","live","photogenic"].map(prompt => <button key={prompt} className={query===prompt?"active":""} onClick={() => setQuery(query===prompt?"":prompt)}>{prompt}</button>)}
     </div>
     <div className="mobile-discovery" aria-label="Mobile discovery controls">
-      <div><span>Quick pick</span><div className="mobile-filter-row">{quickFilters.map(filter => <button key={filter} className={activeQuick.includes(filter)?"active":""} onClick={() => onQuick(filter)}>{filter}</button>)}</div></div>
+      <div><span>Quick pick</span><div className="mobile-filter-row">{quickFilters.map(filter => <button key={filter} className={isQuickActive(filter)?"active":""} onClick={() => onQuick(filter)}>{filter}</button>)}</div></div>
       <div><span>Follow a thread</span><div className="mobile-filter-row">{curiosityFilters.map(({label,icon:Icon}) => <button key={label} className={curiosity===label?"active":""} onClick={() => setCuriosity(curiosity===label?null:label)}><Icon/><b>{label}</b></button>)}</div></div>
       <div><span>Plan by date</span><div className="mobile-filter-row mobile-date-row"><button className={selectedDateKey==="all"?"active":""} onClick={() => setSelectedDateKey("all")}>All time</button>{calendar.map((date,index) => <button key={dateKey(date)} className={selectedDateKey===dateKey(date)?"active":""} onClick={() => setSelectedDateKey(dateKey(date))}>{dateLabel(date,index)} {date.getDate()}</button>)}</div></div>
     </div>
@@ -407,7 +409,7 @@ function MissionBrowser({items,query,setQuery,category,setCategory,time,setTime,
     <div className="filter-block"><span>Make it feel like</span><div className="trait-pills">{traitFilters.map(({label,value}) => <button key={value} className={traits.includes(value)?"active":""} onClick={() => onTrait(value)}>{value==="dog-friendly"&&<PawPrint/>}{label}</button>)}</div></div>
     <div className="filter-columns">
       <div className="filter-block"><span>When</span><div className="filter-pills">{timeFilters.map(value => <button key={value} className={time===value?"active":""} onClick={() => setTime(value)}>{value}</button>)}</div></div>
-      <div className="filter-block"><span>Budget</span><div className="filter-pills">{budgetFilters.map(value => <button key={value} className={budget===value?"active":""} onClick={() => setBudget(value)}>{value}</button>)}</div></div>
+      <div className="filter-block budget-slider"><span>Budget</span><label><input type="range" min="0" max="100" step="5" value={budgetMax ?? 100} onChange={event => setBudgetMax(Number(event.target.value) >= 100 ? null : Number(event.target.value))} aria-label="Maximum mission budget"/><b>{budgetMax === null ? "Any price" : budgetMax === 0 ? "Free only" : `Up to $${budgetMax}`}</b></label><div><small>Free</small><small>Any price</small></div></div>
     </div>
     {filterCount>0&&<div className="result-bar"><span>Your current mix</span><button onClick={onClear}>View all missions</button></div>}
     <div className="mission-results">
