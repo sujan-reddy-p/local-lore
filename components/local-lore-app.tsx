@@ -386,7 +386,7 @@ export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
         {agentOpen && <motion.aside className="lore-agent-popover" role="dialog" aria-label="About the Local Lore agent" initial={{opacity:0,y:-8,scale:.96}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:-8,scale:.96}} transition={{duration:.18}}>
           <div className="lore-agent-mark"><Bot/><span>LORE AGENT</span></div>
           <strong>A living field guide, not a feed.</strong>
-          <p>Local Lore keeps a rolling directory of memorable ways into San Francisco. A local research agent checks approved sources, curates what is worth finding, and publishes catalog updates through GitHub.</p>
+          <p>Local Lore keeps a rolling directory of memorable ways into San Francisco. Claude checks approved sources, refreshes the catalog, and keeps the map focused on things worth finding.</p>
           <p className="lore-agent-note">Always confirm details with the original organizer.</p>
           <button onClick={() => setAgentOpen(false)} aria-label="Close Lore agent message"><X/>Got it</button>
         </motion.aside>}
