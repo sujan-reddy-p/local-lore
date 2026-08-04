@@ -337,7 +337,7 @@ export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
       <div className="intent-panel">
         <div className="map-brand">
           <span className="brand-agent-face" aria-hidden="true"><Bot/></span>
-          <div><strong>Local Lore</strong><small>Curated by Claude, the Lore agent</small></div>
+          <div><strong>Local Lore</strong><small>Curated and maintained by Claude, the Lore agent</small></div>
         </div>
         <h1>Where next?</h1>
         <div className="intent-actions">
