@@ -187,6 +187,7 @@ export async function upsertAgentMission(input: { sourceId: string; externalId: 
     await db.insert(missionRevisions).values({ id: crypto.randomUUID(), missionId: existing[0].id, runId: input.runId, actor: "agent", before: existing[0], after: row });
   }
   const { id, sourceId: ignoredSourceId, externalId: ignoredExternalId, firstSeenAt, ...updates } = row;
+  void id;
   void ignoredSourceId;
   void ignoredExternalId;
   void firstSeenAt;

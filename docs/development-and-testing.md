@@ -13,27 +13,43 @@ No application environment variables or map tokens are required. `.env*` is igno
 | Command | Purpose |
 |---|---|
 | `npm install` | Install the locked dependency tree. |
-| `npm run dev` | Start vinext/Vite/Cloudflare development mode. |
+| `npm run dev` | Start native Next.js development mode on port 4317. |
 | `npm run lint` | ESLint the application, library, scripts, and config surfaces. |
 | `npx tsc --noEmit --incremental false` | Strict typecheck without cached incremental state. |
-| `npm run build` | Produce the vinext/Cloudflare output in ignored `dist/`. |
-| `npm run build:vercel` | Produce a native Next/Vercel build using webpack. |
-| `npm test` | Run vinext build, then Node rendered-HTML tests. |
+| `npm run build` | Produce the native Next/Vercel build using webpack. |
+| `npm run build:vercel` | Alias for the native Vercel build using webpack. |
+| `npm test` | Build with Next, then run Node architectural tests. |
 | `npm run db:generate` | Generate a Drizzle migration from `db/schema.ts`. |
-| `npm run start` | Serve vinext production output; verify PMTiles behavior carefully. |
-| `npm run start:local` | Serve an existing `dist/` through the project’s range-aware Node preview at port 3100. |
+| `npm run start` | Serve the native Next production build on port 4317. |
 
 ## Local development behavior
 
-`vite.config.ts` excludes MapLibre from dependency pre-optimization because MapLibre owns its worker bundle. Inside the macOS Codex seatbelt sandbox, file watching uses polling instead of FSEvents. Wrangler and Miniflare state remain in ignored project-local `.wrangler/` paths.
+The development server is intentionally pinned to port `4317` by the `dev` script. This avoids the commonly occupied port 3000 and makes the local URL predictable: `http://127.0.0.1:4317`. MapLibre is bundled by Next.js and retains ownership of its worker bundle.
 
-If a direct workspace process becomes stuck because of build locks or watcher state, stop the old process, remove only confirmed generated lock/output state, and restart. Do not delete source or reset the repository. A clean temporary copy with shared `node_modules` can isolate environment issues, but the final verification must reflect the workspace source.
+If a direct workspace process becomes stuck because of build locks or watcher state, stop the old process, remove only confirmed generated `.next` output, and restart. Do not delete source or reset the repository.
 
-`scripts/serve-local.mjs` exists specifically to serve vinext output with correct PMTiles byte ranges. It reads `LOCAL_LORE_PORT` or defaults to 3100, serves `dist/client` safely, returns `206`/`416` range responses, and delegates application/RSC requests to `dist/server/index.js`. Run `npm run build` before `npm run start:local`.
+If `npm run dev` prints the command but never prints `Ready`, inspect port 4317 for an orphaned Local Lore Next process. An interrupted background run can leave child workers alive even after the npm parent exits. Stop only the confirmed process for this repository, remove `.next`, and restart in a foreground terminal:
+
+```bash
+lsof -nP -iTCP:4317 -sTCP:LISTEN
+kill <confirmed-local-lore-next-pid>
+rm -rf .next
+npm run dev
+```
+
+The Node process on port 3000 used by a Codex preview is unrelated and should not be stopped as part of this recovery.
+
+If Next reports a missing internal module such as `../shared/lib/size-limit`, the local dependency installation is incomplete. Stop confirmed Local Lore workers, then restore dependencies from the lockfile:
+
+```bash
+rm -rf node_modules .next
+npm ci
+npm run dev
+```
 
 ## Automated tests
 
-`tests/rendered-html.test.mjs` imports the generated worker, makes an in-memory request, and asserts:
+`tests/rendered-html.test.mjs` runs after a native Next build and checks the application source/build shell and architectural contracts. It asserts:
 
 - correct title and map shell;
 - 212-mission count;

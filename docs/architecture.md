@@ -12,9 +12,8 @@
 | Basemap | Protomaps dark flavor over OpenStreetMap-derived vector data |
 | Local vector transport | PMTiles 4.4 protocol and checked-in archive |
 | Analytics | PostHog browser provider with automatic capture and session replay |
-| Cloudflare build | vinext, Vite, Cloudflare Vite plugin, Worker entry |
-| Vercel build | Native Next build with webpack |
-| Quality | ESLint, strict TypeScript, Node test runner, rendered HTML assertions |
+| Development and deployment | Native Next.js with webpack, locally and on Vercel |
+| Quality | ESLint, strict TypeScript, native Next build, Node architectural assertions |
 
 The initial product brief mentioned shadcn/ui and PostgreSQL/Supabase as options, but neither is active. The current UI is purpose-built CSS because the experience is a map surface, not a collection of standard dashboard components.
 
@@ -88,14 +87,9 @@ Filter updates also remove the current hover popup, clear the hover layer, recor
 
 ## Build architecture
 
-The repository has two supported production compilations:
+The repository has one supported runtime. `npm run dev` starts `next dev --webpack --port 4317`; `npm run build` and `npm run build:vercel` both run `next build --webpack`; `npm run start` serves that production build on port 4317. Vercel runs the same native Next.js compilation through `vercel.json`.
 
-- `npm run build` runs `vinext build` for the Cloudflare/Sites-compatible worker output in `dist/`.
-- `npm run build:vercel` runs `next build --webpack` for Vercel’s native Next runtime.
-
-`.openai/hosting.json` currently declares no D1 or R2 resources. `vite.config.ts` reads that file and conditionally constructs local binding config. `worker/index.ts` delegates application requests to vinext and contains an image-optimization path for an environment with an `IMAGES` binding.
-
-`build/sites-vite-plugin.ts` runs only during Vite builds. It recreates `dist/.openai`, copies hosting metadata when present, and packages Drizzle migrations. `scripts/serve-local.mjs` is a small range-aware Node server for the built worker and assets. Unused template authentication, D1-note examples, and starter SVGs were removed to keep the account-free repository unambiguous.
+The earlier Cloudflare/Vinext worker path was removed because it duplicated the Vercel deployment runtime and could stall during local startup. There is no worker build, Cloudflare binding, or alternate asset server in the supported architecture.
 
 ## Dependency rationale
 

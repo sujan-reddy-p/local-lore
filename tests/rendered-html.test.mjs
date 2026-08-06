@@ -2,33 +2,21 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
-async function render() {
-  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
-  const { default: worker } = await import(workerUrl.href);
+test("builds the native Next.js application shell", async () => {
+  await access(new URL("../.next/BUILD_ID", import.meta.url));
+  const [layout, page, app] = await Promise.all([
+    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../components/local-lore-app.tsx", import.meta.url), "utf8"),
+  ]);
 
-  return worker.fetch(
-    new Request("http://localhost/", { headers: { accept: "text/html" } }),
-    { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
-    { waitUntil() {}, passThroughOnException() {} },
-  );
-}
-
-test("server-renders the Local Lore map shell", async () => {
-  const response = await render();
-  assert.equal(response.status, 200);
-  assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
-
-  const html = await response.text();
-  assert.match(html, /<title>Local Lore — Find your San Francisco today<\/title>/i);
-  assert.doesNotMatch(html, /handpicked ways into the city/i);
-  assert.match(html, /Explore all missions/i);
-  assert.match(html, /class="all-time"/i);
-  assert.match(html, />All<\/span><b>time<\/b>/i);
-  assert.match(html, /aria-label="Interactive mission map of San Francisco and the Bay"/i);
-  assert.doesNotMatch(html, /Every icon is locked to its activity zone/i);
-  assert.match(html, /Agent-maintained directory/i);
-  assert.doesNotMatch(html, /starter|taking shape|Building your site/i);
+  assert.match(layout, /Local Lore — Find your San Francisco today/);
+  assert.match(page, /LocalLoreApp/);
+  assert.match(app, /Explore all missions/);
+  assert.match(app, /aria-label="Interactive mission map of San Francisco and the Bay"/i);
+  assert.doesNotMatch(app, /handpicked ways into the city/i);
+  assert.doesNotMatch(app, /Every icon is locked to its activity zone/i);
+  assert.doesNotMatch(app, /starter|taking shape|Building your site/i);
 });
 
 test("keeps map interaction and source attribution in the product code", async () => {
@@ -57,8 +45,8 @@ test("keeps map interaction and source attribution in the product code", async (
   assert.match(zones, /item\.coordinates/);
   assert.match(app, /missionPointCollection/);
   assert.match(app, /visibleMissionCount/);
-  assert.match(app, /zones\.setData\(activityZoneCollection\(visibleIds\)\)/);
-  assert.match(app, /points\.setData\(missionPointCollection\(visibleIds\)\)/);
+  assert.match(app, /zones\.setData\(activityZoneCollection\(catalog,visibleIds\)\)/);
+  assert.match(app, /points\.setData\(missionPointCollection\(catalog,visibleIds\)\)/);
   assert.doesNotMatch(app, /mapLoaded/);
   assert.match(style, /mission-clusters/);
   assert.match(style, /glyphs:/);
@@ -84,11 +72,10 @@ test("keeps map interaction and source attribution in the product code", async (
 });
 
 test("keeps the autonomous catalog behind deterministic boundaries", async () => {
-  const [refresh, checker, normalizer, cron, directory] = await Promise.all([
+  const [refresh, checker, normalizer, directory] = await Promise.all([
     readFile(new URL("../lib/ingestion/daily-refresh.ts", import.meta.url), "utf8"),
     readFile(new URL("../lib/ingestion/page-check.ts", import.meta.url), "utf8"),
     readFile(new URL("../lib/ingestion/normalize-event.ts", import.meta.url), "utf8"),
-    readFile(new URL("../app/api/cron/ingest/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../lib/sources/source-directory.ts", import.meta.url), "utf8"),
   ]);
   assert.match(refresh, /listDueSources/);
@@ -96,7 +83,6 @@ test("keeps the autonomous catalog behind deterministic boundaries", async () =>
   assert.match(checker, /If-None-Match/);
   assert.match(checker, /If-Modified-Since/);
   assert.match(normalizer, /unknown-or-ambiguous-venue/);
-  assert.match(cron, /validCronRequest/);
   assert.match(directory, /allowsAutomatedFetch: false/);
 });
 

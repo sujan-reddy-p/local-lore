@@ -15,7 +15,6 @@
 
 # next.js
 /.next/
-/.vinext/
 /out/
 
 # misc
@@ -37,7 +36,10 @@ yarn-error.log*
 # typescript
 next-env.d.ts
 /dist/
-/.wrangler/
-/.wrangler-recovery-*/
 /outputs/
 /work/
+
+# retired runtime artifacts (never commit local recovery/build output)
+/.vinext/
+/.wrangler/
+/.wrangler-recovery-*/

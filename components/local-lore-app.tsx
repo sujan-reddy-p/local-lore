@@ -268,7 +268,7 @@ export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
       maplibregl.removeProtocol("pmtiles");
       mapRef.current = null;
     };
-  },[]);
+  },[catalog]);
 
   useEffect(() => {
     const map = mapRef.current;
