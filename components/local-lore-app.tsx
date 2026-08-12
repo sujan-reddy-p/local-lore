@@ -113,6 +113,16 @@ function makeMissionIcon(glyph:string) {
 
 export function LocalLoreApp({initialMissions}:{initialMissions?:LoreItem[]}) {
   const catalog = initialMissions?.length ? initialMissions : featuredLore;
+
+  useEffect(() => {
+    const storageKey = "local-lore-visitor-recorded";
+    if (window.sessionStorage.getItem(storageKey)) return;
+    window.sessionStorage.setItem(storageKey, "1");
+    void fetch("/api/visitor", { method: "POST", credentials: "same-origin", keepalive: true }).catch(() => {
+      window.sessionStorage.removeItem(storageKey);
+    });
+  }, []);
+
   const [activeQuick, setActiveQuick] = useState<QuickFilter[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category|"All">("All");
   const [timeFilter, setTimeFilter] = useState<TimeFilter>("Any time");

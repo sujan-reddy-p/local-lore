@@ -11,7 +11,7 @@
 
 ## Current production truth
 
-Local Lore is a deployed, single-page Next.js map experience for San Francisco. The public site is intentionally static at runtime: it reads `lib/seed-data.ts`, renders a local PMTiles map, and does not fetch sources, write a database, or call AI.
+Local Lore is a deployed, single-page Next.js map experience for San Francisco. The catalog is intentionally static at runtime: it reads `lib/seed-data.ts`, renders a local PMTiles map, and does not fetch sources or call AI. The server-only visitor route writes raw-IP visitor records to Neon when database environment variables are configured.
 
 Local development and Vercel production now use the same native Next.js runtime. The local development server is pinned to port `4317`:
 
@@ -67,7 +67,7 @@ The unrelated nested portfolio preview project was removed from this repository'
 - Never label a `curated-seed` record as live.
 - Do not scrape or reuse images without a documented permission basis.
 - Preserve keyboard, touch, contrast, focus, and reduced-motion behavior.
-- Keep the runtime account-free and credential-free; `.env.local` is optional for analytics only.
+- Keep the runtime account-free; database credentials remain server-only and `.env.local` is never committed. The optional visitor route and analytics configuration are separate from the static catalog.
 
 ## Key files
 
@@ -81,6 +81,7 @@ The unrelated nested portfolio preview project was removed from this repository'
 | Published catalog | `lib/seed-data.ts` |
 | Image manifest | `lib/mission-images.ts` |
 | Analytics bootstrapping | `components/posthog-provider.tsx` |
+| Visitor capture | `app/api/visitor/route.ts`, `db/schema.ts`, `drizzle/postgres/0002_add_visitors.sql` |
 | Source directory | `lib/sources/source-directory.ts` |
 | Runtime commands | `package.json` |
 | Native Next configuration | `next.config.ts` |

@@ -114,3 +114,11 @@ export const candidateDecisions = pgTable("candidate_decisions", {
   candidate: jsonb("candidate").notNull(),
   createdAt: now(),
 }, (table) => [index("candidate_decisions_source_created_idx").on(table.sourceId, table.createdAt)]);
+
+export const visitors = pgTable("visitors", {
+  ipAddress: text("ip_address").primaryKey(),
+  firstSeenAt: timestamp("first_seen_at", { mode: "string", withTimezone: true }).notNull().defaultNow(),
+  lastSeenAt: timestamp("last_seen_at", { mode: "string", withTimezone: true }).notNull().defaultNow(),
+  visitCount: integer("visit_count").notNull().default(1),
+  userAgent: text("user_agent"),
+});

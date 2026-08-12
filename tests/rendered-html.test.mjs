@@ -99,3 +99,18 @@ test("declares a Vercel-safe social share image", async () => {
   assert.match(shareImage, /width: 1200, height: 630/);
   assert.match(shareImage, /San Francisco/);
 });
+
+test("keeps visitor capture server-only and versioned", async () => {
+  const [route, schema, migration] = await Promise.all([
+    readFile(new URL("../app/api/visitor/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../db/schema.ts", import.meta.url), "utf8"),
+    readFile(new URL("../drizzle/postgres/0002_add-visitors.sql", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(route, /x-forwarded-for/);
+  assert.match(route, /getDb\(\)/);
+  assert.match(route, /visitors\.ipAddress/);
+  assert.match(schema, /pgTable\("visitors"/);
+  assert.match(migration, /CREATE TABLE "visitors"/);
+  assert.doesNotMatch(route, /NEXT_PUBLIC/);
+});

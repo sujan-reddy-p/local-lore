@@ -27,9 +27,9 @@ The initial product brief mentioned shadcn/ui and PostgreSQL/Supabase as options
 
 `LocalLoreApp` creates one `maplibregl.Map` inside a mount-only effect. Refs retain the map, popup, hovered mission ID, map element, and search input without forcing map reconstruction. The cleanup removes animation, popup, map instance, and the PMTiles protocol.
 
-### Static catalog
+### Static catalog and visitor capture
 
-`lib/seed-data.ts` is imported into the client bundle. `featuredLore` currently aliases the complete catalog. Filtering produces an in-memory `visible` list, then updates both GeoJSON sources using `setData`. No request is issued when filters change.
+`lib/seed-data.ts` is imported into the client bundle. `featuredLore` currently aliases the complete catalog. Filtering produces an in-memory `visible` list, then updates both GeoJSON sources using `setData`. No catalog request is issued when filters change. A separate client effect makes one request per browser session to the server-only `app/api/visitor/route.ts` route; that route writes visitor records to Neon through Drizzle.
 
 ### Future ingestion boundary
 
@@ -102,7 +102,7 @@ The earlier Cloudflare/Vinext worker path was removed because it duplicated the 
 
 ## Security and privacy posture
 
-- No authentication or application user database.
+- No authentication or application user database. The visitor route stores raw IP records in Neon and is not a public read API.
 - PostHog browser analytics and session replay are enabled when public build configuration is present; see `docs/analytics.md`.
 - No location permission is requested; the “whole city” control restores a fixed camera and is not GPS tracking.
 - External links use `target="_blank"` and `rel="noreferrer"`.
