@@ -15,14 +15,13 @@ npm install
 npm run dev
 ```
 
-Open the URL printed by the development server. The retained Codex preview commonly uses [http://127.0.0.1:3100](http://127.0.0.1:3100).
+Open [http://127.0.0.1:4317](http://127.0.0.1:4317). Local Lore uses native Next.js locally and on Vercel, with port 4317 reserved for the project to avoid common preview-process collisions.
 
 Run the complete local verification set:
 
 ```bash
 npm run lint
 npx tsc --noEmit --incremental false
-npm run build
 npm run build:vercel
 npm test
 ```
@@ -41,12 +40,13 @@ npm test
 - Desktop and responsive mobile details with source attribution, accessibility, cost, schedule reminder, and optional licensed photography.
 - A 1200×630 Open Graph/Twitter share image that echoes the initial dark San Francisco map view and activity zones; it is generated from code at `/opengraph-image` in the Node.js runtime so it works on Vercel Hobby without a WebGL screenshot step.
 - A static, Git-tracked catalog that deploys with the map. A separate local catalog agent maintains sources and missions, then publishes through normal GitHub commits.
-- Vite/vinext + Cloudflare build support and a separate Next.js/Vercel build path.
+- One native Next.js runtime for local development and Vercel deployment.
 
 ## Repository map
 
 ```text
 app/                          App Router shell, metadata, and global design
+app/api/visitor/              Server-only Neon visitor capture route
 components/local-lore-app.tsx Map, discovery controls, browser, hover, details
 lib/seed-data.ts              Static 212-mission V1 catalog
 lib/types.ts                  Publish-boundary data contract
@@ -57,10 +57,7 @@ lib/sources/                  Known source directory for the local catalog agent
 lib/ingestion/                Archived prototype utilities; not a web runtime path
 db/ and drizzle/              Archived ingestion prototype; not used by the site
 public/maps/                  Local PMTiles vector archive
-worker/index.ts               vinext Cloudflare Worker entry
-build/sites-vite-plugin.ts    Build-time hosting metadata packager
-scripts/serve-local.mjs       Range-aware server for built vinext output
-tests/                        Rendered-shell and architectural assertions
+tests/                        Build-shell and architectural assertions
 docs/                         Product and engineering handoff guides
 ```
 
@@ -74,12 +71,13 @@ docs/                         Product and engineering handoff guides
 - [Ingestion and AI](docs/ingestion-and-ai.md) — adapters, agent boundaries, validation, review, refresh, and expiry.
 - [Local catalog agent playbook](docs/local-agent-playbook.md) — daily source checks, catalog updates, validation, and GitHub publishing.
 - [Local agent automation runbook](docs/local-agent-automation.md) — daily scheduler contract, source gates, validation, Git publishing, and PostHog boundary.
+- [Local-first development workflow](docs/local-development-workflow.md) — iterate locally, review, checkpoint, and make one deliberate GitHub/Vercel release.
 - [Analytics](docs/analytics.md) — PostHog setup, current collection, dashboard usage, and future event rules.
+- [Visitor capture](docs/visitor-capture.md) — Neon storage, fields, queries, and retention guidance.
 - [Storage](docs/storage.md) — current static state, future schema, migrations, and activation plan.
 - [Design system](docs/design-system.md) — visual language, tokens, overlays, motion, and mobile rules.
 - [Development and testing](docs/development-and-testing.md) — commands, environments, tests, browser QA, and troubleshooting.
-- [Deployment](docs/deployment.md) — Vercel and Cloudflare paths, PMTiles byte ranges, and release checklist.
-- [Source and image policy](docs/source-and-image-policy.md) — attribution, automation permission, licensing, and prohibited behavior.
+- [Deployment](docs/deployment.md) — Vercel, PMTiles byte ranges, and release checklist.
 - [Mission image workflow](docs/mission-image-workflow.md) — exact naming, primary-versus-alternate rules, and the image manifest for future mission additions.
 - [Roadmap and decisions](docs/roadmap-and-decisions.md) — phased future work and decisions already made.
 - [Contribution guide](CONTRIBUTING.md) — safe change workflow and review checklist.
@@ -89,14 +87,10 @@ Future coding agents should read [AGENTS.md](AGENTS.md) before changing the proj
 
 ## Current constraints
 
-- The deployed page reads only `lib/seed-data.ts`; it has no database, cron, source-fetch, or AI dependency.
+- The deployed page reads the static catalog from `lib/seed-data.ts`; the server-only visitor route writes capture records to Neon when database environment variables are configured.
 - A separate local catalog agent checks only documented sources, edits the Git-tracked catalog, and publishes through GitHub commits. See `docs/local-agent-playbook.md`.
 - Labels use the Protomaps glyph CDN. The vector archive is local, but labels still require network access until glyphs are self-hosted.
 - The PMTiles asset must be served with HTTP byte-range support. See the deployment guide before changing hosting.
 - 117 mission primaries are served locally from `public/images/missions/` through the typed image manifest; alternate candidates use `-2` and `-3` suffixes. Three legacy Wikimedia Commons images remain externally hosted. No images were generated for this project.
 - The app is dark-mode-only in the current implementation. Light-mode support remains future work.
-- `shadcn/ui`, Supabase, Neon, and OpenRouter are not runtime dependencies of the deployed product.
-
-## License and source responsibility
-
-The source code has no separate license file yet. OpenStreetMap data attribution is shown in the map control. Mission copy and source links are part of this portfolio prototype. Do not scrape organizer sites, copy event descriptions, or reuse images without documented permission. See [docs/source-and-image-policy.md](docs/source-and-image-policy.md).
+- `shadcn/ui`, Supabase, and OpenRouter are not runtime dependencies of the deployed product. Neon is used only by the server-side visitor capture route.

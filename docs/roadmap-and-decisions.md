@@ -91,10 +91,6 @@ Chosen to prove product quality and data contract before introducing operational
 
 Facts and provenance must be deterministic. AI is an editorial and review assistant after source transport/normalization, not a free-roaming scraper.
 
-### Omit imagery when rights are unclear
-
-The no-image category treatment is a complete visual state. Only documented licensed images are shown; no generated images are used.
-
 ### SQLite/D1 schema remains inactive
 
 Chosen to keep V1 portable while establishing concrete future tables. Activation waits for an end-to-end permissioned adapter and review workflow.

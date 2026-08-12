@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Removed the unused Cloudflare/Vinext worker runtime. Local development and Vercel now use one native Next.js path on port 4317.
+
 ## 0.1.0 — Portfolio V1
 
 ### Product

@@ -2,17 +2,17 @@
 
 ## Status
 
-The Vercel production path is a static Next.js map product. It has no database, scheduled job, source fetch, or AI dependency. Treat every hosted release as a PMTiles compatibility test, especially for HTTP byte ranges.
+The Vercel production path is a Next.js map product with a static catalog and one database-backed visitor route. It has no scheduled job, source fetch, or AI dependency. Treat every hosted release as a PMTiles compatibility test, especially for HTTP byte ranges.
 
 ## Vercel path
 
-`vercel.json` declares the Next.js framework and `npm run build:vercel`. The map uses no map token or required runtime environment variable.
+`vercel.json` declares the Next.js framework and `npm run build:vercel`. The map uses no map token, but visitor capture requires the server-side `DATABASE_URL` or `POSTGRES_URL` environment variable in Vercel.
 
 Expected deployment inputs include application source, lockfile, and `public/maps/san-francisco.pmtiles`. The archive is below GitHub’s normal 100 MiB per-file limit but large enough to affect clone and deploy transfer time.
 
 ### Vercel release procedure
 
-1. Run lint, strict typecheck, tests, `npm run build`, and `npm run build:vercel`.
+1. Run lint, strict typecheck, `npm run build:vercel`, and tests.
 2. Deploy a preview, not production.
 3. Verify root HTML and static JS/CSS.
 4. Verify PMTiles byte ranges using the commands below.
@@ -20,12 +20,6 @@ Expected deployment inputs include application source, lockfile, and `public/map
 6. Confirm organizer links and remote licensed images.
 7. Confirm OpenStreetMap/Protomaps attribution.
 8. Only then promote the same artifact/configuration to production.
-
-## Cloudflare/vinext path
-
-`npm run build` runs vinext and emits a Worker-oriented `dist/`. `worker/index.ts` delegates app routing to vinext and contains optional image optimization. `vite.config.ts` conditionally adds D1/R2 resources from `.openai/hosting.json`; both are null now.
-
-Do not assume `npm run start` proves the archive works. A previous local vinext production-server path produced a PMTiles content-length/range error even though compilation succeeded. Validate the actual platform asset server.
 
 ## PMTiles range verification
 

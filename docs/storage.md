@@ -2,13 +2,11 @@
 
 ## Current state
 
-The Vercel/Next.js page reads published missions from Neon Postgres on the server. If the database is empty it idempotently bootstraps the static seed catalog; if the database is unavailable, it renders the same static seed catalog as a safe fallback. Browser code never receives database credentials.
+The deployed page imports the published missions from `lib/seed-data.ts`. The catalog does not read Neon, but the server-only `POST /api/visitor` route uses Neon to record visitor IPs. Browser code never receives database credentials.
 
-The Cloudflare/vinext path remains a static-build option and does not use Neon.
+## Catalog database choice
 
-## Database choice
-
-The active server-side store is Neon Postgres, accessed through Drizzle and `pg`. The typed schema in `db/schema.ts` and generated migrations in `drizzle/postgres/` are Postgres-specific. The original concept allowed Supabase; it could be introduced later only through the same repository boundary.
+Neon Postgres is the selected database option for server-side features, accessed through Drizzle and `pg`. The catalog tables remain an inactive prototype; visitor capture is the first active database-backed web route.
 
 ## Tables
 

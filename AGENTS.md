@@ -35,7 +35,6 @@ After editing, run:
 ```bash
 npm run lint
 npx tsc --noEmit --incremental false
-npm run build
 npm run build:vercel
 npm test
 ```
@@ -71,7 +70,7 @@ For map or responsive changes, inspect the running page at desktop and mobile wi
 
 ## Repository hygiene
 
-- Do not commit `node_modules`, `.next`, `.vinext`, `dist`, `.wrangler`, `.env*`, or local recovery folders.
+- Do not commit `node_modules`, `.next`, `dist`, `.wrangler`, `.env*`, or local recovery folders.
 - The PMTiles archive is intentionally committed and is about 29.5 MiB.
 - Preserve unrelated work in a dirty working tree.
 - Keep documentation aligned with implemented behavior. If code and docs disagree, fix both in the same change.
