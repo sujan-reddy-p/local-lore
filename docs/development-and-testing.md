@@ -20,9 +20,9 @@ No application environment variables or map tokens are required to run the local
 | `npm run build:vercel` | Alias for the native Vercel build using webpack. |
 | `npm test` | Build with Next, then run catalog and ingestion behavior tests. |
 | `npm run catalog:validate` | Validate source groups, record IDs/order, display/source lineage states, coordinates, and local image paths. |
-| `npm run catalog:research -- --output <proposal.json>` | Run the local agentic researcher; requires authenticated OMP. Defaults to `openai-codex/gpt-6-luna`. |
-| `npm run catalog:stage -- --proposal <proposal.json>` | Deterministically validate and preview a proposal without applying it. |
-| `npm run catalog:apply -- --proposal <proposal.json>` | Apply a validated proposal to the local catalog and discovery state. |
+| `npm run catalog:research -- --output outputs/proposal.json` | Run the local agentic researcher; requires authenticated OMP. Defaults to `openai-codex/gpt-6-luna`. |
+| `npm run catalog:stage -- --proposal outputs/proposal.json` | Deterministically validate and preview a proposal without applying it. |
+| `npm run catalog:apply -- --proposal outputs/proposal.json` | Apply a validated proposal to the local catalog and discovery state. |
 | `npm run catalog:daily` | Run isolated local research, validation, build/tests, then bounded catalog/state commit and push; requires clean, synchronized checkout and local OMP credentials. |
 | `npm run catalog:schedule -- install|remove|status` | Manage the macOS launchd schedule; local schedule is in `data/discovery-config.json` under `schedule.hour` and `schedule.minute`. |
 | `npm run db:generate` | Generate a Drizzle migration from historical `db/schema.ts`. |

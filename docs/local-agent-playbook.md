@@ -33,15 +33,15 @@ Source access permission, terms, rate limits, legal restrictions, rights, securi
 
 ## Historical database boundary
 
-Neon/Postgres schemas, migrations, candidate decisions, and manual review implementation remain historical operational infrastructure. Database setup/import records previous synchronization state; current 212-record count is not a fixed-data contract for future snapshots. The active publisher writes validated, source-backed Git snapshots and does not require database setup or human candidate approval. Never expose credentials to browser code.
+Neon/Postgres schemas, migrations, candidate decisions, and manual review implementation remain historical operational infrastructure. Database setup/import records previous synchronization state; the historical 212-record count is not a fixed-data contract for future snapshots. The active publisher writes validated, source-backed Git snapshots and does not require database setup or human candidate approval. Never expose credentials to browser code.
 
 ## Checks and publishing
 
 ```bash
 npm run catalog:validate
-npm run catalog:research -- --output proposal.json
-npm run catalog:stage -- --proposal proposal.json
-npm run catalog:apply -- --proposal proposal.json
+npm run catalog:research -- --output outputs/proposal.json
+npm run catalog:stage -- --proposal outputs/proposal.json
+npm run catalog:apply -- --proposal outputs/proposal.json
 npm run lint
 npx tsc --noEmit --incremental false
 npm test

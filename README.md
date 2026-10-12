@@ -41,7 +41,7 @@ npm test
 - Hover previews share the mission description and media treatment but never show an Explore action; the selected mission's preview is suppressed.
 - Curated/verified/directory status and stored source-check dates, without inventing live freshness or opening hours.
 - A deployed-only location control requests browser geolocation on secure non-loopback hosts, bounds-checks the result, and reports denied/unavailable/outside/retry states without storing or sending coordinates.
-- A 1200×630 Open Graph/Twitter share image that echoes the initial dark San Francisco map view and activity zones; it is generated from code at `/opengraph-image` in the Node.js runtime so it works on Vercel Hobby without a WebGL screenshot step.
+- A 1200×630 Open Graph/Twitter share image using the Bay Area map-and-badge visual language; it is generated from code at `/opengraph-image` in the Node.js runtime so it works on Vercel Hobby without a WebGL screenshot step.
 - A source-backed, agentic catalog publisher with local research/processing, deterministic validation, and bounded Git snapshots; research runs locally, not in a GitHub scheduled workflow. Raw proposals and evidence outputs stay ignored; only final processed catalog/state files may enter Git. macOS launchd scheduling is local. The former database review/publication path is historical inactive infrastructure.
 
 ## Local catalog discovery
@@ -50,7 +50,7 @@ The active workflow uses `scripts/discover-catalog.mjs`, `scripts/daily-discover
 
 `npm run catalog:daily` requires installed dependencies, authenticated local OMP, a clean committed checkout, and a local branch matching `origin`. It researches, validates, and builds in an isolated ignored Git worktree, leaving the root `.next` untouched. Only `data/source-catalog.json` and `data/discovery-state.json` are managed for commits; raw proposals/evidence remain ignored local outputs. A failed push leaves the bounded local commit in place; push it deliberately before the next run.
 
-The macOS launchd schedule defaults to 08:17 local time. To install from a durable clone (never this `/tmp` checkout), use:
+The macOS launchd schedule defaults to 08:17 local time. For a fresh installation, use a durable clone, never a temporary checkout:
 
 ```bash
 git clone https://github.com/sujan-reddy-p/local-lore.git ~/Projects/local-lore
@@ -59,7 +59,7 @@ npm ci
 npm run catalog:schedule -- install
 ```
 
-The schedule runs the next occurrence, not immediately. Installation state is machine-local; these instructions do not imply that launchd is installed or that a discovery run has been tested.
+On the maintainer's Mac, the maintained checkout is `~/Projects/local-lore`; use it for future agent work rather than the retained `/tmp` clone. Localhost runs there at `http://localhost:4317`, and launchd is installed for 08:17 local time. Both a manual daily run and an actual launchd-triggered run completed research, stage/apply, and catalog validation as no-ops: 225 records retained, no Git changes. Installation is machine-local; a fresh clone still needs the commands above. The calendar schedule does not run immediately on installation.
 
 The baseline catalog contains 225 records. Goals of 350–500 distinct useful regional experiences and a 75 km Bay Area cutoff guide research; they are coverage targets, not achieved totals or a license to include unsupported findings. Route geometry appears only when genuine source-backed ordered geometry exists, and then only on hover/selection; otherwise route activities remain start-first. Grouped dated events use a chooser.
 
@@ -76,7 +76,7 @@ data/source-catalog.json Source-grouped catalog; existing records accepted for d
 lib/seed-data.ts              Adapter from source groups to the `LoreItem` UI contract
 lib/types.ts                  Publish-boundary data contract
 lib/availability.ts           Bay Area calendar/date-selection and stored schedule rules
-lib/activity-zones.ts         Point and polygon GeoJSON
+lib/activity-zones.ts         Shared anchors, contextual outlines, and sourced routes
 lib/region.ts                 Shared map bounds, home camera, and ingestion geography
 lib/ingestion/                 HTTPS fetch, ICS/JSON-LD parsing, timezone normalization, candidate staging
 db/ and drizzle/               PostgreSQL schema and migrations for catalog, ingestion, and review

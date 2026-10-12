@@ -40,16 +40,16 @@ The runner supplies the final proposal schema and run keys. Do not embed brittle
 
 ## Commands
 
-Research into a durable local output (not `/tmp`):
+Research into ignored local outputs in the durable checkout. Before isolated `apply`, copy the bundled catalog and discovery state to the input paths below:
 
 ```sh
-node scripts/discover-catalog.mjs research --output "$PWD/.local-discovery/proposal.json" [--model "$LOCAL_DISCOVERY_MODEL"]
-node scripts/discover-catalog.mjs stage --proposal "$PWD/.local-discovery/proposal.json"
-node scripts/discover-catalog.mjs apply --proposal "$PWD/.local-discovery/proposal.json" --catalog "$PWD/.local-discovery/catalog.json" --state "$PWD/.local-discovery/state.json" --output "$PWD/.local-discovery/catalog.json"
+node scripts/discover-catalog.mjs research --output "$PWD/outputs/local-discovery/proposal.json" [--model "$LOCAL_DISCOVERY_MODEL"]
+node scripts/discover-catalog.mjs stage --proposal "$PWD/outputs/local-discovery/proposal.json"
+node scripts/discover-catalog.mjs apply --proposal "$PWD/outputs/local-discovery/proposal.json" --catalog "$PWD/outputs/local-discovery/catalog.json" --state "$PWD/outputs/local-discovery/state.json" --output "$PWD/outputs/local-discovery/catalog.json"
 ```
 
 `--output` is an alternate catalog destination, not a report. `--state` is an explicit isolated state destination. The apply step is atomic and must not alter the working catalog directly during research. The daily wrapper prepares an isolated copy, validates and builds, then copies back only processed catalog/state files. It refuses a dirty checkout and may commit/push only those two data files. Scheduler management is explicit macOS launchd `install|remove|status`; it must not auto-install and must refuse `/tmp` checkouts.
 
 ## Failure behavior
 
-Credential-unavailable, inaccessible-source, malformed-output, policy-evidence, rights, bounds, duplicate, or schema failures are hard failures or skipped findings with an honest run record—not empty success and not fabricated fallback records. A no-op leaves catalog and state unchanged. Keep the local durable checkout available for the next cursor rotation.
+Credential-unavailable, inaccessible-source, malformed-output, policy-evidence, rights, bounds, duplicate, or schema failures are hard failures or skipped findings with an honest run record—not empty success and not fabricated fallback records. A daily no-op leaves the catalog and Git-tracked state unchanged; ignored local rotation/check state may advance. Keep the durable checkout available for the next cursor rotation.

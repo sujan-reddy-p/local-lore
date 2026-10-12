@@ -18,6 +18,8 @@ Source and record review labels preserve lineage and eligibility evidence; they 
 
 The runner must retain good records on failed fetches or “not seen”, expire past occurrences separately, retire only explicit sourced cancellations/closures, deduplicate genuine experiences/venues/times, and never invent facts.
 
+On the maintainer's Mac, the maintained checkout is `~/Projects/local-lore`, and the development server remains at `http://localhost:4317`. Work in that checkout rather than the retained temporary clone. LaunchAgent `com.local-lore.discovery` is installed for 08:17 local time. A manual daily run and an actual launchd-triggered run completed with 225 records retained and no publishable catalog changes; local rotation/check state advanced outside Git.
+
 ## Active publication flow
 
 ```text
@@ -31,12 +33,14 @@ local Mac: node scripts/daily-discovery.mjs [--limit N] [--model MODEL]
 Manual runner commands:
 
 ```text
-node scripts/discover-catalog.mjs research --output proposal.json [--model MODEL]
-node scripts/discover-catalog.mjs stage --proposal proposal.json
-node scripts/discover-catalog.mjs apply --proposal proposal.json --catalog isolated-catalog.json --state isolated-state.json --output alternate-catalog.json
+node scripts/discover-catalog.mjs research --output outputs/proposal.json [--model MODEL]
+node scripts/discover-catalog.mjs stage --proposal outputs/proposal.json
+node scripts/discover-catalog.mjs apply --proposal outputs/proposal.json --catalog outputs/isolated-catalog.json --state outputs/isolated-state.json --output outputs/alternate-catalog.json
 ```
 
 For `apply`, `--output` is an alternate catalog destination, not a report. For `research`, it is the local proposal file. Package aliases are `catalog:research`, `catalog:stage`, `catalog:apply`, and `catalog:daily`. OMP credentials stay local; the default model is `openai-codex/gpt-6-luna`, overridable by `LOCAL_DISCOVERY_MODEL` or `--model`. Raw proposals, source pages, logs, and generated research outputs are local-only and ignored; never commit them. Source access permission, terms, rate limits, image rights, security, evidence, provenance, and no-invention requirements remain mandatory.
+
+Before isolated `apply`, copy `data/source-catalog.json` and `data/discovery-state.json` to the chosen `--catalog` and `--state` input paths. Use ignored `outputs/` for proposals and intermediate files. Routine publication should use `catalog:daily` instead: it prepares the isolated inputs itself. Unchanged catalogs only need catalog validation; changed snapshots also run lint, strict TypeScript, build, and tests before copying back.
 
 `scripts/schedule-discovery.mjs install|remove|status` manages macOS launchd at the configured local time (default `08:17`) from `data/discovery-config.json` fields `schedule.hour` and `schedule.minute`. Install only from a durable checkout, not `/tmp`; the daily wrapper refuses a dirty checkout or branch that differs from `origin`. A failed push leaves the local bounded commit in place for deliberate synchronization.
 
@@ -54,9 +58,9 @@ For `apply`, `--output` is an alternate catalog destination, not a report. For `
 
 ```bash
 npm run catalog:validate
-npm run catalog:research -- --output proposal.json
-npm run catalog:stage -- --proposal proposal.json
-npm run catalog:apply -- --proposal proposal.json
+npm run catalog:research -- --output outputs/proposal.json
+npm run catalog:stage -- --proposal outputs/proposal.json
+npm run catalog:apply -- --proposal outputs/proposal.json
 npm run lint
 npx tsc --noEmit --incremental false
 npm test
@@ -64,7 +68,7 @@ npm test
 
 Historical `db:*` commands operate on PostgreSQL structures but are not publication steps. Removed package aliases `sources:refresh`, `sources:audit`, and `events:review` are not runnable commands. Database credentials remain server/local-only.
 
-Inspect `http://localhost:4317` after UI or catalog changes. No UI changes are part of the data migration.
+Inspect `http://localhost:4317` after UI or catalog changes. The daily data job must not modify UI code.
 
 
 ## Git publishing
