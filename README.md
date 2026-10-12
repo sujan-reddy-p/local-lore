@@ -34,7 +34,7 @@ npm test
 - A compact, always-visible discovery panel with search, eight interest choices (including Anything), date choices, an arbitrary native date picker, and a filter disclosure for budget and approximate activity time. There is no gallery or duplicate category/trait browser.
 - Regional pan bounds and a Bay Area home view; the current mission catalog remains focused on San Francisco.
 - Density-aware clusters at city scale; map markers keep a restrained halo when building/landuse footprints are absent or visually tiny. The halo fades as a real, loaded polygon becomes legible; it is a locator, never a fabricated boundary.
-- Subject-specific Lucide artwork badges with editable SVG and retina PNG assets in `public/map-icons`; missing/error media uses the same compact activity artwork rather than stock photography.
+- Subject-specific Lucide artwork badges with editable SVG and retina PNG assets in `public/map-icons`; native 1×/2× sprites prevent startup image-registration races. Missing/error media uses the same compact activity artwork rather than stock photography.
 - Any day, Today, Tomorrow, Weekend, and a native picker for arbitrary dates, using Bay Area calendar days; date matching is explicitly not a confirmed live schedule.
 - Camera zoom through 18, overzooming native zoom-14 vector tiles; explicit plus/minus and secondary rotate/tilt/region controls.
 - Desktop and responsive mobile mission details with one specific action sentence, three facts, one website CTA, and an inline Info disclosure for source, schedule, accessibility, and photo provenance.

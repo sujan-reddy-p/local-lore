@@ -45,7 +45,7 @@ If changing type, test actual macOS, Windows, iOS, and Android fallback metrics 
 
 ## Icons
 
-Lucide icons support familiar controls, interests, facts, and Info disclosure. Map activity badges use subject-specific rounded-square custom SVG/retina PNG assets in `public/map-icons`, with editable SVGs and ISC/MIT `LICENSE.txt`; regenerate with `npx tsx scripts/generate-map-icons.mjs`. Do not reintroduce Unicode category glyphs or activity-purpose labels.
+Lucide icons support familiar controls, interests, facts, and Info disclosure. Map activity badges use subject-specific rounded-square custom SVG/retina PNG assets in `public/map-icons`, with editable SVGs and ISC/MIT `LICENSE.txt`; regenerate with `npx tsx scripts/generate-map-icons.mjs`. The generator also produces native 1×/2× MapLibre sprites so marker artwork is registered before symbols render. Do not reintroduce Unicode category glyphs, asynchronous per-marker image registration, or activity-purpose labels.
 
 Icons are never the only accessible name. Buttons carry readable text or `aria-label`. Map centers are static; use short hover/focus transitions rather than ambient animation.
 

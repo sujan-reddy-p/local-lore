@@ -81,6 +81,7 @@ export function createMapStyle(
     version: 8,
     name: "Local Lore — San Francisco",
     glyphs: "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+    sprite: new URL("/map-icons/sprite", archiveUrl).href,
     light: {
       anchor: "map",
       color: "#e5eee6",

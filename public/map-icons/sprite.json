@@ -1,0 +1,142 @@
+{
+  "mission-vinyl": {
+    "x": 0,
+    "y": 0,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-concert": {
+    "x": 32,
+    "y": 0,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-running": {
+    "x": 64,
+    "y": 0,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-cycling": {
+    "x": 96,
+    "y": 0,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-park": {
+    "x": 128,
+    "y": 0,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-garden": {
+    "x": 0,
+    "y": 32,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-museum": {
+    "x": 32,
+    "y": 32,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-library": {
+    "x": 64,
+    "y": 32,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-cinema": {
+    "x": 96,
+    "y": 32,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-theater": {
+    "x": 128,
+    "y": 32,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-food": {
+    "x": 0,
+    "y": 64,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-coffee": {
+    "x": 32,
+    "y": 64,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-market": {
+    "x": 64,
+    "y": 64,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-art": {
+    "x": 96,
+    "y": 64,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-making": {
+    "x": 128,
+    "y": 64,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-drive": {
+    "x": 0,
+    "y": 96,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-water": {
+    "x": 32,
+    "y": 96,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-overlook": {
+    "x": 64,
+    "y": 96,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-nightlife": {
+    "x": 96,
+    "y": 96,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mission-community": {
+    "x": 128,
+    "y": 96,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  }
+}

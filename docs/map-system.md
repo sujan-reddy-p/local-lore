@@ -69,7 +69,7 @@ Center, hover, and selected treatments use viewport alignment so the artwork bad
 
 ## Icon generation
 
-Subject artwork is generated offline from editable SVG definitions and exported retina PNGs in `public/map-icons`. The map loads `/map-icons/{kind}.png` at pixel ratio 2; Lucide ISC/MIT paths are composed into consistent rounded-square badges. Regenerate assets with:
+Subject artwork is generated offline from editable SVG definitions and exported retina PNGs in `public/map-icons`. MapLibre loads the generated native `sprite.json`/`sprite.png` or `sprite@2x.json`/`sprite@2x.png` before resolving marker symbols; do not reintroduce asynchronous per-marker `loadImage` registration. Individual PNGs remain available for cards/share images. Lucide ISC/MIT paths are composed into consistent rounded-square badges. Regenerate all badge and sprite assets with:
 
 ```bash
 npx tsx scripts/generate-map-icons.mjs
@@ -113,11 +113,11 @@ This instrumentation exists for local/browser smoke tests. A ready map usually h
 
 - Test initial, top-down, maximum-pitch, rotated, cluster, and close neighborhood views.
 - Verify matching building/landuse outlines appear only when valid, holes remain open, clipped/oversized candidates fall back to point artwork, and no circle footprint is implied.
-- Verify subject artwork loads from `public/map-icons` and remains crisp at retina scale.
+- Verify all 20 subject badges register from the native sprite before markers render, no missing-image warnings occur on a fresh load, and artwork remains crisp at retina scale.
 - Verify hover/select layer filters, continuous area-aware fades, popup cleanup, and selected-preview suppression.
 - Verify desktop drag/right-drag/wheel and mobile pan/pinch/tilt.
 - Verify Anything, each interest, dates, arbitrary date picker, budget, approximate activity-time filter, and Reset all update both map sources; travel is not included in time.
 - Verify source, schedule, accessibility, and photo provenance are behind Info; the website is the sole CTA.
 - Verify deployed location control gating, bounds, denied/unavailable/outside/retry statuses, and stale callback/moved-camera guards without persisting coordinates.
 - Check reduced motion.
-- Rebuild both production targets.
+- Run the native Next production build; `npm test` includes that build and the behavioral suite.

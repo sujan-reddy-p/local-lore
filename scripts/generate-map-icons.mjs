@@ -29,11 +29,29 @@ import community from "lucide-react/dist/esm/icons/handshake.mjs";
 const icons = { vinyl, concert, running, cycling, park, garden, museum, library, cinema, theater, food, coffee, market, art, making, drive, water, overlook, nightlife, community };
 const output = new URL("../public/map-icons/", import.meta.url);
 await mkdir(output, { recursive: true });
-for (const [name, { color }] of Object.entries(activityArtworks)) {
+const entries = Object.entries(activityArtworks);
+const size = 64;
+const columns = 5;
+const rows = Math.ceil(entries.length / columns);
+const tiles = [];
+const sprite = {};
+const sprite2x = {};
+for (const [index, [name, { color }]] of entries.entries()) {
   const paths = renderToStaticMarkup(createElement(icons[name], { color, strokeWidth: 1.7, size: 24 }));
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><!-- Lucide ISC/MIT; license in LICENSE.txt. Field-guide composition by Local Lore. --><rect x="3" y="4" width="58" height="58" rx="17" fill="#0b1713" fill-opacity=".35"/><rect x="4" y="3" width="56" height="56" rx="15" fill="#172b23" stroke="${color}" stroke-width="1.5"/><path d="M18 7h18" stroke="${color}" stroke-opacity=".22" stroke-linecap="round"/><g transform="translate(13 12) scale(1.58)" fill="none" stroke="${color}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${paths}</g></svg>`;
   await writeFile(new URL(`${name}.svg`, output), svg);
-  await sharp(Buffer.from(svg)).png().toFile(fileURLToPath(new URL(`${name}.png`, output)));
+  const png = await sharp(Buffer.from(svg)).png().toBuffer();
+  await writeFile(new URL(`${name}.png`, output), png);
+  const left = (index % columns) * size;
+  const top = Math.floor(index / columns) * size;
+  tiles.push({ input: png, left, top });
+  sprite2x[`mission-${name}`] = { x: left, y: top, width: size, height: size, pixelRatio: 2 };
+  sprite[`mission-${name}`] = { x: left / 2, y: top / 2, width: size / 2, height: size / 2, pixelRatio: 1 };
 }
+const atlas = await sharp({ create: { width: columns * size, height: rows * size, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } }).composite(tiles).png().toBuffer();
+await writeFile(new URL("sprite@2x.png", output), atlas);
+await sharp(atlas).resize(columns * size / 2, rows * size / 2).png().toFile(fileURLToPath(new URL("sprite.png", output)));
+await writeFile(new URL("sprite.json", output), `${JSON.stringify(sprite, null, 2)}\n`);
+await writeFile(new URL("sprite@2x.json", output), `${JSON.stringify(sprite2x, null, 2)}\n`);
 await copyFile(new URL("../node_modules/lucide-react/LICENSE", import.meta.url), new URL("LICENSE.txt", output));
-console.log(`Generated ${Object.keys(activityArtworks).length} licensed activity badges (SVG sources + 2× PNGs).`);
+console.log(`Generated ${entries.length} licensed activity badges and native 1×/2× MapLibre sprites.`);

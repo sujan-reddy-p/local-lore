@@ -6,7 +6,6 @@ import { Protocol } from "pmtiles";
 import { useEffect, useEffectEvent, useMemo, useRef, useState, type RefObject } from "react";
 import { createPortal } from "react-dom";
 import { activityScene, matchActivityOutlines, type ActivityOutline, type OutlineFeature } from "@/lib/activity-zones";
-import { activityArtworks, activityArtwork } from "@/lib/activity-artwork";
 import { missionDescription } from "@/lib/mission-copy";
 import { missionWhen } from "@/lib/mission-presentation";
 import { createMapStyle } from "@/lib/map-style";
@@ -51,7 +50,6 @@ export function MissionMap({ catalog, visible, selected, mapRef, onChoose }: {
   const sceneState = useMemo(() => ({ catalog, byId: Object.fromEntries(catalog.map(item => [item.id, item])), ids: visible.map(item => item.id), outlines: outlineCache }), [catalog, visible]);
   const readScene = useEffectEvent(() => sceneState);
   const previousCatalogRef = useRef(catalog);
-  const registerCatalogArtworkRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const previous = previousCatalogRef.current;
@@ -59,7 +57,6 @@ export function MissionMap({ catalog, visible, selected, mapRef, onChoose }: {
     if (previous !== catalog && mapRef.current) {
       outlineCache.set(mapRef.current, new Map());
     }
-    registerCatalogArtworkRef.current?.();
   }, [catalog, mapRef]);
 
   useEffect(() => {
@@ -215,29 +212,7 @@ export function MissionMap({ catalog, visible, selected, mapRef, onChoose }: {
     });
     const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") dismiss(); };
     window.addEventListener("keydown", onKey);
-    const pendingImages = new Set<string>();
-    const registerArtwork = (name: string) => {
-      const kind = name.replace(/^mission-/, "");
-      if (!(kind in activityArtworks) || map.hasImage(name) || pendingImages.has(name)) return;
-      pendingImages.add(name);
-      void map.loadImage(`/map-icons/${kind}.png`).then(image => {
-        if (mapRef.current === map && !map.hasImage(name)) map.addImage(name, image.data, { pixelRatio: 2 });
-      }).catch(error => {
-        if (mapRef.current !== map) return;
-        if (mapNode.current) mapNode.current.dataset.mapError = `Activity artwork unavailable: ${kind}`;
-        console.error("Local Lore artwork error:", error);
-      });
-    };
-    registerCatalogArtworkRef.current = () => {
-      const currentCatalog = readScene().catalog;
-      if (!map.isStyleLoaded()) return;
-      for (const kind of new Set(currentCatalog.map(activityArtwork))) registerArtwork(`mission-${kind}`);
-    };
-    map.on("styleimagemissing", event => registerArtwork(event.id));
-    map.on("load", () => {
-      registerCatalogArtworkRef.current?.();
-      refreshOutlines();
-    });
+    map.on("load", refreshOutlines);
     const reportHealth = () => {
       if (!mapNode.current) return;
       const source = map.getSource("san-francisco") as VectorTileSource | undefined;
@@ -266,7 +241,6 @@ export function MissionMap({ catalog, visible, selected, mapRef, onChoose }: {
       popup?.remove();
       window.removeEventListener("keydown", onKey);
       dismissRef.current = null;
-      registerCatalogArtworkRef.current = null;
       map.off("idle", refreshOutlines);
       map.remove();
       maplibregl.removeProtocol("pmtiles");
