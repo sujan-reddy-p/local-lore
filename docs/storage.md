@@ -1,72 +1,91 @@
 # Storage architecture
 
+## Decision
+
+The active catalog and discovery state are versioned in Git. The website bundles `data/source-catalog.json` through `lib/seed-data.ts`; it does not query Postgres for catalog or event data. PostgreSQL/Neon schemas, migrations, source observations, event candidates, decisions, and revisions are historical operational infrastructure, not the active catalog publication path. The optional visitor route is separate. Credentials must never enter source control or browser code.
+
+## Connect a fresh local checkout
+
+The historical Neon project can be linked for database maintenance, but this setup is not required for catalog publication. Use the ignored `.env.local` for credentials:
+
+```bash
+npx neon@latest link --project-id spring-sun-40275315 --branch main --no-env-pull -y
+npx neon@latest env pull --service postgres --file .env.local
+npm run db:setup
+```
+
+If the Neon CLI needs authorization, run `npx neon@latest auth` and complete browser sign-in. If the shell's `CI` variable prevents browser sign-in, use `env -u CI npx neon@latest auth`. Never print or commit `.env.local` values.
+
+
 ## Current state
 
-The deployed page imports the published missions from `lib/seed-data.ts`. The catalog does not read Neon, but the server-only `POST /api/visitor` route uses Neon to record visitor IPs. Browser code never receives database credentials.
+The active catalog is static at runtime and is maintained by the local agentic publisher described in `docs/content-maintenance.md`. Existing visible records retain `approved_for_display` as historical lineage, not an automated-fetch or image-reuse permission.
 
-## Catalog database choice
+The removed catalog importer previously synchronized 165 source groups and 212 catalog records. Those are historical setup facts, not a current publication contract. The deployed page reads the Git catalog, not mission/event rows in Postgres.
 
-Neon Postgres is the selected database option for server-side features, accessed through Drizzle and `pg`. The catalog tables remain an inactive prototype; visitor capture is the first active database-backed web route.
+Historical backend implementation includes manually invoked, permission-gated source ingestion and private `needs_review` event candidates, plus human review and audit tables. These are inactive and do not gate active Git catalog publication. Former package aliases `sources:refresh` and `events:review` have been removed; do not give them as runnable commands. The active publication path does not require database setup, candidate staging, or human approval.
 
-## Tables
+## Historical backend tables
 
 ### `sources`
 
-Stores the approved source registry: stable key/name/kind, canonical and terms URLs, attribution, automation and image permissions, refresh cadence, enabled state, and timestamps. Source key is unique.
+Stable identity, source/display lineage, canonical and terms URLs, explicit automated-fetch/image permissions, timezone, enabled state, refresh cadence, and fetch validators.
 
 ### `missions`
 
-Stores normalized content and facts, location/radius, time label/duration/price, JSON vibes/traits/image, source URL/check date, confidence, lifecycle status, seen/published/expiry timestamps, and source/external identity. `(source_id, external_id)` is unique.
+Editorial catalog entries, including category, location, image, schedule, source references, stable catalog order, and lifecycle.
 
-Indexes support status/category, neighborhood/status, and freshness queries.
+### `event_occurrences`
 
-### `ingestion_runs`
+One dated event instance per source identity, with source URL, title, timezone-aware start/end, location evidence, price, source snapshot/provenance, confidence, lifecycle, and expiry. Separate from evergreen missions.
 
-Tracks source run status, fetched/normalized/review counts, start/end, and error. This table is the operational audit surface and should be written even if a run publishes nothing.
+### `ingestion_runs`, `source_observations`, `candidate_decisions`
 
-### `source_observations`, `candidate_decisions`, and `mission_revisions`
+Run counts/outcome, response validators/content hash, extracted structured events, and retained normalized candidates with rejection/review reasons.
 
-Source observations store HTTP freshness details and extraction counts. Candidate decisions record deterministic publish/discard outcomes and reasons. Mission revisions retain agent before/after snapshots when an existing mission changes. The current product deliberately has no human-review queue.
+### `event_reviews`, `event_revisions`, `mission_revisions`
 
-## Migration files
+Human approval/rejection/update audit records and before/after event/catalog state. Event decisions are transactionally coupled to publication.
 
-- `db/schema.ts` is the typed source of truth.
-- `drizzle.config.ts` targets Postgres and writes to `drizzle/postgres/`.
-- `drizzle/postgres/` contains the applied migration history for Neon.
-- `npm run db:generate` generates future migrations after schema changes.
+## Migrations and historical import
 
-Never edit migration metadata casually after it has been applied to a shared environment. Create a new migration.
+- `db/schema.ts` is the typed Drizzle schema; `drizzle/postgres/` is its migration history.
+- `npm run db:generate` generates a migration; review the SQL before applying it.
+- `npm run db:migrate` applies pending PostgreSQL migrations, preferring `DATABASE_URL_UNPOOLED` for direct Neon connections, then `DATABASE_URL` or `POSTGRES_URL`.
+- `npm run db:setup` applies PostgreSQL migrations for optional visitor storage. It requires configured credentials, does not fetch sources, and does not synchronize the Git catalog.
 
-## Recommended repository boundary
+Historical catalog upserts update catalog-owned fields for matching stable IDs, preserve unrelated database rows, and do not delete records.
 
-Do not import Drizzle rows directly into map components. Add a server-side repository with methods such as:
+## Historical backend data model
 
-```ts
-listPublishedMissions(window): Promise<LoreItem[]>
-upsertNormalizedMission(input): Promise<StoredMission>
-enqueueReview(missionId, reasons): Promise<void>
-recordIngestionRun(result): Promise<void>
-```
+### `sources`
 
-Conversion code should parse JSON columns, resolve schedules, and return the existing `LoreItem` contract.
+Stable identity, source/display lineage, canonical and terms URLs, explicit automated-fetch/image permissions, timezone, enabled state, refresh cadence, and fetch validators.
 
-## Activation plan
+### `missions`
 
-1. Add more explicitly permissioned public feeds to the source directory.
-2. Add repository tests with isolated data.
-3. Confirm freshness and expiry behavior with live feed fixtures.
-4. Expand source observation monitoring and rollback instructions.
-5. Keep the static seed fallback for database outages.
+Editorial catalog entries, including category, location, image, schedule, source references, stable catalog order, and lifecycle.
 
-## Data integrity rules
+### `event_occurrences`
 
-- Source plus external ID is the ingestion identity.
-- Published records require a canonical source, valid coordinates, valid schedule/location normalization, and deterministic acceptance.
-- Source facts and AI editorial proposals should be separable in audit history.
-- Expiry should change visibility/status, not destroy provenance.
-- Run writes and mission/decision writes should be transactional when possible.
-- Never expose a D1 or database binding to browser code.
+One dated event instance per source identity, with source URL, title, timezone-aware start/end, location evidence, price, source snapshot/provenance, confidence, lifecycle, and expiry. Separate from evergreen missions.
+
+### `ingestion_runs`, `source_observations`, `candidate_decisions`
+
+Run counts/outcome, response validators/content hash, extracted structured events, and retained normalized candidates with rejection/review reasons.
+
+### `event_reviews`, `event_revisions`, `mission_revisions`
+
+Historical human approval/rejection/update audit records and before/after event/catalog state. This manual publication path is inactive.
+## Data integrity
+
+- Keep source permission distinct from display lineage, factual confidence, and image reuse.
+- Preserve source observations and rejected candidates where the historical backend is maintained; do not erase provenance.
+- Never publish unknown freshness as verified.
+- A failed fetch is not a successful refresh and does not mass-expire records.
+- Expire occurrences by lifecycle state; keep their history.
+- Keep the static catalog as runtime source unless database-backed reads are explicitly activated with corresponding architecture, policy, observability, and rollback updates.
 
 ## Object storage
 
-R2 is currently disabled. Do not mirror remote images into storage without checking license and organizer terms. If object storage is introduced for permitted media, preserve original source, license, credit, checksum, fetch time, transforms, and deletion policy.
+R2 is disabled. Do not mirror or transform remote images without checking permission, credit, source URL, checksum, fetch time, and deletion policy.

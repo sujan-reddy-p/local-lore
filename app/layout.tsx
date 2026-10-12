@@ -5,19 +5,19 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://local-lore.vercel.app"),
-  title: "Local Lore — Find your San Francisco today",
-  description: "A living, curated map of memorable things to do around San Francisco.",
+  title: "Local Lore — Things to do nearby",
+  description: "Explore Bay Area places and events by date, budget, and activity.",
   icons: { icon: "/favicon.svg" },
   openGraph: {
-    title: "Local Lore — Find your San Francisco today",
-    description: "Memorable ways into San Francisco, mapped by time, mood, budget, and neighborhood.",
+    title: "Local Lore — Things to do nearby",
+    description: "Explore Bay Area places and events by date, budget, and activity.",
     type: "website",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Local Lore map of San Francisco activity zones" }],
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Local Lore map of Bay Area activities" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Local Lore — Find your San Francisco today",
-    description: "Memorable ways into San Francisco, mapped by time, mood, budget, and neighborhood.",
+    title: "Local Lore — Things to do nearby",
+    description: "Explore Bay Area places and events by date, budget, and activity.",
     images: ["/opengraph-image"],
   },
 };

@@ -1,0 +1,46 @@
+.location-control {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.location-control__button {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, .035);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.location-control__button:hover:not(:disabled),
+.location-control__button:focus-visible {
+  border-color: var(--lime);
+}
+
+.location-control__button:disabled {
+  cursor: wait;
+  opacity: .7;
+}
+
+.location-control__button svg {
+  width: 15px;
+  height: 15px;
+  color: var(--lime);
+}
+
+.location-control__status {
+  width: min(130px, 25vw);
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+  text-align: left;
+}

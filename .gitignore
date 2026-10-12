@@ -15,6 +15,8 @@
 
 # next.js
 /.next/
+/.next-local/
+/.next-discovery-check/
 /out/
 
 # misc
@@ -29,6 +31,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+.neon
 
 # vercel
 .vercel
@@ -43,3 +46,5 @@ next-env.d.ts
 /.vinext/
 /.wrangler/
 /.wrangler-recovery-*/
+/.source-audit.lock
+/data/*.lock

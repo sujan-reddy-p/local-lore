@@ -1,0 +1,67 @@
+.discovery-rail { position:absolute; z-index:8; left:18px; top:18px; width:360px; padding:14px; border:1px solid var(--line); border-radius:24px; background:rgba(18,30,25,.96); box-shadow:0 14px 48px rgba(0,0,0,.25); backdrop-filter:blur(16px); }
+.discovery-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+.discovery-brand { display:flex; align-items:center; gap:8px; }
+.discovery-brand>svg { width:23px; height:23px; color:var(--lime); }
+.discovery-brand h1 { margin:0; font-size:17px; line-height:1.1; font-weight:650; letter-spacing:-.035em; }
+.discovery-search-row { display:flex; gap:7px; }
+.discovery-search { min-width:0; flex:1; height:40px; display:flex; align-items:center; gap:8px; padding:0 10px; border:1px solid var(--line); border-radius:11px; background:rgba(255,255,255,.045); }
+.discovery-search:focus-within { border-color:var(--lime); }
+.discovery-search>svg { width:15px; height:15px; flex:none; color:var(--lime); }
+.discovery-search input { width:100%; min-width:0; border:0; outline:0; background:transparent; color:var(--ink); font-size:12px; }
+.discovery-search input::placeholder { color:#94a79b; }
+.discovery-search button { width:24px; height:28px; display:grid; place-items:center; flex:none; padding:0; border:0; border-radius:7px; background:transparent; cursor:pointer; }
+.discovery-search button svg { width:13px; }
+.filter-toggle { position:relative; width:40px; height:40px; flex:none; display:grid; place-items:center; padding:0; border:1px solid var(--line); border-radius:11px; background:rgba(255,255,255,.025); cursor:pointer; }
+.filter-toggle.active,.filter-toggle:hover { border-color:var(--lime); }
+.filter-toggle>svg { width:16px; height:16px; color:var(--lime); }
+.filter-toggle b { position:absolute; right:-3px; top:-4px; min-width:15px; height:15px; display:grid; place-items:center; border-radius:50%; background:var(--lime); color:#18261f; font-size:9px; }
+.discovery-body { min-height:110px; margin:11px 0; }
+.discovery-interests { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; }
+.discovery-interests button { min-width:0; min-height:52px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:6px 3px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.025); color:#c9d7ce; font-size:10px; cursor:pointer; }
+.discovery-interests button svg { width:16px; height:16px; color:var(--lime); }
+.discovery-interests button.active { border-color:rgba(142,220,196,.7); background:rgba(142,220,196,.13); color:#d9f7e8; }
+.idea-refinement { display:grid; gap:13px; padding:2px 1px; }
+.refine-dial label { display:flex; justify-content:space-between; gap:10px; color:#c8d9cd; font-size:11px; }
+.refine-dial strong { color:#e6f0e9; font-weight:600; }
+.refine-dial input { width:100%; margin:7px 0 0; accent-color:var(--lime); cursor:pointer; }
+.refine-dial p { margin:2px 0 0; color:var(--muted); font-size:10px; }
+.refinement-summary { margin:0 0 7px; color:var(--lime); font-size:10px; }
+.discovery-empty { margin:0 0 8px; color:var(--muted); font-size:11px; line-height:1.4; }
+.discovery-context { min-height:16px; display:flex; align-items:center; justify-content:space-between; gap:8px; color:var(--muted); font-size:9px; }
+.discovery-context>button { flex:none; padding:2px 0; border:0; background:transparent; color:var(--lime); font-size:10px; cursor:pointer; }
+.discovery-dates { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:5px; margin-top:9px; padding-top:10px; border-top:1px solid var(--line); }
+.discovery-dates button { min-width:0; min-height:29px; padding:0 3px; border:1px solid var(--line); border-radius:8px; background:rgba(255,255,255,.025); color:#c9d7ce; font-size:10px; cursor:pointer; }
+.discovery-dates button.active { border-color:#dae9df; background:#dae9df; color:#192a20; }
+.discovery-date-picker { grid-column:1/-1; display:flex; justify-content:space-between; align-items:center; gap:7px; min-height:29px; padding:0 9px; border:1px solid var(--line); border-radius:8px; color:#bbccc1; font-size:10px; }
+.discovery-date-picker.active { border-color:var(--lime); }
+.discovery-date-picker svg { width:13px; height:13px; }
+.discovery-date-picker>span { margin-right:auto; }
+.discovery-date-picker input { width:118px; height:26px; padding:0; border:0; background:transparent; color:inherit; font-size:10px; cursor:pointer; }
+.map-tools { position:absolute; z-index:7; right:18px; top:18px; display:flex; flex-direction:column; gap:6px; }
+.map-tools>button { width:40px; height:40px; padding:0; display:grid; place-items:center; border:1px solid var(--line); border-radius:11px; background:rgba(18,30,25,.96); color:#d7e9de; box-shadow:0 5px 18px rgba(0,0,0,.16); cursor:pointer; font-size:24px; }
+.map-tools>button:hover { border-color:var(--lime); }
+.map-tools svg { width:17px; height:17px; }
+.map-view-options { position:absolute; top:92px; right:48px; width:170px; padding:7px; border:1px solid var(--line); border-radius:12px; background:#17281f; box-shadow:0 12px 30px rgba(0,0,0,.25); }
+.map-view-options button { width:100%; min-height:36px; display:flex; align-items:center; gap:9px; padding:0 9px; border:0; border-radius:7px; background:transparent; text-align:left; font-size:11px; cursor:pointer; }
+.map-view-options button:hover { background:rgba(255,255,255,.055); }
+.map-view-options svg { color:var(--lime); }
+@media(max-width:980px) {
+  .lore-map { display:grid; grid-template-rows:max-content minmax(0,1fr); padding:10px 8px 8px; }
+  .discovery-rail { position:relative; grid-row:1; justify-self:start; left:auto; top:auto; width:min(360px,100%); margin:0 0 10px; padding:12px; border-radius:21px; }
+  .discovery-brand h1 { font-size:16px; }
+  .discovery-search input { font-size:12px; }
+  .map-tools { right:12px; top:12px; }
+  .lore-app:has(.activity-card) .map-tools { display:none; }
+  .map-tools>button { width:36px; height:36px; font-size:22px; }
+  .map-view-options { top:82px; right:43px; }
+}
+@media(max-width:460px) {
+  .discovery-rail { width:100%; }
+  .map-tools { top:auto; bottom:43px; }
+}
+@media(max-height:500px) and (min-width:461px) {
+  .discovery-rail { width:330px; padding:10px; }
+  .discovery-heading { margin-bottom:6px; }
+  .discovery-body { margin:7px 0; }
+  .discovery-interests button { min-height:47px; }
+}

@@ -4,6 +4,8 @@
 
 Local Lore combines the clarity of a modern product, the warmth of a field guide, and the discovery rhythm of a crafted city map. It avoids generic startup gradients, dense dashboards, obvious pin markers, permanent title labels, and excessive chrome.
 
+Close-up direction: preserve the city and 3D buildings while keeping ground-level activity areas quiet and geographically honest. A preview is a lightweight map label/card with title and description only; it has no Explore action and disappears for the selected mission. The selected card has one hierarchy: truthful image (190px desktop/140px mobile when available, compact 96px activity artwork on missing/error), venue title, specific action sentence, three facts, one website CTA, then optional Info disclosure.
+
 ## Color system
 
 Core CSS tokens in `app/globals.css`:
@@ -30,31 +32,28 @@ If changing type, test actual macOS, Windows, iOS, and Android fallback metrics 
 ## Spatial hierarchy
 
 - Full viewport map establishes context.
-- Compact brand identifies the product without reserving a top bar.
-- “Where next?” leads to one primary action.
-- Quick and curiosity filters stay near the question and are directly manipulable.
-- Detailed filtering is deferred to MissionBrowser.
-- Mission detail occupies one corner/sheet and never replaces the map.
-- The mission browser uses visual cards in a wide gallery. It does not announce catalog/category/result totals.
+- A compact 360px upper-left rail keeps search, eight interests, and dates visible. Filter refinement replaces the interest body and contains only budget and approximate activity time; no duplicated quick/category/trait controls.
+- Applied refinement is summarized unobtrusively; Reset all includes search, interest, date, budget, and time.
+- The selected card occupies one corner/sheet and never replaces the map. The preview and selected card are distinct states, not a gallery.
+- Card hierarchy is image → venue/title → specific activity sentence → three fact rows with 20px Lucide icons and legible 16px values → one website CTA. Source, schedule, accessibility, and image rights/provenance remain behind native inline Info disclosure.
 
 ## Shape language
-
-- Activity zones are soft geographic halos with thin edges and subtle extrusion.
-- Controls use 10–13 px radii; primary overlays use 19–22 px radii.
-- Brand mark is an imperfect rotated circle, giving the field-guide warmth.
-- Pills are reserved for quick or multi-select dimensions; categories use compact grid cells.
+- Activity areas are smooth geographic fills with thin edges only when a matching native PMTiles building/relevant landuse polygon is loaded. Preserve holes, reject oversized or native-tile-boundary-clipped geometry, and do not invent circle footprints. Unknown area remains an honest point artwork.
+- Learned shapes persist across zooms and synchronize to visible IDs; fades are continuous and area-aware. These are basemap context, not independently verified official venue boundaries.
+- Controls use 10–13px radii; the primary rail/card uses 19–22px radii. Use one restrained elevation rather than stacked floating slabs.
+- Pills are reserved for compact date/refinement states; interests are compact rounded-square grid buttons.
 
 ## Icons
 
-Lucide icons support familiar interface actions and curiosity prompts. Map categories use a separate typographic glyph vocabulary because the glyphs must render efficiently inside a MapLibre symbol layer.
+Lucide icons support familiar controls, interests, facts, and Info disclosure. Map activity badges use subject-specific rounded-square custom SVG/retina PNG assets in `public/map-icons`, with editable SVGs and ISC/MIT `LICENSE.txt`; regenerate with `npx tsx scripts/generate-map-icons.mjs`. Do not reintroduce Unicode category glyphs or activity-purpose labels.
 
-Icons are never the only accessible name. Buttons carry readable text or `aria-label`. Do not animate every icon continuously; current ambient motion is concentrated at mission centers. If prompt icons gain micro-motion later, use short hover/focus transitions and respect reduced motion.
+Icons are never the only accessible name. Buttons carry readable text or `aria-label`. Map centers are static; use short hover/focus transitions rather than ambient animation.
 
 ## Motion
 
 - Map camera easing: 600–850 ms for deliberate spatial continuity.
 - Mission browser/detail: short Framer Motion opacity/translation transitions.
-- Mission pulse: sine wave updates radius and stroke opacity; disabled for reduced motion.
+- No animated mission pulse. Camera transitions honor reduced motion; media and panel transitions are reduced or disabled.
 - Hover controls: color/border/one-pixel lift, not large movement.
 
 Motion should explain location, selection, or hierarchy. Avoid decorative loops in filters and cards.
@@ -65,16 +64,12 @@ Panels use dark green translucency and `backdrop-filter` to remain legible over 
 
 ## Responsive rules
 
-At 720 px and below:
+At 980px and below:
 
-- brand remains compact while the headline and map-overlay filter rows are removed;
-- one Explore button opens the mission sheet, where quick, curiosity, and date rows scroll horizontally;
-- control stack moves to 12 px from top/right;
-- mission browser becomes a bottom sheet;
-- activity details condense and hide the two longer prose paragraphs;
-- attribution is hidden in the current CSS and needs an accessible release solution.
-
-At 390 px and below, headline and spacing tighten further, and one fact is hidden to prevent card overflow.
+- the compact discovery rail remains visible above the map/detail, with all eight interests and dates legible; native responsive treatment may allow horizontal date overflow but must not introduce a hidden gallery;
+- budget/time refinement remains inline and limited to those two sliders;
+- selected cards scroll within the available viewport; Info disclosure retains source/schedule, accessibility, and photo rights;
+- map tools hide while mobile selected detail is open; attribution remains available.
 
 ## Dark and light themes
 
@@ -83,11 +78,10 @@ V1 declares `color-scheme: dark` and implements only the dark theme. A future li
 ## Visual QA checklist
 
 - The city remains the largest visual object.
-- UI does not overlap the three map controls at supported widths.
-- Curiosity words and icons are readable without zooming the browser.
-- Date rail includes All time and scrolls rather than compressing.
-- Popup and detail text survive both dark land and water backgrounds.
-- Mission glyph and zone center coincide at multiple pitches/bearings.
-- No hard black overscan edge appears inside allowed bounds.
-- Hover and focus states are visible but not fluorescent.
-- Licensed images crop cleanly and retain credit in details.
+- UI does not overlap map controls at supported widths.
+- The eight interests and date choices are readable at the compact rail width.
+- Preview has title/description only, no Explore action; selected preview is suppressed.
+- Selected card hierarchy is image, venue/title, specific sentence, three legible fact values/icons, one website CTA, then optional Info.
+- Missing/error media uses compact activity artwork, never stock imagery or duplicate fallback text; image credits/licenses remain available.
+- Activity areas match accepted native geometry, preserve holes, and never become unjustified circles; unknown areas remain point artwork.
+- Focus states are visible but not fluorescent; reduced motion is respected.

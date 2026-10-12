@@ -1,154 +1,58 @@
 # Source ingestion and AI curation
 
-## Goal
+## Current state
 
-The long-term portfolio story is an AI-agent-assisted city catalog, but the agent must increase useful volume without weakening factual trust. The system is designed around approved sources, deterministic parsing, provenance, review, and expiry. It is not an unrestricted web scraper.
+The page bundles `data/source-catalog.json` through `lib/seed-data.ts`; it does not query Postgres for catalog or event occurrences. The active path is the agentic Git catalog publisher: evidence-bearing research emits strict structured findings, then deterministic validation writes a bounded snapshot. Existing database candidates, reviews, and revisions are historical inactive infrastructure.
 
-## Intended flow
+Source and record `reviewStatus` labels preserve lineage/eligibility evidence, not a mandatory human publication gate. Source access controls, terms, rights, security, provenance, and no-invention rules remain required. Failed fetches and “not seen” results preserve good records.
+
+The publisher supports source-backed evergreen activities and genuine dated occurrences. Expiry is separate from explicit sourced cancellation/closure; duplicate real experiences, venues, and event times are collapsed.
+
+## Pipeline
 
 ```text
-source registry
-→ permission gate
-→ source-specific fetch adapter
-→ deterministic normalization
-→ optional AI editorial proposal
-→ validation and dedupe
-→ deterministic publish/discard decision
-→ refresh, miss handling, and expiry
+select due source or coverage gap
+→ agent researcher reads permitted evidence and emits strict structured findings
+→ deterministic normalization and validation of facts, geography, rights, duplicates, and dates
+→ apply source-backed add/update/remove/retire changes to the Git catalog
+→ bounded snapshot publication; preserve evidence and revert by prior snapshot
 ```
 
-## Source registry and policy
+Source permission, display lineage, factual confidence, image reuse, and publication are separate concerns. Agentic publication removes the mandatory human review step, not access controls or evidence requirements.
 
-Every adapter exposes:
 
-- stable key and display name;
-- kind: official calendar, public feed, organizer page, or curated seed;
-- canonical source URL and attribution;
-- optional terms URL;
-- whether automated fetching is allowed;
-- whether image reuse is allowed;
-- refresh cadence in minutes.
+## Versioned catalog boundary
 
-`canRun` returns true only for permissioned automated sources and excludes organizer pages. `runAdapter` also refuses `allowsAutomatedFetch: false`. Before a live scheduler exists, consolidate these gates so there is one authoritative policy decision and test both allowed and denied cases.
+`data/source-catalog.json` groups source definitions and their existing catalog records. `lib/seed-data.ts` adapts those records to the current `LoreItem` page contract. Existing records carry `approved_for_display` based on the maintainer’s accuracy assumption; the source’s `allowsAutomatedFetch` and `enabled` fields still control whether a fetch may run. Image rights remain separate.
 
-Preferred inputs are official public APIs, documented RSS/Atom/ICS/JSON feeds, city-agency datasets, cultural-institution calendars, and organizer-maintained feeds. A normal webpage is not permission to crawl it.
+A Local Lore mission/place is not a dated event occurrence. `event_occurrences` stores event identity, original event URL, source timezone, start/end instants, place evidence, source snapshot, lifecycle, and expiry separately from `missions.schedule`.
 
-## Adapter contract
+## Source permissions and supported inputs
 
-An adapter implements:
+Before automated fetching, document the permitted canonical source, exact access method, relevant terms, attribution, rate limits, and refresh boundaries. A source URL or public visibility is not permission. Do not bypass authentication, CAPTCHAs, bot protection, paywalls, rate limits, or technical controls.
 
-```ts
-interface SourceAdapter {
-  key: string;
-  sourceName: string;
-  policy: SourcePolicy;
-  fetch(signal?: AbortSignal): Promise<RawSourceRecord[]>;
-  normalize(record: RawSourceRecord, checkedAt: string): NormalizedMission | null;
-}
-```
+The generic collector recognizes `text/calendar` and HTML containing JSON-LD Event records. Parser support is not permission; source-specific access conditions and evidence still apply. Do not let AI crawl for missing instructions.
 
-`fetch` handles only source transport and should support cancellation. `normalize` must be deterministic for factual fields. Returning `null` means the raw item cannot safely become a mission.
+## Deterministic normalization and historical review model
 
-Source adapters should include fixtures and tests for schema changes, missing fields, time zones, pagination, rate limits, cancellations, malformed records, and duplicate external IDs.
+Normalization preserves source identity, canonical event URL, source snapshot hash, observation time, source timezone, and original structured data. Local timezone wall-times convert to UTC only when unambiguous; nonexistent and ambiguous daylight-saving times are rejected. Non-HTTPS links and malformed/incomplete timestamps are rejected rather than guessed. Agents must not invent date/time, price, availability, address, coordinates, accessibility, organizer identity, canonical URL, or image rights.
 
-## Normalized record
+AI confidence is a triage hint, never source evidence. The deterministic publisher applies only supported facts and records provenance. The former database candidate-review CLI and human approval flow are historical and inactive.
 
-`NormalizedMission` is `LoreItem` without local ID plus:
+## Schedule, freshness, and expiry
 
-- `externalId`: stable source-owned identity;
-- `confidence`: normalization/publish confidence from 0 to 1;
-- `lastSeenAt`: source observation time.
+Refresh cadence uses source `refreshHours` only after the source is explicitly enabled. Failed fetches use bounded backoff; they do not count as successful freshness. Persist and distinguish:
 
-The adapter must preserve the canonical organizer URL. Any AI stage receives normalized facts and their provenance; it does not fetch arbitrary pages on its own.
+- last attempted check, HTTP outcome, and failure;
+- source content hash and HTTP validators;
+- next eligible check;
+- event start/end and source timezone;
+- expiry and last-seen state.
 
-## AI responsibilities
+A failed fetch is not a successful refresh and must not mass-expire records. A missing event in one snapshot is not evidence of cancellation. Expired occurrences leave active results but retain provenance and history.
 
-An AI model may propose:
+The current browser schedule logic remains a display convenience for evergreen missions, not evidence of a live schedule. Dynamic event times require timezone-aware occurrence facts.
 
-- original Local Lore title, kicker, description, and why;
-- category and format;
-- vibes and traits;
-- likely duplicate groups;
-- confidence and a concise reviewer rationale;
-- whether a source change appears editorial or factual.
+## Active runner and historical backend commands
 
-An AI model must not invent or infer without evidence:
-
-- event date or time;
-- price, discount, availability, or ticket status;
-- address, venue, coordinate, neighborhood, or distance;
-- age, skill, accessibility, pet, or safety claim;
-- organizer identity or canonical URL;
-- image license or credit;
-- weather, tide, surf, or other conditions.
-
-Store model name/version, prompt version, input record hash, proposed patch, confidence, and reviewer decision for auditability. AI output should be structured JSON validated against a schema, never directly interpolated into storage.
-
-## Current deterministic validation
-
-`runAdapter`:
-
-1. refuses an adapter without automated-fetch permission;
-2. calls `fetch` and `normalize`;
-3. rejects normalized nulls and counts them;
-4. requires an HTTPS source URL;
-5. bounds coordinates to longitude −122.62…−122.25 and latitude 37.60…37.94;
-6. sends confidence below 0.78 to review;
-7. marks expired records for review;
-8. detects within-run duplicates using normalized title, venue, and coordinates rounded to three decimals;
-9. generates an 18-character SHA-256-derived ID from source key plus external ID for publishable records.
-
-In the automated-directory implementation, records with a rejection reason are stored in `candidate_decisions` and remain private. They do not appear in the map. A record becomes `LoreItem` only after deterministic validation completes.
-
-## Rejection reasons
-
-- `low-confidence`
-- `missing-source`
-- `invalid-location`
-- `duplicate`
-- `expired`
-
-The current system is intentionally review-free. Add source schema change, ambiguous time zone, material factual conflict, license uncertainty, accessibility uncertainty, and significant content change as private discard/hold reasons rather than publishing them.
-
-## Dedupe strategy evolution
-
-The V1 fingerprint only catches close same-run duplicates. A live system should stage dedupe:
-
-1. exact source key/external ID;
-2. canonical URL identity;
-3. normalized venue plus start time;
-4. title similarity within a geographic/time window;
-5. AI suggestion for ambiguous cross-source duplicates;
-6. human merge decision preserving every provenance link.
-
-Never discard alternate provenance merely because two records merge.
-
-## Refresh and expiry semantics
-
-- A successful source sighting updates `lastSeenAt`.
-- One missing run should not immediately delete an evergreen record.
-- Scheduled events disappear after their end/expiry while remaining stored for audit.
-- Recurring missions should be revalidated on the source cadence.
-- A failed source run must not mass-expire its catalog.
-- Material source changes should create a review diff before overwriting published facts.
-- The UI should eventually communicate last verified time and degraded freshness.
-
-## Scheduling and operations
-
-Start with one daily permissioned adapter. Record run start/end, counts, errors, source ID, HTTP status, ETag, Last-Modified, content hash, and extracted-event count. The daily run checks only due sources, never the complete directory. Add idempotency so retrying the same source snapshot cannot duplicate missions. Apply rate limits, timeouts, backoff, and a descriptive user agent where source terms require it.
-
-Operational alerts should cover consecutive failures, a major count drop/spike, parsing rejection rate, abnormal review volume, expired-but-visible records, and broken canonical URLs.
-
-## Safe implementation order
-
-1. Select one official feed with explicit automation permission.
-2. Add policy registry entry, fixtures, adapter, and tests.
-3. Persist ingestion runs only.
-4. Persist normalized missions and review reasons in a transaction.
-5. Build a read-only review view.
-6. Add explicit approve/reject with audit note.
-7. Publish through a repository returning `LoreItem[]`.
-8. Add a scheduler after manual runs are repeatable.
-9. Introduce AI proposals last, behind structured validation and audit logs.
-
-This order makes the AI layer a controlled multiplier rather than the foundation of factual correctness.
+Use `node scripts/discover-catalog.mjs research|stage|apply` or the `catalog:research`, `catalog:stage`, and `catalog:apply` package scripts as documented in `docs/content-maintenance.md`. The local researcher emits strict proposals; deterministic staging/application checks and applies only evidence-backed Git catalog changes. `scripts/daily-discovery.mjs` provides isolated research and bounded catalog/state publication. Historical database refresh and event-review commands are inactive and are not required for catalog publication; their former package aliases have been removed.

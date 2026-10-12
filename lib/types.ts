@@ -37,8 +37,8 @@ export type LoreItem = {
   zoneRadiusM: number;
   time: string;
   timeSlot: "Now" | "Tonight" | "Weekend";
-  duration: number;
-  price: number;
+  duration: number | null;
+  price: number | null;
   vibe: ("solo" | "friends" | "outdoors" | "quiet" | "social")[];
   accessibility: string;
   source: { name: string; url: string; status: MissionSourceStatus; checkedAt: string };
@@ -47,6 +47,11 @@ export type LoreItem = {
   format?: MissionFormat;
   traits?: MissionTrait[];
   schedule?: MissionSchedule;
+  map?: {
+    kind: "area" | "venue" | "route";
+    route?: [number, number][];
+    sourceUrl?: string;
+  };
   image?: MissionImage;
   hotspot?: boolean;
   featured?: boolean;

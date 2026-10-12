@@ -10,6 +10,8 @@ export const sources = pgTable("sources", {
   canonicalUrl: text("canonical_url").notNull(),
   termsUrl: text("terms_url"),
   attribution: text("attribution").notNull(),
+  reviewStatus: text("review_status", { enum: ["approved_for_display", "needs_source_review"] }).notNull().default("needs_source_review"),
+  timezone: text("timezone").notNull().default("America/Los_Angeles"),
   allowsAutomatedFetch: integer("allows_automated_fetch").notNull().default(0),
   allowsImageReuse: integer("allows_image_reuse").notNull().default(0),
   refreshHours: integer("refresh_hours").notNull().default(168),
@@ -32,6 +34,7 @@ export const ingestionRuns = pgTable("ingestion_runs", {
   unchanged: integer("unchanged").notNull().default(0),
   normalized: integer("normalized").notNull().default(0),
   published: integer("published").notNull().default(0),
+  pendingReview: integer("pending_review").notNull().default(0),
   rejected: integer("rejected").notNull().default(0),
   startedAt: timestamp("started_at", { mode: "string", withTimezone: true }).notNull().defaultNow(),
   finishedAt: timestamp("finished_at", { mode: "string", withTimezone: true }),
@@ -50,11 +53,13 @@ export const sourceObservations = pgTable("source_observations", {
   contentType: text("content_type"),
   extractedEventCount: integer("extracted_event_count").notNull().default(0),
   error: text("error"),
+  extractedEvents: jsonb("extracted_events").$type<unknown[]>(),
   checkedAt: timestamp("checked_at", { mode: "string", withTimezone: true }).notNull().defaultNow(),
 }, (table) => [index("source_observations_source_checked_idx").on(table.sourceId, table.checkedAt)]);
 
 export const missions = pgTable("missions", {
   id: text("id").primaryKey(),
+  catalogOrder: integer("catalog_order"),
   sourceId: text("source_id").notNull().references(() => sources.id),
   externalId: text("external_id").notNull(),
   canonicalUrl: text("canonical_url").notNull(),
@@ -93,6 +98,48 @@ export const missions = pgTable("missions", {
   index("missions_status_category_idx").on(table.status, table.category),
   index("missions_last_seen_idx").on(table.lastSeenAt),
 ]);
+export const eventOccurrences = pgTable("event_occurrences", {
+  id: text("id").primaryKey(),
+  sourceId: text("source_id").notNull().references(() => sources.id, { onDelete: "cascade" }),
+  missionId: text("mission_id").references(() => missions.id, { onDelete: "set null" }),
+  externalId: text("external_id").notNull(),
+  sourceUrl: text("source_url").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  startsAt: timestamp("starts_at", { mode: "string", withTimezone: true }).notNull(),
+  endsAt: timestamp("ends_at", { mode: "string", withTimezone: true }),
+  timezone: text("timezone").notNull(),
+  venue: text("venue"),
+  address: text("address"),
+  longitude: real("longitude"),
+  latitude: real("latitude"),
+  price: real("price"),
+  currency: text("currency"),
+  status: text("status", { enum: ["candidate", "published", "rejected", "cancelled", "expired"] }).notNull().default("candidate"),
+  confidence: real("confidence").notNull().default(0),
+  sourceObservedAt: timestamp("source_observed_at", { mode: "string", withTimezone: true }).notNull(),
+  sourceSnapshotHash: text("source_snapshot_hash"),
+  sourceData: jsonb("source_data").notNull(),
+  firstSeenAt: timestamp("first_seen_at", { mode: "string", withTimezone: true }).notNull().defaultNow(),
+  lastSeenAt: timestamp("last_seen_at", { mode: "string", withTimezone: true }).notNull().defaultNow(),
+  publishedAt: timestamp("published_at", { mode: "string", withTimezone: true }),
+  expiresAt: timestamp("expires_at", { mode: "string", withTimezone: true }),
+  createdAt: now(),
+  updatedAt: timestamp("updated_at", { mode: "string", withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  uniqueIndex("event_occurrences_source_external_unique").on(table.sourceId, table.externalId),
+  index("event_occurrences_status_start_idx").on(table.status, table.startsAt),
+  index("event_occurrences_source_start_idx").on(table.sourceId, table.startsAt),
+]);
+export const eventRevisions = pgTable("event_revisions", {
+  id: text("id").primaryKey(),
+  eventId: text("event_id").notNull().references(() => eventOccurrences.id, { onDelete: "cascade" }),
+  runId: text("run_id").references(() => ingestionRuns.id, { onDelete: "set null" }),
+  actor: text("actor").notNull(),
+  before: jsonb("before"),
+  after: jsonb("after").notNull(),
+  createdAt: now(),
+}, (table) => [index("event_revisions_event_created_idx").on(table.eventId, table.createdAt)]);
 
 export const missionRevisions = pgTable("mission_revisions", {
   id: text("id").primaryKey(),
@@ -109,11 +156,24 @@ export const candidateDecisions = pgTable("candidate_decisions", {
   sourceId: text("source_id").notNull().references(() => sources.id, { onDelete: "cascade" }),
   runId: text("run_id").references(() => ingestionRuns.id, { onDelete: "set null" }),
   externalId: text("external_id"),
-  decision: text("decision").notNull(),
+  eventId: text("event_id").references(() => eventOccurrences.id, { onDelete: "set null" }),
+  decision: text("decision", { enum: ["needs_review", "approved", "rejected", "discarded"] }).notNull(),
   reasons: jsonb("reasons").$type<string[]>().notNull(),
   candidate: jsonb("candidate").notNull(),
   createdAt: now(),
 }, (table) => [index("candidate_decisions_source_created_idx").on(table.sourceId, table.createdAt)]);
+export const eventReviews = pgTable("event_reviews", {
+  id: text("id").primaryKey(),
+  eventId: text("event_id").references(() => eventOccurrences.id, { onDelete: "set null" }),
+  candidateId: text("candidate_id").references(() => candidateDecisions.id, { onDelete: "set null" }),
+  action: text("action", { enum: ["approved", "rejected", "updated", "unpublished"] }).notNull(),
+  actor: text("actor").notNull(),
+  note: text("note"),
+  reviewedAt: timestamp("reviewed_at", { mode: "string", withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index("event_reviews_event_reviewed_idx").on(table.eventId, table.reviewedAt),
+  index("event_reviews_candidate_reviewed_idx").on(table.candidateId, table.reviewedAt),
+]);
 
 export const visitors = pgTable("visitors", {
   ipAddress: text("ip_address").primaryKey(),

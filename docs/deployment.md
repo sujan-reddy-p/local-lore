@@ -8,7 +8,7 @@ The Vercel production path is a Next.js map product with a static catalog and on
 
 `vercel.json` declares the Next.js framework and `npm run build:vercel`. The map uses no map token, but visitor capture requires the server-side `DATABASE_URL` or `POSTGRES_URL` environment variable in Vercel.
 
-Expected deployment inputs include application source, lockfile, and `public/maps/san-francisco.pmtiles`. The archive is below GitHub’s normal 100 MiB per-file limit but large enough to affect clone and deploy transfer time.
+Expected deployment inputs include application source, lockfile, and `public/maps/san-francisco-region.pmtiles` (about 87.6 MiB; below GitHub’s 100 MiB per-file limit). The archive is a regional extract, not a runtime hotlink to the full Protomaps planet build.
 
 ### Vercel release procedure
 
@@ -26,8 +26,8 @@ Expected deployment inputs include application source, lockfile, and `public/map
 Replace the origin and run:
 
 ```bash
-curl -I https://example.com/maps/san-francisco.pmtiles
-curl -i -H 'Range: bytes=0-126' https://example.com/maps/san-francisco.pmtiles
+curl -I https://example.com/maps/san-francisco-region.pmtiles
+curl -i -H 'Range: bytes=0-126' https://example.com/maps/san-francisco-region.pmtiles
 ```
 
 The range request should return `206 Partial Content`, a correct `Content-Range` beginning `bytes 0-126/`, an appropriate `Content-Length` of 127 for that response, and binary data rather than HTML. `Accept-Ranges: bytes` is strongly expected. Verify cache/CDN behavior does not strip Range.
@@ -54,7 +54,7 @@ A future Content Security Policy must include these exact needs or self-host the
 
 ## Catalog updates
 
-Catalog updates happen outside Vercel. A local catalog agent checks approved sources, edits the typed seed catalog, validates the repository, and commits to GitHub. Vercel deploys that commit. Follow `docs/local-agent-playbook.md`; do not add a Vercel cron or runtime ingestion route.
+Catalog updates happen outside Vercel. A human-reviewed agent edits the source-grouped JSON catalog and related source policy, runs validation, and commits through GitHub. Vercel deploys that commit. No Vercel cron or runtime ingestion route is active.
 
 ## Rollback
 
@@ -64,14 +64,22 @@ Keep the previous deployment artifact/commit available. Because catalog and map 
 
 - Root has correct title and metadata.
 - Map ready/source loaded with no `data-map-error`.
-- 3D buildings, labels, water, parks, roads, clusters, and zones visible.
-- Pan/zoom/rotate/tilt/whole-city work.
-- All time shows the seed catalog plus any published database missions.
-- Hover/select maps to the correct mission.
-- Mission browser and mobile sheet work.
-- Source links, seed disclosure, and agent-maintained-directory disclaimer work.
+- 3D buildings, labels, water, parks, roads, clusters, and accepted activity areas visible; unknown areas remain honest point artwork.
+- Pan/zoom/rotate/tilt/whole-region reset work throughout the bounded Bay Area.
+- Any day shows the available catalog; future live event integration must preserve separately labeled ideas and published occurrences.
+- Preview shows title/description without an Explore action; selecting a mission opens the correct selected card and suppresses its preview.
+- Selected card hierarchy is legible: truthful image or compact activity artwork fallback, venue title, specific sentence, three facts, one website CTA, optional Info disclosure.
+- Source links, historical check dates, unconfirmed schedules, accessibility, and photo rights/provenance remain available through the card/Info disclosure.
 - PMTiles range and cache headers pass.
 - No secrets, console exceptions, hydration errors, or 404 assets.
+
+## Location permission checklist
+
+- On localhost, `127.0.0.1`, IPv6 loopback, and `*.localhost`, the location control is hidden and no browser permission request occurs.
+- On a deployed secure non-loopback host, the control requests browser geolocation only after the visitor activates it. No coordinates are stored or sent.
+- Verify requesting, denied, unavailable, outside-covered-Bay-Area, retry, and unchanged/moved-camera outcomes have clear status.
+- A denied or unavailable request offers retry without trapping the visitor; an outside result leaves the map usable and does not move outside supported bounds.
+- A stale callback or camera movement must not overwrite a newer view; existing pan/zoom/rotate/tilt gestures and whole-region navigation remain intact.
 # Share preview metadata
 
 The App Router special route `app/opengraph-image.tsx` generates the 1200×630 PNG used by Open Graph and Twitter cards. It is a code-rendered, static representation of the opening Local Lore map (not a live MapLibre screenshot), which keeps previews reliable in Vercel’s serverless/edge runtime.

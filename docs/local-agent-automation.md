@@ -2,88 +2,83 @@
 
 ## System boundary
 
-There are two unrelated data systems:
-
 | System | Holds | Writer |
 |---|---|---|
-| GitHub repository | Local Lore missions, source directory, images, and documentation | Local catalog agent |
-| PostHog | Anonymous visitor analytics, replay, device and approximate geography | Browser SDK only |
+| GitHub repository | `data/source-catalog.json`, `data/discovery-state.json`, source policy, code, docs, and image assets | Active local agentic publisher creates bounded catalog/state snapshots |
+| PostgreSQL | Historical source observations, ingestion runs, event candidates, decisions, revisions; optional visitor records | Historical local CLI/server-only app |
+| PostHog | Browser analytics and session replay | Browser SDK only |
 
-Do **not** write missions, source content, or organizer facts into PostHog. Do **not** make the website read catalog data from PostHog. It is analytics, not the Local Lore catalog database.
+PostHog is analytics, not the Local Lore catalog database. Do not store organizer or mission facts there.
 
-## Daily local-agent job
+## Current activity
 
-Run once per day from a machine that has this repository, Node/npm, Git credentials, and the chosen local agent runner. The runner can be macOS `launchd`, a local cron service, or a manually started agent session; scheduling is machine-specific and is not committed to this repository.
+The website bundles its catalog from `data/source-catalog.json` through `lib/seed-data.ts`; it does not query Postgres for catalog or event data. The active publication path is an agentic researcher plus deterministic validator/publisher that writes a bounded Git snapshot. Existing Neon/Postgres migrations, observations, candidates, decisions, and revisions remain historical operational infrastructure.
+
+Source and record review labels preserve lineage and eligibility evidence; they are not a mandatory human approval gate. Access controls, rights, security, provenance, and source terms remain mandatory. Human correction/takedown workflows are not implemented now.
+
+The runner must retain good records on failed fetches or “not seen”, expire past occurrences separately, retire only explicit sourced cancellations/closures, deduplicate genuine experiences/venues/times, and never invent facts.
+
+## Active publication flow
 
 ```text
-open repository at latest master
-→ read policy + source directory
-→ check only approved sources
-→ normalize/deduplicate facts
-→ edit seed catalog and optional image manifest
-→ run validation
-→ commit and push only if valid changes exist
-→ Vercel deploys the pushed commit
-→ write a local run summary for the operator
+local Mac: node scripts/daily-discovery.mjs [--limit N] [--model MODEL]
+→ isolated Git worktree and local OMP research/processing
+→ deterministic validation and build/tests
+→ copy only processed catalog/state into the clean checkout
+→ commit and push only `data/source-catalog.json` and `data/discovery-state.json`
 ```
 
-## Required agent instructions
+Manual runner commands:
 
-The scheduler or agent prompt must direct the agent to read, in order:
+```text
+node scripts/discover-catalog.mjs research --output proposal.json [--model MODEL]
+node scripts/discover-catalog.mjs stage --proposal proposal.json
+node scripts/discover-catalog.mjs apply --proposal proposal.json --catalog isolated-catalog.json --state isolated-state.json --output alternate-catalog.json
+```
 
-1. `AGENTS.md`
-2. `README.md`
-3. `docs/agent-handoff.md`
-4. `docs/local-agent-playbook.md`
-5. this file
-6. `docs/source-and-image-policy.md`
-7. `docs/catalog-and-data-model.md`
+For `apply`, `--output` is an alternate catalog destination, not a report. For `research`, it is the local proposal file. Package aliases are `catalog:research`, `catalog:stage`, `catalog:apply`, and `catalog:daily`. OMP credentials stay local; the default model is `openai-codex/gpt-6-luna`, overridable by `LOCAL_DISCOVERY_MODEL` or `--model`. Raw proposals, source pages, logs, and generated research outputs are local-only and ignored; never commit them. Source access permission, terms, rate limits, image rights, security, evidence, provenance, and no-invention requirements remain mandatory.
 
-## Source policy
+`scripts/schedule-discovery.mjs install|remove|status` manages macOS launchd at the configured local time (default `08:17`) from `data/discovery-config.json` fields `schedule.hour` and `schedule.minute`. Install only from a durable checkout, not `/tmp`; the daily wrapper refuses a dirty checkout or branch that differs from `origin`. A failed push leaves the local bounded commit in place for deliberate synchronization.
 
-The agent may only automate a source when `lib/sources/source-directory.ts` and `docs/source-and-image-policy.md` document a public API/feed or equivalent automation permission. The directory is non-exhaustive; adding a source requires recording its name, canonical URL, type, attribution, cadence, and permission basis before it is fetched automatically.
+## Source and catalog rules
 
-For an ordinary organizer page, the agent may use it as a human/local research lead but must not build an unattended scraper around it. Never bypass a robots rule, login, CAPTCHA, paywall, rate limit, or anti-bot control.
+- Source/record status is lineage and eligibility evidence; it is not a mandatory publication approval.
+- Automated fetching still requires documented permitted access, terms, rate limits, and rights. Source registry presence or public visibility is not permission.
+- Do not bypass robots, authentication, CAPTCHA, paywalls, rate limits, or anti-bot controls.
+- Preserve existing records and `catalogOrder` unless evidence-backed maintenance changes them; current record counts are snapshot state, not a permanent contract.
+- `lib/seed-data.ts` is an adapter only; do not hand-edit it to change content.
+- Coordinates are `[longitude, latitude]`; map bounds live in `lib/region.ts`.
+- Keep editorial framing distinct from sourced event facts.
 
-## Catalog update rules
-
-- `lib/seed-data.ts` is the published catalog source of truth.
-- Preserve every `LoreItem` factual field: source name/URL/check date/status, coordinate, zone radius, price, schedule, accessibility, and image metadata where applicable.
-- Coordinates are `[longitude, latitude]`; zones must stay within `SF_BOUNDS`.
-- Use original Local Lore framing. Do not copy source descriptions.
-- New temporary activities need dates and expiry. Ambiguous candidates are skipped, not invented.
-- Image additions require documented permission and the complete `MissionImage` record.
-
-## Validation and publish gate
-
-Run before every push:
+## Operator commands
 
 ```bash
+npm run catalog:validate
+npm run catalog:research -- --output proposal.json
+npm run catalog:stage -- --proposal proposal.json
+npm run catalog:apply -- --proposal proposal.json
 npm run lint
 npx tsc --noEmit --incremental false
-npm run build:vercel
 npm test
 ```
 
-Then visually confirm map range loading, category colors, filter hiding, glyph anchoring, mobile layout, source link, and no console error. If a check fails, do not push. Record the blocker and leave the prior catalog deployed.
+Historical `db:*` commands operate on PostgreSQL structures but are not publication steps. Removed package aliases `sources:refresh`, `sources:audit`, and `events:review` are not runnable commands. Database credentials remain server/local-only.
+
+Inspect `http://localhost:4317` after UI or catalog changes. No UI changes are part of the data migration.
+
 
 ## Git publishing
 
-Use a small, descriptive commit such as `data: refresh approved SF sources` or `data: add mission at <venue>`. Push only the catalog, source policy, image manifest, and documentation files relevant to the update. Never commit `.env*`, `node_modules`, build output, credentials, or local scheduler logs.
-
-## PostHog relationship
-
-The browser automatically sends anonymous usage events to PostHog. The local catalog agent does not need a PostHog API key and must not query visitor data to decide what to publish. PostHog may inform future editorial decisions in aggregate, but it is never a source of factual event data.
+The daily runner commits and pushes its two managed data paths after validation. For manual catalog publication, use the repository's configured Git workflow and inspect the bounded diff. Never commit `.env*`, `node_modules`, build output, credentials, raw proposals, source pages, or local scheduler logs.
 
 ## Run summary template
 
 ```text
 Date:
-Sources checked:
-Sources skipped and why:
-Candidates found / published / rejected:
+Sources researched and evidence:
+Access terms/rights retained:
 Catalog IDs changed:
 Validation result:
-Git commit:
-Notes or follow-up:
+Bounded Git commit:
+Notes:
 ```

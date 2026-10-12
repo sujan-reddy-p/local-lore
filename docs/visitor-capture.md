@@ -1,8 +1,6 @@
 # Visitor capture
 
-Local Lore records one row per distinct IP address in Neon through the
-server-only `POST /api/visitor` route. The map and catalog remain static; this
-route is the only visitor database write in the web runtime.
+When `DATABASE_URL` or `POSTGRES_URL` is configured, Local Lore records one row per distinct IP address in Neon through the server-only `POST /api/visitor` route. The map and catalog remain static; this is the only visitor database write in the web runtime. The local `.env.local` now enables this endpoint, so an ordinary local browser visit can record the visitor's raw IP and user agent. Avoid page loads during verification unless that write is intended.
 
 ## Stored fields
 

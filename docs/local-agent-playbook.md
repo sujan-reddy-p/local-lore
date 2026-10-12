@@ -1,56 +1,50 @@
 # Local catalog agent playbook
 
-## Role
+## Role and active publication path
 
-The local catalog agent is separate from the deployed website. Its job is to maintain the Git-tracked catalog, not to run inside Vercel, alter the visitor experience, or depend on a runtime database.
+The local agent maintains the versioned catalog and source knowledge in Git. An evidence-bearing researcher produces strict structured findings; a deterministic validator/publisher applies only source-backed changes and creates a bounded Git snapshot. No mandatory human approval or review queue is part of this path. Access controls, rights, security, provenance, and “never invent” rules remain mandatory.
 
-For the daily scheduled workflow, operational boundaries, publish gate, and run-summary format, read `docs/local-agent-automation.md` immediately after this playbook.
+## Current data layout
 
-```text
-approved source directory → local agent → validate + edit seed catalog → tests → GitHub commit → Vercel static deploy
-```
+- `data/source-catalog.json`: source-grouped catalog. Record/source counts describe the checked-in snapshot, not an invariant for future data.
+- `data/discovery-state.json`: publisher rotation and source-observation state.
+- Raw proposals, research evidence, and run outputs are local-only ignored files; never commit them.
+- `lib/seed-data.ts`: deterministic projection of the catalog into the `LoreItem` UI contract. Do not edit it to change content.
+- `scripts/discover-catalog.mjs`: active researcher, strict proposal staging, and deterministic apply flow.
+- `scripts/daily-discovery.mjs`, `scripts/schedule-discovery.mjs`: isolated daily publisher and local macOS launchd management.
+- PostgreSQL schemas, migrations, and `lib/ingestion/`: historical backend candidate/manual-review implementation; not required for catalog publication.
+- `docs/source-and-image-policy.md`: source access and image rights requirements.
+- `docs/catalog-and-data-model.md`: field meanings, lineage states, and QA rules.
 
-The website reads only `lib/seed-data.ts`. A new Git commit is the publish action and Vercel's Git integration deploys it.
+Existing catalog records retain historical `approved_for_display` lineage. This is not an independent accuracy audit or permission to fetch sources or reuse images. A source check date is not proof of live status.
 
-## Inputs
+## Research and source checks
 
-- `lib/seed-data.ts`: published `LoreItem` catalog.
-- `lib/sources/source-directory.ts`: known organizers and feeds. Existing entries are leads, not automatic permission.
-- `docs/source-and-image-policy.md`: mandatory source, automation, and image rules.
-- `docs/catalog-and-data-model.md`: exact publish contract and QA rules.
-- `lib/mission-images.ts` and `docs/mission-image-workflow.md`: image manifest and naming rules.
+The active local agentic publisher selects research opportunities, reads permitted public evidence through OMP, and emits strict structured findings. Defaults to `openai-codex/gpt-6-luna`; override with `--model` or `LOCAL_DISCOVERY_MODEL`. Keep raw research proposals, source pages, logs, and generated outputs local-only and ignored. Do not copy these into Git.
 
-## Daily workflow
+1. Research official organizer, venue, agency, institution, or authorized public-feed evidence; retain canonical URL, source identity, applicable access terms, attribution, rate limits, check time, and image-rights basis.
+2. Record only explicit source-backed facts. Never invent date, time, price, coordinates, accessibility, availability, route geometry, organizer identity, or image rights.
+3. Separate evergreen activities, recurring programs, and genuine dated occurrences. A failed fetch or “not seen” result preserves existing good records and does not imply cancellation.
+4. Apply the San Francisco anchor and 75 km geodesic cutoff. Research coverage goals guide work but are not quotas; skip unsupported or incomplete findings.
+5. Stage and apply through `scripts/discover-catalog.mjs`; use `docs/content-maintenance.md` for add/update/remove/retire decisions, validation, publication, and revert.
 
-1. Read the source policy and source directory.
-2. Check only sources with a documented feed/API/permission basis. Do not crawl ordinary organizer pages merely because they appear in the directory.
-3. Capture factual candidate fields: canonical source URL/name, event or venue title, time/date, price if stated, location, coordinates, and access context.
-4. Reject a candidate if its source, location, date, or organizer is ambiguous. Never fill factual gaps with model inference.
-5. Deduplicate against `lib/seed-data.ts` by canonical URL, venue, time, and geographic footprint.
-6. Write concise original Local Lore framing. Preserve the source link and accurate `curated-seed` / future live status.
-7. Add or update `LoreItem` records directly in `lib/seed-data.ts`; use `[longitude, latitude]` and a realistic `zoneRadiusM`.
-8. Add an image only when permission and every `MissionImage` field are known. Otherwise use the existing visual fallback.
-9. Run the validation commands below, visually inspect desktop and mobile map behavior, then commit the catalog and documentation together.
+Source access permission, terms, rate limits, legal restrictions, rights, security, provenance, and no-invention rules remain mandatory. Public visibility, model confidence, or a historical lineage label is not permission.
 
-## Required checks
+
+## Historical database boundary
+
+Neon/Postgres schemas, migrations, candidate decisions, and manual review implementation remain historical operational infrastructure. Database setup/import records previous synchronization state; current 212-record count is not a fixed-data contract for future snapshots. The active publisher writes validated, source-backed Git snapshots and does not require database setup or human candidate approval. Never expose credentials to browser code.
+
+## Checks and publishing
 
 ```bash
+npm run catalog:validate
+npm run catalog:research -- --output proposal.json
+npm run catalog:stage -- --proposal proposal.json
+npm run catalog:apply -- --proposal proposal.json
 npm run lint
 npx tsc --noEmit --incremental false
-npm run build:vercel
 npm test
 ```
 
-For a map/data change also confirm: zones retain category color, glyphs stay centered through pan/zoom/tilt/rotation, filters hide non-matching zones, source links work, and no mission appears outside SF bounds.
-
-## Publishing rule
-
-Never edit production data directly. The local agent commits the reviewed files to GitHub. Vercel builds the committed static artifact. If a bad catalog update ships, revert the commit and redeploy through Git history.
-
-## What the local agent must not do
-
-- Do not add Vercel cron jobs, runtime scraping, database writes, browser credentials, or API keys to the website.
-- Do not claim a source is live merely because it can be opened.
-- Do not copy source descriptions or images without permission.
-- Do not make the map component source-specific.
-- Do not convert zones into generic pins.
+For routine automated publication use `npm run catalog:daily`; the local schedule is managed by `npm run catalog:schedule -- install|remove|status`. See `docs/content-maintenance.md` for prerequisites and bounded publication behavior. Removed `sources:refresh`, `sources:audit`, and `events:review` package aliases are not valid commands. The local dev preview at `http://localhost:4317` hot-reloads UI changes.

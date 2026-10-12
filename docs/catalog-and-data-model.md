@@ -2,11 +2,26 @@
 
 ## Current catalog
 
-`lib/seed-data.ts` exports 212 `LoreItem` records. They are compiled into the app and filtered client-side. The file uses a shared helper to stamp every source with status `curated-seed` and checked date `2026-08-02`. The 100-mission expansion is authored through the local `mission()` helper in the same file so the full publish boundary remains `LoreItem`.
+`data/source-catalog.json` stores the catalog grouped by its 165 source entries. The 212 records are nested under the source that owns their canonical URL; the separate `lib/seed-data.ts` adapter reconstructs the existing `LoreItem` UI contract. `catalogOrder` preserves the prior display order.
 
-The catalog spans eight categories: Outside, Move, Make, Listen, Eat, Learn, Community, and After dark. Formats provide a second axis: Adventure, Class, Culture, Food, Live, Market, Meetup, and Volunteer. Traits support high-intent discovery such as dog-friendly, photogenic, date idea, family, weird, cozy, scenic, drive, romantic, and social.
+The maintainer explicitly asked that every item already shown on the site be treated as accurate and retained. All 212 records are therefore marked `approved_for_display` under `approvalBasis: maintainer_assumed_accurate_for_existing_site_content`. This records the maintainer’s assumption, not an independent factual audit. The prior shared `lastCatalogCheckedAt: 2026-08-02` remains historical, not a live check. Display approval, automated-fetch permission, and image-reuse permission remain separate.
 
-## `LoreItem` contract
+These records are mostly editorial missions and venue/organizer references, not a feed of 212 dated events. The Postgres `missions` table preserves this catalog representation. A separate `event_occurrences` model now stores dated, source-derived event candidates and published occurrences.
+
+The catalog spans eight categories: Outside, Move, Make, Listen, Eat, Learn, Community, and After dark. Formats provide a second axis: Adventure, Class, Culture, Food, Live, Market, Meetup, and Volunteer.
+
+## Source group contract
+
+Each source group in `data/source-catalog.json` contains:
+
+- `source`: stable ID/key, canonical URL, attribution, existing automation/image permissions, enabled state, and refresh configuration.
+- `reviewStatus`: `approved_for_display` for existing populated groups under the maintainer’s assumption; `needs_source_review` for a source-only lead.
+- `lastCatalogCheckedAt`: the historical seed stamp, or `null` when the group has no seed record.
+- `records`: source-owned records with a stable `id`, `catalogOrder`, and `reviewStatus: approved_for_display`.
+
+Do not infer source-specific fetch instructions or permission from a URL or public visibility. Automated collection additionally requires `allowsAutomatedFetch: true` and `enabled: true`. Do not create a separate file per mission.
+
+## `LoreItem` publish contract
 
 | Field | Type and meaning |
 |---|---|
@@ -17,81 +32,47 @@ The catalog spans eight categories: Outside, Move, Make, Listen, Eat, Learn, Com
 | `why` | Why the mission is distinctive or worth the time. |
 | `category` | One of the eight product categories. |
 | `neighborhood` | Human-readable map context. |
-| `venue` | Specific official place/organizer venue. |
+| `venue` | Specific place or organizer venue. |
 | `coordinates` | `[longitude, latitude]` numeric tuple. |
-| `zoneRadiusM` | Approximate geographic footprint in meters. |
+| `zoneRadiusM` | Legacy hint retained in catalog data; never treated as a physical boundary. |
+| `map` | Optional context: `kind` is `area`, `venue`, or `route`; `route` may contain a genuine sourced `[longitude, latitude][]` line and `sourceUrl`. Without genuine geometry, route rendering is start-first. |
 | `time` | Human-readable schedule guidance shown in cards. |
 | `timeSlot` | Coarse `Now`, `Tonight`, or `Weekend` filter value. |
-| `duration` | Approximate hours required. |
-| `price` | Dollar number; zero renders as Free. |
+| `duration` | Approximate hours, or `null` when the source does not state one; render as “Time varies”. |
+| `price` | Dollar number, or `null` when unlisted; render as “Not listed”. Zero renders as Free. |
 | `vibe` | Combination of solo, friends, outdoors, quiet, and social. |
 | `accessibility` | Short, cautious access or terrain note. |
-| `source` | Name, HTTPS URL, `curated-seed` status, checked date. |
-| `accent` | CSS-compatible mission color used by map and cards. |
-| `distance` | Prototype display string; not currently computed from user location. |
-| `format` | Optional explicit mission format; otherwise category fallback is used. |
-| `traits` | Optional high-intent discovery facets. |
-| `schedule` | Optional structured availability. |
-| `image` | Optional permissioned image metadata. |
-| `hotspot` | Shows a broader overview polygon at city zoom. |
-| `featured` | Reserved editorial flag; not currently a separate UI filter. |
+| `source` | Derived from its owning source group: name, HTTPS URL, status, and legacy check date. |
+| `format`, `traits`, `schedule`, `image`, `hotspot`, `featured` | Optional presentation, availability, and image metadata. |
 
-## Schedule model
+## Schedule model and limitation
 
-`MissionSchedule` supports:
+`MissionSchedule` supports evergreen, recurring, scheduled, seasonal, and conditions-based availability, with optional weekdays, explicit dates, and start/end/expiry bounds. If no schedule is present, Weekend missions default to recurring Saturday/Sunday; other missions default to evergreen. This is an app display rule, not evidence that an event is currently happening.
 
-- `kind`: evergreen, recurring, scheduled, seasonal, or conditions.
-- `daysOfWeek`: JavaScript day numbers, Sunday 0 through Saturday 6.
-- `dates`: explicit `YYYY-MM-DD` values.
-- `startsAt`, `endsAt`, `expiresAt`: date boundaries.
+`lib/availability.ts` now uses `America/Los_Angeles` calendar days for date choices, weekend selection, weekdays, and schedule bounds, including timestamp bounds and DST/year transitions. This makes filtering consistent across visitor timezones, not live: `MissionStatus` uses only the explicit schedule, otherwise reports it unconfirmed. Real live events still require distinct published occurrences, source observations, and expiry/cancellation facts.
 
-`missionSchedule` uses the explicit schedule when present. If absent, Weekend missions become recurring on Saturday/Sunday and all others become evergreen. `isAvailableOn` first applies expiry/start/end bounds, then exact scheduled dates, then recurring days.
+## Event dates and rendering
 
-The UI generates seven dates from local “today” normalized to noon. All time returns `null` as selected date and skips `isAvailableOn`, which is why scheduled records with no matching current date still remain discoverable.
+An explicit source-backed event occurrence may carry a genuine start/end date and source timezone. Render that occurrence’s date as sourced; do not derive a date from a recurring idea, browser timezone, or a missing field. Past occurrences expire independently. “Not seen” or a failed fetch preserves the last good record and is not cancellation evidence. Retire an occurrence only for explicit, sourced cancellation or closure.
 
-### Scheduling limitation
+## Data checks and editing
 
-Date values are ISO strings but the helper uses `toISOString`, while display and JavaScript weekday use the browser environment. This can create time-zone edge cases around midnight. A live version should use explicit `America/Los_Angeles` calendar semantics and a temporal/date library or server-normalized date keys.
+Run `npm run catalog:validate` after editing the source catalog. It checks source keys/URLs, duplicate IDs and ordering, review labels, geographic coordinate syntax, and local image files.
 
-## Filter semantics
+Migration checks confirm the catalog’s structure, IDs, source URLs, ordering, coordinates, and local image paths; they do not prove factual or schedule accuracy. Existing visible content is retained by the maintainer’s instruction. Do not imply that the migration re-verified venue alignment, current hours, prices, accessibility, or source rights.
 
-- All dimensions combine with AND.
-- Curiosity is single-select.
-- Traits require every selected trait.
-- Today removes coarse Weekend items in addition to date availability.
-- Sunset means Tonight plus outdoors or scenic.
-- Live music means Listen category or Live format.
-- Scenic drive means the drive trait.
-- Text tokens must all appear somewhere in the aggregated mission haystack.
+For a source review:
 
-## Adding a seed mission
+1. Open the canonical source and record the source’s actual event/venue facts separately from Local Lore’s editorial framing.
+2. Check whether a record describes an evergreen experience, a recurring program, or one dated occurrence.
+3. Confirm coordinates, schedule, price, accessibility, and image rights independently where applicable.
+4. Record the human decision and evidence in that source group; retain rejected or uncertain legacy records in the archive with a status rather than deleting their provenance.
+5. Validate the data and inspect the local map before publishing.
 
-1. Open and verify an authoritative canonical source.
-2. Confirm the actual coordinates independently and use longitude first.
-3. Pick a radius that represents the activity, not an arbitrary uniform halo.
-4. Write original title, kicker, description, and why.
-5. Fill factual fields conservatively; use schedule reminder language when data is not live.
-6. Add explicit schedule structure where the source clearly provides it.
-7. Add useful traits without over-tagging.
-8. Add an image only under the documented image policy.
-9. Run tests and visually inspect the map coordinate/zone at neighborhood zoom.
-10. Update tests if the catalog count changes.
+## Image record and fallback
 
-## Content QA rules
+`MissionImage` stores URL, alt text, credit, original source URL, and optional license. The migrated file carries the existing image metadata inside each mission record; `lib/mission-images.ts` is no longer a second source of truth. The catalog validator checks local image paths. If reuse permission is unclear, omit the image and use the venue-and-neighborhood visual treatment.
 
-- The venue, neighborhood, coordinate, and source must refer to the same place.
-- Price should represent a realistic entry or participation cost, not an unverified deal.
-- Duration describes the proposed mission rather than venue opening hours.
-- Accessibility wording must distinguish known accessible routes from uneven terrain and should link to the organizer for definitive accommodations.
-- Source URL should be the actionable visitor/organizer page, not a search result or aggregator when a primary page exists.
-- Temporary events need explicit dates and expiry.
-- Conditions-based missions need a trustworthy conditions source in the future, not a fabricated prediction.
-- A single venue can support multiple missions only when the editorial activity and geographic footprint are meaningfully distinct.
+## Database boundary
 
-## Image record and visual fallback
-
-`MissionImage` requires URL, alt text, credit, original source URL, and optional license. The optional type does not mean licensing is optional in product policy: if reuse permission cannot be established, do not add the image. The UI uses a venue-and-neighborhood visual panel with the existing category glyph as the fallback; it must not use a copied organizer photo merely to fill the space.
-
-## Future database mapping
-
-The current database schema separates source registry fields from mission rows and schedules. Arrays/images are stored as JSON text in the initial SQLite design. A repository/API layer should convert persisted rows back into the exact `LoreItem` publish shape so presentation code remains independent of storage.
+GitHub stores the versioned catalog, source definitions, parser code, and reviewed schema changes. The existing Neon/Postgres database now contains the imported catalog and operational schema. The UI still bundles `data/source-catalog.json`; it does not query the database for catalog or event data.

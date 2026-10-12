@@ -1,10 +1,7 @@
-import { and, eq, inArray, isNull, lte, or } from "drizzle-orm";
+import { and, asc, eq, getTableColumns, gte, inArray, isNotNull, isNull, lte, or } from "drizzle-orm";
 import { getDb } from "@/db/client";
-import { candidateDecisions, ingestionRuns, missionRevisions, missions, sourceObservations, sources } from "@/db/schema";
-import { loreItems } from "@/lib/seed-data";
-import { sourceDirectory, sourceKey, type SourceDirectoryEntry } from "@/lib/sources/source-directory";
+import { candidateDecisions, eventOccurrences, ingestionRuns, missions, sourceObservations, sources } from "@/db/schema";
 import type { LoreItem, MissionSourceStatus } from "@/lib/types";
-
 type StoredMission = typeof missions.$inferSelect;
 
 // Accent is a presentation token, not source data. Persisted catalog rows use
@@ -54,78 +51,11 @@ function missionFromRow(row: StoredMission): LoreItem {
   };
 }
 
-function sourceRow(source: SourceDirectoryEntry) {
-  return {
-    id: source.id,
-    key: source.key,
-    name: source.name,
-    kind: source.kind,
-    canonicalUrl: source.canonicalUrl,
-    termsUrl: source.termsUrl ?? null,
-    attribution: source.attribution,
-    allowsAutomatedFetch: source.allowsAutomatedFetch ? 1 : 0,
-    allowsImageReuse: source.allowsImageReuse ? 1 : 0,
-    refreshHours: source.refreshHours,
-    enabled: source.enabled ? 1 : 0,
-  };
-}
-
-function missionValues(item: LoreItem, sourceId: string, externalId = item.id) {
-  const now = new Date().toISOString();
-  return {
-    id: item.id,
-    sourceId,
-    externalId,
-    canonicalUrl: item.source.url,
-    title: item.title,
-    kicker: item.kicker,
-    description: item.description,
-    why: item.why,
-    category: item.category,
-    format: item.format ?? null,
-    neighborhood: item.neighborhood,
-    venue: item.venue,
-    longitude: item.coordinates[0],
-    latitude: item.coordinates[1],
-    zoneRadiusM: item.zoneRadiusM,
-    timeLabel: item.time,
-    timeSlot: item.timeSlot,
-    durationHours: item.duration,
-    priceDollars: item.price,
-    vibes: item.vibe,
-    traits: item.traits ?? [],
-    accessibility: item.accessibility,
-    sourceName: item.source.name,
-    sourceUrl: item.source.url,
-    sourceStatus: item.source.status,
-    sourceCheckedAt: item.source.checkedAt,
-    image: item.image ?? null,
-    schedule: item.schedule ?? null,
-    confidence: 1,
-    status: "published",
-    firstSeenAt: now,
-    lastSeenAt: now,
-    publishedAt: now,
-    expiresAt: item.schedule?.expiresAt ? `${item.schedule.expiresAt}T23:59:59.999Z` : null,
-  };
-}
-
-function missionRow(item: LoreItem) {
-  const source = sourceDirectory.find((entry) => entry.key === sourceKey(item.source.name, item.source.url));
-  if (!source) throw new Error(`Missing source-directory entry for ${item.source.name}`);
-  return missionValues(item, source.id);
-}
-
-export async function bootstrapSeedCatalog() {
-  const db = getDb();
-  await db.insert(sources).values(sourceDirectory.map(sourceRow)).onConflictDoNothing();
-  await db.insert(missions).values(loreItems.map(missionRow)).onConflictDoNothing();
-  return { sources: sourceDirectory.length, missions: loreItems.length };
-}
 
 export async function listDueSources(now = new Date(), limit = 20) {
   const db = getDb();
   return db.select().from(sources).where(and(
+    eq(sources.reviewStatus, "approved_for_display"),
     eq(sources.enabled, 1),
     eq(sources.allowsAutomatedFetch, 1),
     or(isNull(sources.nextCheckAt), lte(sources.nextCheckAt, now.toISOString())),
@@ -139,7 +69,7 @@ export async function createIngestionRun(sourceId: string | null = null) {
   return id;
 }
 
-export async function finishIngestionRun(id: string, result: { status: "completed" | "failed"; fetched: number; unchanged: number; normalized: number; published: number; rejected: number; error?: string }) {
+export async function finishIngestionRun(id: string, result: { status: "completed" | "failed"; fetched: number; unchanged: number; normalized: number; pendingReview: number; published: number; rejected: number; error?: string }) {
   const db = getDb();
   await db.update(ingestionRuns).set({ ...result, finishedAt: new Date().toISOString() }).where(eq(ingestionRuns.id, id));
 }
@@ -154,6 +84,7 @@ export async function recordSourceObservation(input: {
   contentHash?: string | null;
   contentType?: string | null;
   extractedEventCount?: number;
+  extractedEvents?: unknown[];
   error?: string;
   nextCheckAt: string;
 }) {
@@ -162,7 +93,7 @@ export async function recordSourceObservation(input: {
     id: crypto.randomUUID(), sourceId: input.sourceId, runId: input.runId,
     statusCode: input.statusCode, changed: input.changed ? 1 : 0, etag: input.etag,
     lastModified: input.lastModified, contentHash: input.contentHash, contentType: input.contentType,
-    extractedEventCount: input.extractedEventCount ?? 0, error: input.error,
+    extractedEventCount: input.extractedEventCount ?? 0, error: input.error, extractedEvents: input.extractedEvents,
   });
   await db.update(sources).set({
     lastCheckedAt: new Date().toISOString(), nextCheckAt: input.nextCheckAt,
@@ -171,39 +102,34 @@ export async function recordSourceObservation(input: {
   }).where(eq(sources.id, input.sourceId));
 }
 
-export async function recordCandidateDecision(input: { sourceId: string; runId: string; externalId?: string; decision: "published" | "discarded"; reasons: string[]; candidate: unknown }) {
+export async function recordCandidateDecision(input: { sourceId: string; runId: string; externalId?: string; eventId?: string | null; decision: "needs_review" | "approved" | "rejected" | "discarded"; reasons: string[]; candidate: unknown }) {
   const db = getDb();
   await db.insert(candidateDecisions).values({
     id: crypto.randomUUID(), sourceId: input.sourceId, runId: input.runId, externalId: input.externalId,
-    decision: input.decision, reasons: input.reasons, candidate: input.candidate,
+    eventId: input.eventId, decision: input.decision, reasons: input.reasons, candidate: input.candidate,
   });
 }
 
-export async function upsertAgentMission(input: { sourceId: string; externalId: string; mission: LoreItem; runId: string }) {
-  const db = getDb();
-  const row = missionValues(input.mission, input.sourceId, input.externalId);
-  const existing = await db.select().from(missions).where(and(eq(missions.sourceId, input.sourceId), eq(missions.externalId, input.externalId))).limit(1);
-  if (existing[0]) {
-    await db.insert(missionRevisions).values({ id: crypto.randomUUID(), missionId: existing[0].id, runId: input.runId, actor: "agent", before: existing[0], after: row });
-  }
-  const { id, sourceId: ignoredSourceId, externalId: ignoredExternalId, firstSeenAt, ...updates } = row;
-  void id;
-  void ignoredSourceId;
-  void ignoredExternalId;
-  void firstSeenAt;
-  await db.insert(missions).values(row).onConflictDoUpdate({ target: [missions.sourceId, missions.externalId], set: updates });
-  return row.id;
-}
 
 export async function listPublishedMissions() {
   const db = getDb();
-  const rows = await db.select().from(missions).where(eq(missions.status, "published"));
-  return rows.map(missionFromRow);
+  const rows = await db.select({ mission: missions }).from(missions)
+    .innerJoin(sources, eq(missions.sourceId, sources.id))
+    .where(and(
+      eq(missions.status, "published"),
+      eq(sources.reviewStatus, "approved_for_display"),
+    ));
+  return rows.map(({ mission }) => missionFromRow(mission));
 }
 
 export async function getPublishedMissionCount() {
   const db = getDb();
-  const rows = await db.select({ id: missions.id }).from(missions).where(eq(missions.status, "published"));
+  const rows = await db.select({ id: missions.id }).from(missions)
+    .innerJoin(sources, eq(missions.sourceId, sources.id))
+    .where(and(
+      eq(missions.status, "published"),
+      eq(sources.reviewStatus, "approved_for_display"),
+    ));
   return rows.length;
 }
 
@@ -213,5 +139,34 @@ export async function markExpiredMissionIds(ids: string[]) {
   await db.update(missions).set({ status: "expired" }).where(and(eq(missions.status, "published"), inArray(missions.id, ids)));
   return ids.length;
 }
+export async function listPublishedEventOccurrences(now = new Date()) {
+  const db = getDb();
+  const instant = now.toISOString();
+  return db.select(getTableColumns(eventOccurrences)).from(eventOccurrences)
+    .innerJoin(sources, eq(eventOccurrences.sourceId, sources.id))
+    .where(and(
+      eq(eventOccurrences.status, "published"),
+      eq(sources.reviewStatus, "approved_for_display"),
+      or(
+        gte(eventOccurrences.startsAt, instant),
+        and(isNotNull(eventOccurrences.endsAt), gte(eventOccurrences.endsAt, instant)),
+      ),
+    )).orderBy(asc(eventOccurrences.startsAt));
+}
 
-export { candidateDecisions, ingestionRuns, missionRevisions, missions, sourceObservations, sources };
+export async function expirePastEventOccurrences(now = new Date()) {
+  const db = getDb();
+  const expired = await db.update(eventOccurrences).set({ status: "expired", updatedAt: now.toISOString() }).where(and(
+    eq(eventOccurrences.status, "published"),
+    or(
+      lte(eventOccurrences.expiresAt, now.toISOString()),
+      and(isNull(eventOccurrences.expiresAt), or(
+        lte(eventOccurrences.endsAt, now.toISOString()),
+        and(isNull(eventOccurrences.endsAt), lte(eventOccurrences.startsAt, now.toISOString())),
+      )),
+    ),
+  )).returning({ id: eventOccurrences.id });
+  return expired.length;
+}
+
+export { candidateDecisions, ingestionRuns, missions, sourceObservations, sources };

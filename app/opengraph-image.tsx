@@ -1,23 +1,27 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 
 // This illustration has a larger dependency graph than Vercel Hobby's 1 MB
 // Edge Function allowance. Node.js supports ImageResponse and keeps the
 // share-card route within the serverless function limit.
 export const runtime = "nodejs";
-export const alt = "Local Lore — a curated map of memorable things to do in San Francisco";
+export const alt = "Local Lore — a curated map of Bay Area places and events";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 const zones = [
-  { left: 178, top: 158, size: 118, color: "#f06e5d", icon: "↗" },
-  { left: 396, top: 234, size: 154, color: "#d99b41", icon: "♫" },
-  { left: 616, top: 128, size: 132, color: "#8bbd7c", icon: "✦" },
-  { left: 792, top: 262, size: 122, color: "#d66e96", icon: "⌁" },
-  { left: 968, top: 152, size: 104, color: "#78b9c4", icon: "◌" },
-  { left: 755, top: 426, size: 96, color: "#b78ad3", icon: "☾" },
+  { left: 178, top: 158, icon: "cycling" },
+  { left: 396, top: 234, icon: "concert" },
+  { left: 616, top: 128, icon: "garden" },
+  { left: 792, top: 262, icon: "making" },
+  { left: 968, top: 152, icon: "water" },
+  { left: 755, top: 426, icon: "nightlife" },
 ];
+const badgeImages = Promise.all(zones.map(async zone => `data:image/png;base64,${(await readFile(join(process.cwd(), "public/map-icons", `${zone.icon}.png`))).toString("base64")}`));
 
-export default function OpenGraphImage() {
+export default async function OpenGraphImage() {
+  const images = await badgeImages;
   return new ImageResponse(
     (
       <div
@@ -68,25 +72,22 @@ export default function OpenGraphImage() {
           <path d="M145 460C353 403 488 452 648 412C814 371 967 392 1058 336" fill="none" stroke="#84c8bd" strokeWidth="3" opacity="0.2" />
         </svg>
 
-        {zones.map((zone) => (
+        {zones.map((zone, index) => (
           <div
             key={`${zone.left}-${zone.top}`}
             style={{
               alignItems: "center",
-              background: `${zone.color}30`,
-              border: `2px solid ${zone.color}`,
-              borderRadius: 999,
-              boxShadow: `0 0 0 16px ${zone.color}12, 0 0 42px ${zone.color}55`,
               display: "flex",
-              height: zone.size,
+              height: 88,
               justifyContent: "center",
               left: zone.left,
               position: "absolute",
               top: zone.top,
-              width: zone.size,
+              width: 88,
             }}
           >
-            <span style={{ color: "#fff9e9", fontSize: 42, fontWeight: 700, lineHeight: 1 }}>{zone.icon}</span>
+            {/* ImageResponse embeds local badge bytes; next/image is not supported here. */}
+            <img src={images[index]} width={88} height={88} alt="" />
           </div>
         ))}
 
@@ -105,13 +106,13 @@ export default function OpenGraphImage() {
           }}
         >
           <div style={{ alignItems: "center", color: "#d7e8c6", display: "flex", fontSize: 18, fontWeight: 700, letterSpacing: 3, textTransform: "uppercase" }}>
-            San Francisco / Today
+            Bay Area / Nearby
           </div>
           <div style={{ display: "flex", fontSize: 58, fontWeight: 700, letterSpacing: -3, lineHeight: 1.05, marginTop: 14 }}>
             Local Lore
           </div>
           <div style={{ color: "#d4dfd0", display: "flex", fontSize: 23, lineHeight: 1.35, marginTop: 16 }}>
-            A living map of memorable ways into the city.
+            Places, events, and a reason to get out nearby.
           </div>
         </div>
 

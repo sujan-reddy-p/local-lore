@@ -1,25 +1,22 @@
 # Mission image workflow
 
-Local Lore uses one primary local photograph for a mission and can retain `-2` and `-3` alternatives beside it for future curation. The UI only renders the unsuffixed primary.
+## Add or change an image
 
-## Add an image
+1. Find the record in `data/source-catalog.json` by stable mission `id` under its owning source group.
+2. Keep image metadata on that record’s `image` field: image URL, alt text, credit, original source URL, and license where applicable.
+3. For a locally served image, add the primary at `public/images/missions/<mission-id>.jpg` and point that record’s image URL to `/images/missions/<mission-id>.jpg`.
+4. Optional visual candidates may stay beside the primary as `<mission-id>-2.jpg` and `<mission-id>-3.jpg`; they are not rendered automatically.
+5. Preserve a documented permission basis, credit, and source URL. Existing project-approved images are retained; adding a new image still requires its own rights review.
+6. Run `npm run catalog:validate` and inspect the browser. The validator rejects a referenced local file that does not exist.
 
-1. Confirm the mission ID in `lib/seed-data.ts`.
-2. Add the primary file at `public/images/missions/<mission-id>.jpg`.
-3. Add that exact mission ID to `localMissionImageIds` in `lib/mission-images.ts`.
-4. Put alternate candidates beside it as `<mission-id>-2.jpg` and `<mission-id>-3.jpg`; they are retained but never rendered automatically.
-5. The manifest applies the image to both the mission browser and selected detail view. It records the project’s confirmed creator-permission basis internally without adding credits to the interface.
-6. Run the normal lint, TypeScript, build, and test checks. A missing primary file will cause a broken image in the browser, so validate the path before committing.
+## Current collection
 
-## Current state
+The existing asset directory contains 282 JPG files: 134 unsuffixed local primary images and 148 alternate candidates. The catalog includes local image metadata and two legacy externally hosted Wikimedia Commons images with credit/license metadata. Image records are embedded in their catalog entries; there is no separate image-ID manifest.
 
-- `localMissionImageIds` identifies 117 primary local photos.
-- 148 retained local JPGs are alternates for those missions and can be swapped into the primary position when a better crop is chosen.
-- Three existing Wikimedia Commons mission images remain externally hosted and keep their original metadata in the seed catalog.
+## Image quality and fallback
 
-## Naming rules
-
-- Use the exact stable mission ID, in lowercase kebab-case.
-- Do not add spaces, dates, "final", or other informal filename suffixes.
-- Use JPG for the current catalog convention and crop thoughtfully for a wide card preview.
-- If a mission is renamed, update its image manifest key and filename in the same change.
+- Use landscape crops appropriate for wide cards.
+- Keep filenames stable and lowercase; do not use spaces or dates.
+- Do not switch to an unreviewed alternate automatically.
+- If no image has a clear permission basis, omit it and use the venue/neighborhood visual treatment.
+- Do not mirror remote files without permission, credit, source URL, checksum, fetch time, and deletion policy.

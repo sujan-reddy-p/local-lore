@@ -19,54 +19,50 @@ The unit of value is a **mission**: a place or event plus a small way to engage 
 ## Primary flow
 
 1. The visitor lands on a pitched map of San Francisco.
-2. They visually scan clusters and zones, move the camera, or pick a curiosity/date filter.
-3. Hovering a mission reveals its name, format, neighborhood, time, and price without forcing a click.
-4. Clicking opens the detail card and focuses the camera.
-5. The visitor reads the editorial reason, practical details, accessibility note, and seed warning.
-6. They follow the canonical source to confirm and act.
+2. They scan the map, move the camera, search, choose one interest, or choose a date.
+3. A map preview provides the mission title and concise description; it has no Explore action. The preview for the selected mission is suppressed.
+4. Clicking a mission opens the selected card and focuses the camera.
+5. The card leads with a truthful image (or compact activity artwork fallback), venue title, a specific activity sentence, three practical facts, and one website CTA.
+6. The visitor may open native inline Info disclosure for source/schedule, accessibility, and photo rights/provenance, then follows the canonical source to confirm and act.
 
 ## Discovery controls
 
-- **Explore all missions** opens a wider visual mission gallery without turning discovery into an inventory count.
-- **Quick filters:** Today, Free, Outside, Social. Multiple quick filters combine with AND semantics.
-- **Curiosity filters:** Food ritual, Live music, Sunset, After dark, Make something, Odd & local, Scenic drive. These are mutually exclusive in the map overlay.
-- **Calendar:** All time plus seven dates starting today. Date-specific choices enforce mission availability; All time deliberately disables that check.
-- **Mission browser:** query prompts, category grid, traits, time slot, a budget slider from Free through Any price, reset action, and a three-column desktop/two-column mobile card gallery. Setting the slider to Free visibly activates the shared Free quick filter; either Free control clears that constraint. Matching missions with approved imagery lead the gallery, with live music, making, food, and after-dark visual stories prioritized among them. Every other card uses a compact source-site preview displaying the original organizer name and hostname, not an unreliable embedded third-party page.
+- **Visible discovery rail:** search, one compact interest grid, and dates are visible without a hamburger. The rail is designed to remain compact and non-scrolling at the normal 360px panel width.
+- **Interests:** Anything, Food, Music, Drives, Sunsets, After dark, Make, and Unusual. One interest may be active at a time; selecting it filters the current catalog and selecting it again clears it. “Drives” is an editorial interest, not route feasibility.
+- **Dates:** Any day, Today, Tomorrow, Weekend, and a native picker for arbitrary dates. Use `America/Los_Angeles` calendar days. Weekend means the upcoming Saturday/Sunday or the remaining Sunday when already Sunday. Any day is inspiration without a date constraint; stored mission schedule filtering does not prove live availability.
+- **Refinement:** the Filters control replaces the interest body with only Budget and Time for an activity sliders. Time is approximate, measured in hours, and excludes travel. Reset all clears search, interest, date, budget, and time.
+- **Map filtering:** search, interest, date, budget, and time use AND semantics and filter both mission points and learned activity areas. A selected detail is cleared when it is no longer eligible. Empty results state the problem and offer reset.
+- **Trust:** the selected card’s Info disclosure retains known schedule/source status, accessibility text, and image credit/license/source. The organizer remains the authority for current schedule, price, rules, and booking; a historical check date or source link is not a live refresh.
 - **Search:** lower-cased token AND match over title, kicker, description, why, neighborhood, venue, category, format, vibes, and traits. Words shorter than three characters and a small stop-word list are ignored.
 
-All selected dimensions combine with AND semantics. A no-results overlay offers a one-click reset.
+Mission totals are intentionally not displayed. Calendar choices remain because they are dates, not inventory.
 
-Mission totals are intentionally not displayed in the visible interface. Counts made the experience feel like a directory; the map density and card gallery communicate breadth more naturally. Calendar day numbers remain because they are dates, not inventory.
+## Practical design review
 
-Every filter is also a map filter. The same filtered ID set replaces both activity-zone polygons and clustered mission points, so anything that does not match vanishes from the map rather than merely disappearing from the list. A filter change also clears a hover popup or selected detail if that mission is no longer eligible. Selecting Today after All time returns the calendar to the actual Today date before filtering.
+Review each journey for a clear visual hierarchy (image → venue/title → specific action sentence → three facts → one CTA), readable scale/contrast, one restrained elevation, and progressive disclosure for secondary trust details. Prefer meaningful copy and calm map context over extra controls or generic card patterns. This applies the primary guidance from [Anthropic’s frontend-design skill](https://github.com/anthropics/skills/tree/main/skills/frontend-design), [Impeccable](https://github.com/pbakaus/impeccable), and NN/g’s [Cards Component](https://www.nngroup.com/articles/cards-component/).
 
 ## Map controls and gestures
 
 - Primary desktop pan: left drag.
 - Rotate/pitch: right drag or the rotate/tilt buttons.
-- Zoom: wheel/trackpad, double click, box zoom, and keyboard. There are no visual plus/minus controls.
+- Zoom: visible plus/minus, wheel/trackpad, double click, box zoom, and keyboard. Camera zoom reaches 18; native zoom-14 tiles are overzoomed above that.
 - Touch: one finger pans; two fingers zoom and rotate; two-finger vertical movement changes pitch.
 - Rotate button: advances the bearing by 35 degrees and ensures a useful pitch.
 - Tilt button: cycles between roughly 46°, 70°, and top-down.
-- Whole-city button: restores the `SF_HOME` camera.
+- Region button: restores the `BAY_AREA_HOME` camera.
 
 ## Desktop layout
 
 - The map occupies `100dvh`.
-- Brand, editorial heading, discovery controls, and date rail float at the upper left.
-- Camera actions sit at the upper right; attribution sits at the lower right.
-- The mission browser opens as a right-side overlay.
-- The selected mission card opens at the lower left so the map context remains visible.
+- The compact upper-left rail remains visible over the map; it contains search, the eight-interest grid, dates, and (when opened) only budget/time refinement.
+- The selected mission card opens in the lower-left corner so map context remains visible. It is not a gallery or a second map surface.
 
 ## Mobile layout
 
 - The map remains full-screen and touch-first.
-- The top overlay is deliberately reduced to the compact brand and a single Explore button; the headline and map-overlay filters are removed.
-- The mission browser becomes a compact bottom sheet designed separately from desktop: a search field, one horizontal Quick pick row, and immediately visible, independently scrollable mission cards.
-- A single Refine action opens a focused full-sheet controls view for curiosity, date, category, traits, time, and budget. This keeps the main mobile surface low-friction while retaining the complete desktop filter capability.
-- The top-right mobile map menu is one compact icon: it foregrounds Date idea, Bring the dog, Food ritual, Live music, Free, and the Lore-agent explanation; Rotate, Tilt, and City view remain available as secondary actions inside that menu.
-- The detail card spans the screen with safe margins and hides long explanatory copy to preserve map access.
-- Map attribution is currently hidden at the smallest layout to prevent obstruction; this should be revisited before public release so attribution remains accessible through an alternative compact affordance.
+- The same compact rail remains above the map/detail; the eight interests and date choices stay legible without requiring a hidden menu. The panel may use its existing narrow responsive treatment, but controls must not be silently dropped.
+- Selecting a mission opens the selected card; its content scrolls within the available viewport when needed. Native Info disclosure preserves source/schedule, accessibility, and photo provenance.
+- Map tools hide while the selected mobile detail is open so they cannot cover its actions; attribution remains visible.
 
 ## Content voice
 
@@ -82,7 +78,7 @@ Every filter is also a map filter. The same filtered ID set replaces both activi
 - MapLibre keyboard navigation remains enabled.
 - `:focus-visible` receives a clear mint outline.
 - Text and panels maintain high contrast over the map.
-- `prefers-reduced-motion: reduce` suppresses pulse animation and shortens transitions.
+- `prefers-reduced-motion: reduce` disables camera easing and shortens overlay/media transitions. Map centers do not pulse.
 - Image alt text describes the place rather than repeating the mission title.
 - Accessibility fields should describe known terrain, route, seating, transit, or venue accommodations without making unverified promises.
 

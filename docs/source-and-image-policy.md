@@ -16,9 +16,22 @@ Search results, social reposts, unattributed aggregators, and copied calendars a
 
 ## Automation permission
 
-Before automated fetching, record source kind, canonical URL, attribution, relevant terms/robots or feed documentation, whether automation is allowed, rate limits, refresh cadence, and whether media reuse is allowed.
+Before recurring automated fetching, record source kind, canonical URL, attribution, relevant terms/robots or feed documentation, whether automation is allowed, rate limits, refresh cadence, and whether media reuse is allowed.
 
-Public visibility is not permission to scrape. An organizer webpage with no approved feed remains manually curated. Do not bypass authentication, CAPTCHAs, bot protection, rate limits, paywalls, or technical access controls.
+Public visibility is not permission to scrape. An organizer webpage with no documented permitted feed or page access remains unavailable to automated research; the local researcher must verify access terms, policy/robots/feed evidence, rate limits, and attribution before use. Do not bypass authentication, CAPTCHAs, bot protection, rate limits, paywalls, or technical access controls.
+
+## Agentic publication and access controls
+
+The active catalog path is an agentic researcher followed by deterministic validation and a bounded Git snapshot. A mandatory human approval/review queue is not required. This does not weaken source access controls: each source must have a documented canonical URL, permitted access method, relevant terms/robots or feed documentation, attribution, rate limits, refresh boundary, and media-rights basis before it is used.
+
+The 2026-10-11 one-time read-only audit authorization is historical audit scope, not a recurring fetch requirement or publication gate. `approved_for_display` and `needs_source_review` remain lineage/eligibility labels. Public visibility, an accessible URL, or model confidence never grants permission. Do not bypass authentication, CAPTCHAs, bot protection, rate limits, paywalls, or technical controls.
+
+Agents must preserve provenance and security boundaries, and must not invent factual fields or image rights. Human correction, takedown, and manual review workflows are not implemented now; retain evidence so a later correction path can be added.
+
+## Privacy
+
+This source policy concerns the provenance and permitted use of public source material; it is not a visitor privacy policy. The website separately collects visitor data as documented in `docs/visitor-capture.md` and `docs/analytics.md`.
+
 
 ## Content usage
 
@@ -30,9 +43,11 @@ Public visibility is not permission to scrape. An organizer webpage with no appr
 - Keep attribution visible in mission details and map attribution.
 - Honor corrections and removal requests promptly when a live system exists.
 
-## Seed versus live status
+## Existing catalog versus live status
 
-`curated-seed` means a human assembled a believable prototype record and checked a source on the stored date. It does not mean the activity is available now.
+The maintainer explicitly directed that the records already displayed on the website be treated as accurate and retained. They are marked `approved_for_display` on that basis; this is an assumption for existing catalog display, not an independent fact-check. It does not approve automated fetching or image reuse.
+
+`curated-seed` means an existing Local Lore record assembled from historical source evidence on its stored check date. It does not mean the activity is available now or that the source is currently approved for automated access.
 
 Future status language should distinguish:
 
@@ -57,11 +72,11 @@ Every image record must preserve:
 
 The source registry’s `allowsImageReuse` must be independently true for automated media collection. Even then, preserve per-image metadata and comply with hotlinking/download/transform requirements.
 
-When rights are unclear, omit the image. In the mission browser, the fallback is a compact source-site preview containing only the stored source name, hostname, venue, glyph, and Local Lore styling—not copied page content or an embedded third-party page. The detail view uses the venue-and-neighborhood visual panel. Do not generate or search for a visually similar substitute.
+When rights are unclear, omit the image. Hover, gallery, and detail use the shared `MissionMedia` venue/glyph/source-name fallback for missing, loading, or failed photos. It contains only stored facts and Local Lore styling, not copied page content, an embedded third-party page, or a simulated website screenshot. Successful photos expose stored credit, source-page link, and license in mission details. Do not generate or search for a visually similar substitute.
 
 ## Current images
 
-The project owner has confirmed creator permission for the local primary mission images listed in `lib/mission-images.ts`. These files are served from `public/images/missions/`; the `MissionImage` record keeps the permission basis internally without adding a visible credit treatment.
+The project owner has confirmed that the existing local primary images may remain displayed. Their image metadata is stored on each mission’s `image` field in `data/source-catalog.json`; files are served from `public/images/missions/`. This permission does not grant automated fetching or reuse of new images.
 
 Three legacy seed missions reference Wikimedia Commons through `Special:Redirect/file` and store a Commons file page, credit, license, and alt text:
 
@@ -73,11 +88,11 @@ Recheck each source page before a public launch because attribution and file sta
 
 ## Local-agent source checks
 
-The SF Recreation & Parks Golden Gate Bandshell iCalendar feed is an approved lead for the local catalog agent because the agency publishes it for calendar subscription from its [iCalendar page](https://sfrecpark.org/iCalendar.aspx). The agent may check it no more than once per day and may not reuse its source images. The deployed website never fetches this or any other source at runtime.
+The SF Recreation & Parks Golden Gate Bandshell iCalendar feed remains an unreviewed source lead. Its historical one-time audit instruction does not establish recurring access conditions: keep it disabled until a permitted feed method, terms, rate limits, and rights basis are documented; no human approval queue is required.
 
 ## AI and source trust
 
-AI may help a local agent summarize already-normalized facts or propose duplicates. It is not part of the deployed product or publishing path. It cannot create provenance, permissions, licenses, dates, prices, coordinates, or accessibility facts. A model’s confidence is not evidence.
+AI is the local research worker and may summarize only rendered, source-backed facts into strict structured proposals. Deterministic validation/publishing applies those proposals to the static Git catalog. AI cannot create provenance, permissions, licenses, dates, prices, coordinates, accessibility facts, or image rights.
 
 ## Takedown and correction design
 

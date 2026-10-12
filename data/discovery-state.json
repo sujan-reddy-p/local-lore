@@ -1,0 +1,636 @@
+{
+  "schemaVersion": 1,
+  "lastRunAt": "2026-10-12T18:05:10.819Z",
+  "runs": [
+    {
+      "runId": "dffe1aea-14ba-4451-bbbf-ea876e239bd0",
+      "completedAt": "2026-10-12T17:48:46.175Z",
+      "candidates": 1,
+      "changed": 2
+    },
+    {
+      "runId": "dfca54d1-175f-48c2-97f5-e49ddcff16c6",
+      "completedAt": "2026-10-12T18:05:10.821Z",
+      "candidates": 15,
+      "changed": 17
+    }
+  ],
+  "cityCursor": 4,
+  "categoryCursor": 0,
+  "seenCandidateIds": [],
+  "lastOutcome": "applied",
+  "sourceCursor": 16,
+  "coverage": [
+    {
+      "name": "San Francisco",
+      "count": 183,
+      "target": 40,
+      "categories": {
+        "After dark": 15,
+        "Listen": 30,
+        "Eat": 25,
+        "Learn": 27,
+        "Make": 17,
+        "Move": 22,
+        "Outside": 30,
+        "Community": 17
+      }
+    },
+    {
+      "name": "Oakland",
+      "count": 4,
+      "target": 35,
+      "categories": {
+        "After dark": 1,
+        "Eat": 2,
+        "Listen": 1
+      }
+    },
+    {
+      "name": "Berkeley",
+      "count": 6,
+      "target": 25,
+      "categories": {
+        "Learn": 2,
+        "Outside": 2,
+        "Community": 1,
+        "Make": 1
+      }
+    },
+    {
+      "name": "San Jose",
+      "count": 5,
+      "target": 30,
+      "categories": {
+        "Outside": 2,
+        "Learn": 2,
+        "Community": 1
+      }
+    },
+    {
+      "name": "Richmond",
+      "count": 0,
+      "target": 15,
+      "categories": {}
+    },
+    {
+      "name": "Daly City",
+      "count": 15,
+      "target": 10,
+      "categories": {
+        "Community": 1,
+        "Outside": 6,
+        "Move": 6,
+        "Listen": 2
+      }
+    },
+    {
+      "name": "Redwood City",
+      "count": 0,
+      "target": 12,
+      "categories": {}
+    },
+    {
+      "name": "Palo Alto",
+      "count": 0,
+      "target": 15,
+      "categories": {}
+    },
+    {
+      "name": "Walnut Creek",
+      "count": 0,
+      "target": 12,
+      "categories": {}
+    },
+    {
+      "name": "San Rafael",
+      "count": 0,
+      "target": 12,
+      "categories": {}
+    },
+    {
+      "name": "Alameda",
+      "count": 1,
+      "target": 15,
+      "categories": {
+        "Eat": 1
+      }
+    },
+    {
+      "name": "Sausalito",
+      "count": 1,
+      "target": 10,
+      "categories": {
+        "Outside": 1
+      }
+    },
+    {
+      "name": "Marin Headlands",
+      "count": 10,
+      "target": 12,
+      "categories": {
+        "Learn": 2,
+        "Outside": 4,
+        "Eat": 1,
+        "Move": 2,
+        "Community": 1
+      }
+    },
+    {
+      "name": "Pacifica",
+      "count": 0,
+      "target": 12,
+      "categories": {}
+    },
+    {
+      "name": "Half Moon Bay",
+      "count": 0,
+      "target": 12,
+      "categories": {}
+    },
+    {
+      "name": "San Mateo",
+      "count": 0,
+      "target": 15,
+      "categories": {}
+    },
+    {
+      "name": "Fremont",
+      "count": 0,
+      "target": 20,
+      "categories": {}
+    },
+    {
+      "name": "Hayward",
+      "count": 0,
+      "target": 15,
+      "categories": {}
+    },
+    {
+      "name": "Sunnyvale",
+      "count": 0,
+      "target": 15,
+      "categories": {}
+    },
+    {
+      "name": "El Cerrito",
+      "count": 0,
+      "target": 8,
+      "categories": {}
+    }
+  ],
+  "sources": {
+    "https://www.sanjose.org/robots.txt": {
+      "lastAttemptAt": "2026-10-12T17:54:07.878Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:07.878Z",
+      "result": "checked"
+    },
+    "https://botanicalgarden.berkeley.edu/robots.txt": {
+      "lastAttemptAt": "2026-10-12T17:54:07.888Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:07.888Z",
+      "result": "checked"
+    },
+    "https://sjmusart.org/robots.txt": {
+      "lastAttemptAt": "2026-10-12T17:54:07.991Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:07.991Z",
+      "result": "checked"
+    },
+    "https://berkeleyca.gov/robots.txt": {
+      "lastAttemptAt": "2026-10-12T17:54:08.035Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:08.035Z",
+      "result": "checked"
+    },
+    "https://sjmusart.org/calendar": {
+      "lastAttemptAt": "2026-10-12T16:32:54.544Z",
+      "lastSuccessfulCheckAt": "2026-10-12T16:32:54.544Z",
+      "result": "checked"
+    },
+    "https://www.sanjose.org/things-to-do/museums": {
+      "lastAttemptAt": "2026-10-12T16:32:54.904Z",
+      "lastSuccessfulCheckAt": "2026-10-12T16:32:54.904Z",
+      "result": "checked"
+    },
+    "https://botanicalgarden.berkeley.edu/visit": {
+      "lastAttemptAt": "2026-10-12T16:32:55.037Z",
+      "lastSuccessfulCheckAt": "2026-10-12T16:32:55.037Z",
+      "result": "checked"
+    },
+    "https://berkeleyca.gov/community-recreation/events": {
+      "lastAttemptAt": "2026-10-12T16:32:55.127Z",
+      "lastSuccessfulCheckAt": "2026-10-12T16:32:55.127Z",
+      "result": "checked"
+    },
+    "https://www.sanjose.org/listings/guadalupe-river-park-and-gardens": {
+      "lastAttemptAt": "2026-10-12T16:33:01.736Z",
+      "lastSuccessfulCheckAt": "2026-10-12T16:33:01.736Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/robots.txt": {
+      "lastAttemptAt": "2026-10-12T16:33:08.822Z",
+      "lastSuccessfulCheckAt": "2026-10-12T16:33:08.822Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=San%20Jose%20Museum%20of%20Art&language=en&format=json": {
+      "lastAttemptAt": "2026-10-12T17:55:26.316Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:26.316Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=Guadalupe%20River%20Park%20and%20Gardens&language=en&format=json": {
+      "lastAttemptAt": "2026-10-12T16:33:08.904Z",
+      "lastSuccessfulCheckAt": "2026-10-12T16:33:08.904Z",
+      "result": "checked"
+    },
+    "https://www.4-star-movies.com/robots.txt": {
+      "lastAttemptAt": "2026-10-12T16:33:17.128Z",
+      "lastSuccessfulCheckAt": "2026-10-12T16:33:17.128Z",
+      "result": "checked"
+    },
+    "https://alemanyfarm.org/robots.txt": {
+      "lastAttemptAt": "2026-10-12T16:33:17.183Z",
+      "lastSuccessfulCheckAt": "2026-10-12T16:33:17.183Z",
+      "result": "checked"
+    },
+    "https://www.visitberkeley.com/robots.txt": {
+      "lastAttemptAt": "2026-10-12T16:33:17.374Z",
+      "lastSuccessfulCheckAt": "2026-10-12T16:33:17.374Z",
+      "result": "checked"
+    },
+    "https://www.4-star-movies.com/": {
+      "lastAttemptAt": "2026-10-12T16:33:17.487Z",
+      "lastSuccessfulCheckAt": "2026-10-12T16:33:17.487Z",
+      "result": "checked"
+    },
+    "https://alemanyfarm.org/get-involved": {
+      "lastAttemptAt": "2026-10-12T16:33:18.163Z",
+      "lastSuccessfulCheckAt": "2026-10-12T16:33:18.163Z",
+      "result": "checked"
+    },
+    "https://www.visitberkeley.com/things-to-do/outdoor-activities": {
+      "lastAttemptAt": "2026-10-12T16:33:19.079Z",
+      "lastSuccessfulCheckAt": "2026-10-12T16:33:19.079Z",
+      "result": "checked"
+    },
+    "https://www.4-star-movies.com/calendar-of-events/fogcutter-film-series-volume-26-buddy-holly": {
+      "lastAttemptAt": "2026-10-12T16:33:24.545Z",
+      "lastSuccessfulCheckAt": "2026-10-12T16:33:24.545Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/wiki/Wikidata:Data_access": {
+      "lastAttemptAt": "2026-10-12T17:53:55.025Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:53:55.025Z",
+      "result": "checked"
+    },
+    "https://bampfa.org/robots.txt": {
+      "lastAttemptAt": "2026-10-12T17:54:07.838Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:07.838Z",
+      "result": "checked"
+    },
+    "https://lawrencehallofscience.org/robots.txt": {
+      "lastAttemptAt": "2026-10-12T17:54:07.839Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:07.839Z",
+      "result": "checked"
+    },
+    "https://www.cablecarmuseum.org/robots.txt": {
+      "lastAttemptAt": "2026-10-12T17:54:07.846Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:07.846Z",
+      "result": "checked"
+    },
+    "https://cafedunord.com/robots.txt": {
+      "lastAttemptAt": "2026-10-12T17:54:07.981Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:07.981Z",
+      "result": "checked"
+    },
+    "https://www.bottomofthehill.com/robots.txt": {
+      "lastAttemptAt": "2026-10-12T17:54:08.015Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:08.015Z",
+      "result": "checked"
+    },
+    "https://www.calacademy.org/robots.txt": {
+      "lastAttemptAt": "2026-10-12T17:54:08.033Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:08.033Z",
+      "result": "checked"
+    },
+    "https://blackcatsf.com/robots.txt": {
+      "lastAttemptAt": "2026-10-12T17:54:08.128Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:08.128Z",
+      "result": "checked"
+    },
+    "https://www.parks.ca.gov/robots.txt": {
+      "lastAttemptAt": "2026-10-12T17:54:08.191Z",
+      "result": "failed"
+    },
+    "https://www.cdfa.ca.gov/robots.txt": {
+      "lastAttemptAt": "2026-10-12T17:54:08.477Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:08.477Z",
+      "result": "checked"
+    },
+    "https://www.boomboomroom.com/robots.txt": {
+      "lastAttemptAt": "2026-10-12T17:54:09.790Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:09.790Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=University%20of%20California%20Botanical%20Garden&language=en&format=json": {
+      "lastAttemptAt": "2026-10-12T17:54:24.352Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:24.352Z",
+      "result": "checked"
+    },
+    "https://www.cablecarmuseum.org/": {
+      "lastAttemptAt": "2026-10-12T17:54:24.616Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:24.616Z",
+      "result": "checked"
+    },
+    "https://lawrencehallofscience.org/landing/visit-the-lawrence": {
+      "lastAttemptAt": "2026-10-12T17:54:24.807Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:24.807Z",
+      "result": "checked"
+    },
+    "https://bampfa.org/visit": {
+      "lastAttemptAt": "2026-10-12T17:54:24.963Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:24.963Z",
+      "result": "checked"
+    },
+    "https://www.bottomofthehill.com/calendar.html": {
+      "lastAttemptAt": "2026-10-12T17:54:25.049Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:25.049Z",
+      "result": "checked"
+    },
+    "https://cafedunord.com/": {
+      "lastAttemptAt": "2026-10-12T17:54:25.055Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:25.055Z",
+      "result": "checked"
+    },
+    "https://blackcatsf.com/": {
+      "lastAttemptAt": "2026-10-12T17:54:25.150Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:25.150Z",
+      "result": "checked"
+    },
+    "https://botanicalgarden.berkeley.edu/visit/plan-your-visit": {
+      "lastAttemptAt": "2026-10-12T17:54:25.509Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:25.509Z",
+      "result": "checked"
+    },
+    "https://www.sanjose.org/listings/japanese-friendship-garden": {
+      "lastAttemptAt": "2026-10-12T17:54:25.858Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:25.858Z",
+      "result": "checked"
+    },
+    "https://www.sanjose.org/listings/tech-interactive": {
+      "lastAttemptAt": "2026-10-12T17:54:26.024Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:26.024Z",
+      "result": "checked"
+    },
+    "https://www.sanjose.org/attraction/municipal-rose-garden": {
+      "lastAttemptAt": "2026-10-12T17:54:26.073Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:26.073Z",
+      "result": "checked"
+    },
+    "https://www.boomboomroom.com/": {
+      "lastAttemptAt": "2026-10-12T17:54:30.328Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:54:30.328Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q5796845&property=P625&format=json": {
+      "lastAttemptAt": "2026-10-12T17:55:00.182Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:00.182Z",
+      "result": "checked"
+    },
+    "https://www.thetech.org/robots.txt": {
+      "lastAttemptAt": "2026-10-12T17:55:00.250Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:00.250Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=The%20Tech%20Interactive&language=en&format=json": {
+      "lastAttemptAt": "2026-10-12T17:55:00.400Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:00.400Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=Japanese%20Friendship%20Garden%20San%20Jose&language=en&format=json": {
+      "lastAttemptAt": "2026-10-12T17:55:00.423Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:00.423Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=San%20Jose%20Municipal%20Rose%20Garden&language=en&format=json": {
+      "lastAttemptAt": "2026-10-12T17:55:00.441Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:00.441Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=Berkeley%20Art%20Museum%20and%20Pacific%20Film%20Archive&language=en&format=json": {
+      "lastAttemptAt": "2026-10-12T17:55:00.458Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:00.458Z",
+      "result": "checked"
+    },
+    "https://egyptianmuseum.org/robots.txt": {
+      "lastAttemptAt": "2026-10-12T17:55:00.536Z",
+      "result": "failed"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=Lawrence%20Hall%20of%20Science&language=en&format=json": {
+      "lastAttemptAt": "2026-10-12T17:55:00.734Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:00.734Z",
+      "result": "checked"
+    },
+    "https://www.sanjoseca.gov/robots.txt": {
+      "lastAttemptAt": "2026-10-12T17:55:00.889Z",
+      "result": "failed"
+    },
+    "https://www.cdfa.ca.gov/is/docs/CurrentMrktsCounty.pdf": {
+      "lastAttemptAt": "2026-10-12T17:55:01.156Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:01.156Z",
+      "result": "checked"
+    },
+    "https://sjmusart.org/visit": {
+      "lastAttemptAt": "2026-10-12T17:55:01.208Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:01.208Z",
+      "result": "checked"
+    },
+    "https://www.parks.ca.gov/?page_id=468": {
+      "lastAttemptAt": "2026-10-12T17:55:01.907Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:01.907Z",
+      "result": "checked"
+    },
+    "https://botanicalgarden.berkeley.edu/": {
+      "lastAttemptAt": "2026-10-12T17:55:02.143Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:02.143Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q7768226&property=P625&format=json": {
+      "lastAttemptAt": "2026-10-12T17:55:26.251Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:26.251Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q3442578&property=P625&format=json": {
+      "lastAttemptAt": "2026-10-12T17:55:26.255Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:26.255Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q2916280&property=P625&format=json": {
+      "lastAttemptAt": "2026-10-12T17:55:26.292Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:26.292Z",
+      "result": "checked"
+    },
+    "https://www.cablecarmuseum.org/museum.html": {
+      "lastAttemptAt": "2026-10-12T17:55:26.386Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:26.386Z",
+      "result": "checked"
+    },
+    "https://www.bottomofthehill.com/20261025A.html": {
+      "lastAttemptAt": "2026-10-12T17:55:26.750Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:26.750Z",
+      "result": "checked"
+    },
+    "https://www.thetech.org/visit/": {
+      "lastAttemptAt": "2026-10-12T17:55:26.819Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:26.819Z",
+      "result": "checked"
+    },
+    "https://boomboomroom.com/event/jeff-cottons-gin-joint-w-special-guests-no-cover-charge-4/client-club-demo/san-francisco-california/": {
+      "lastAttemptAt": "2026-10-12T17:55:28.645Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:28.645Z",
+      "result": "checked"
+    },
+    "https://botanicalgarden.berkeley.edu/about/": {
+      "lastAttemptAt": "2026-10-12T17:55:29.912Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:55:29.912Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q14683059&property=P625&format=json": {
+      "lastAttemptAt": "2026-10-12T17:55:36.258Z",
+      "result": "failed"
+    },
+    "https://lawrencehallofscience.org/visitors/plan-your-visit/": {
+      "lastAttemptAt": "2026-10-12T17:56:02.741Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:56:02.741Z",
+      "result": "checked"
+    },
+    "https://www.sanjose.org/privacy-policy": {
+      "lastAttemptAt": "2026-10-12T17:56:02.849Z",
+      "result": "failed"
+    },
+    "https://bampfa.org/visit/getting-here": {
+      "lastAttemptAt": "2026-10-12T17:56:03.214Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:56:03.214Z",
+      "result": "checked"
+    },
+    "https://bampfa.org/about": {
+      "lastAttemptAt": "2026-10-12T17:56:03.287Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:56:03.287Z",
+      "result": "checked"
+    },
+    "https://sjmusart.org/programs-at-sjma/community-days/dia-de-los-muertos": {
+      "lastAttemptAt": "2026-10-12T17:56:03.668Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:56:03.668Z",
+      "result": "checked"
+    },
+    "https://berkeleyca.gov/community-recreation/parks-recreation/parks/park-berkeley-waterfront": {
+      "lastAttemptAt": "2026-10-12T17:56:03.886Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:56:03.886Z",
+      "result": "checked"
+    },
+    "https://berkeleyca.gov/community-recreation/events?field_daterange_value=All&page=2": {
+      "lastAttemptAt": "2026-10-12T17:56:04.743Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:56:04.743Z",
+      "result": "checked"
+    },
+    "https://www.parks.ca.gov/?page_id=28403": {
+      "lastAttemptAt": "2026-10-12T17:57:32.393Z",
+      "result": "failed"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q7414466&property=P625&format=json": {
+      "lastAttemptAt": "2026-10-12T17:57:44.738Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:57:44.738Z",
+      "result": "checked"
+    },
+    "https://www.sanjose.org/terms-and-conditions": {
+      "lastAttemptAt": "2026-10-12T17:57:55.057Z",
+      "result": "failed"
+    },
+    "https://blackcatsf.com/about/": {
+      "lastAttemptAt": "2026-10-12T17:57:55.838Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:57:55.838Z",
+      "result": "checked"
+    },
+    "https://berkeleyca.gov/community-recreation/events/harvest-festival-2026": {
+      "lastAttemptAt": "2026-10-12T17:57:56.046Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:57:56.046Z",
+      "result": "checked"
+    },
+    "https://bampfa.org/event/wrenching-news-workshops": {
+      "lastAttemptAt": "2026-10-12T17:57:56.180Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:57:56.180Z",
+      "result": "checked"
+    },
+    "https://boomboomroom.com/about/": {
+      "lastAttemptAt": "2026-10-12T17:57:56.370Z",
+      "result": "failed"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=Cesar%20Chavez%20Park&language=en&format=json": {
+      "lastAttemptAt": "2026-10-12T17:57:59.497Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:57:59.497Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q5202534&property=P625&format=json": {
+      "lastAttemptAt": "2026-10-12T17:58:05.598Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:58:05.598Z",
+      "result": "checked"
+    },
+    "https://berkeleyca.gov/community-recreation/parks-recreation/parks/cedar-rose-park": {
+      "lastAttemptAt": "2026-10-12T17:58:10.696Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:58:10.696Z",
+      "result": "checked"
+    },
+    "https://bampfa.org/visit/calendar/2026-10": {
+      "lastAttemptAt": "2026-10-12T17:58:15.943Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:58:15.943Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=Cedar%20Rose%20Park&language=en&format=json": {
+      "lastAttemptAt": "2026-10-12T17:58:19.238Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:58:19.238Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q5202534&props=labels%7Cdescriptions%7Csitelinks&languages=en&sitefilter=enwiki&format=json": {
+      "lastAttemptAt": "2026-10-12T17:58:30.920Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:58:30.920Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=Japanese%20Friendship%20Garden&language=en&format=json": {
+      "lastAttemptAt": "2026-10-12T17:58:36.687Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:58:36.687Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q633365%7CQ7339220&props=labels%7Cdescriptions%7Csitelinks&languages=en&sitefilter=enwiki&format=json": {
+      "lastAttemptAt": "2026-10-12T17:58:41.354Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:58:41.354Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q633365&property=P625&format=json": {
+      "lastAttemptAt": "2026-10-12T17:58:44.336Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:58:44.336Z",
+      "result": "checked"
+    },
+    "https://geocoding.geo.census.gov/geocoder/Geocoding_Services_API.pdf": {
+      "lastAttemptAt": "2026-10-12T17:58:57.690Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:58:57.690Z",
+      "result": "checked"
+    },
+    "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=1300%20Rose%20St%2C%20Berkeley%2C%20CA%2094702&benchmark=Public_AR_Current&format=json": {
+      "lastAttemptAt": "2026-10-12T17:59:01.792Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:59:01.792Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q5202534&property=P856&format=json": {
+      "lastAttemptAt": "2026-10-12T17:59:22.063Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:59:22.063Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbgetclaims&entity=Q5202534&property=P131&format=json": {
+      "lastAttemptAt": "2026-10-12T17:59:27.925Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:59:27.925Z",
+      "result": "checked"
+    },
+    "https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q484678&props=labels%7Cdescriptions&languages=en&format=json": {
+      "lastAttemptAt": "2026-10-12T17:59:31.524Z",
+      "lastSuccessfulCheckAt": "2026-10-12T17:59:31.524Z",
+      "result": "checked"
+    }
+  }
+}

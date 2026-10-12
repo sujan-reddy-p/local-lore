@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "origin": [-122.42, 37.78],
+  "radiusKm": 75,
+  "bounds": [[-123.1, 36.55], [-121.4, 38.5]],
+  "targets": {"minimum": 350, "maximum": 500, "eventsDays": 30},
+  "cities": [
+    {"name":"San Francisco","coordinates":[-122.42,37.78],"target":40,"areas":["Outside","Move","Make","Listen","Eat","Learn","Community","After dark"]},
+    {"name":"Oakland","coordinates":[-122.272,37.805],"target":35,"areas":["Outside","Move","Make","Listen","Eat","Learn","Community"]},
+    {"name":"Berkeley","coordinates":[-122.273,37.871],"target":25,"areas":["Outside","Learn","Listen","Community","Eat"]},
+    {"name":"San Jose","coordinates":[-121.886,37.338],"target":30,"areas":["Outside","Move","Listen","Learn","Community","Eat"]},
+    {"name":"Richmond","coordinates":[-122.348,37.936],"target":15,"areas":["Outside","Community","Make"]},
+    {"name":"Daly City","coordinates":[-122.47,37.687],"target":10,"areas":["Outside","Move","Community"]},
+    {"name":"Redwood City","coordinates":[-122.236,37.486],"target":12,"areas":["Outside","Learn","Community","Listen"]},
+    {"name":"Palo Alto","coordinates":[-122.144,37.442],"target":15,"areas":["Learn","Outside","Listen","Community"]},
+    {"name":"Walnut Creek","coordinates":[-122.066,37.906],"target":12,"areas":["Outside","Move","Community","Listen"]},
+    {"name":"San Rafael","coordinates":[-122.532,37.973],"target":12,"areas":["Outside","Move","Community"]},
+    {"name":"Alameda","coordinates":[-122.244,37.765],"target":15,"areas":["Outside","Move","Learn","Eat"]},
+    {"name":"Sausalito","coordinates":[-122.486,37.859],"target":10,"areas":["Outside","Make","Eat"]},
+    {"name":"Marin Headlands","coordinates":[-122.524,37.829],"target":12,"areas":["Outside","Move","Learn"]},
+    {"name":"Pacifica","coordinates":[-122.487,37.614],"target":12,"areas":["Outside","Move","Community"]},
+    {"name":"Half Moon Bay","coordinates":[-122.429,37.463],"target":12,"areas":["Outside","Move","Eat"]},
+    {"name":"San Mateo","coordinates":[-122.325,37.563],"target":15,"areas":["Outside","Learn","Eat","Community"]},
+    {"name":"Fremont","coordinates":[-121.988,37.548],"target":20,"areas":["Outside","Move","Learn","Community"]},
+    {"name":"Hayward","coordinates":[-122.081,37.669],"target":15,"areas":["Outside","Make","Community"]},
+    {"name":"Sunnyvale","coordinates":[-122.037,37.369],"target":15,"areas":["Outside","Learn","Community"]},
+    {"name":"El Cerrito","coordinates":[-122.31,37.915],"target":8,"areas":["Outside","Move","Community"]}
+  ],
+  "rotation": {"initialPerRun": 40, "dailyPerRun": 12, "lookbackRuns": 3},
+  "schedule": {"hour": 8, "minute": 17},
+  "statePath": "data/discovery-state.json",
+  "requires": {"sourceEvidence": true, "sameRunObservation": true, "imageRights": true}
+}

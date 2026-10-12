@@ -1,0 +1,8 @@
+.mission-status { display:flex; flex-direction:column; gap:7px; margin-top:11px; padding-top:11px; border-top:1px solid var(--line); color:#b8c4bd; font-size:10px; line-height:1.4; }
+.mission-status__heading { display:flex; flex-wrap:wrap; align-items:center; gap:7px; }
+.mission-status__badge { display:inline-flex; align-items:center; min-height:21px; padding:3px 8px; border:1px solid var(--line); border-radius:999px; color:#bdcfc2; background:rgba(255,255,255,.035); font-size:9px; font-weight:600; letter-spacing:.025em; }
+.mission-status--compact { display:inline-flex; width:max-content; max-width:100%; margin-top:9px; overflow:hidden; padding:3px 0 0; border:0; color:#a1b6a8; background:transparent; font-size:9px; line-height:1.2; text-overflow:ellipsis; white-space:nowrap; }
+.mission-status__note { color:#c6d1cb; font-size:10px; }
+.mission-status__checked,.mission-status__confirm { margin:0; }
+.mission-status__schedule { display:flex; flex-direction:column; gap:2px; color:#d2dbd5; }
+.mission-status__confirm { color:#f0c0a8; font-weight:650; }
