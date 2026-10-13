@@ -19,11 +19,9 @@ If the Neon CLI needs authorization, run `npx neon@latest auth` and complete bro
 
 ## Current state
 
-The active catalog is static at runtime and is maintained by the local agentic publisher described in `docs/content-maintenance.md`. Existing visible records retain `approved_for_display` as historical lineage, not an automated-fetch or image-reuse permission.
+The static catalog is maintained through the manually invoked OMP workflow described in `docs/content-maintenance.md`. Existing visible records retain `approved_for_display` as historical lineage, not automated-fetch or image-reuse permission.
 
-The removed catalog importer previously synchronized 165 source groups and 212 catalog records. Those are historical setup facts, not a current publication contract. The deployed page reads the Git catalog, not mission/event rows in Postgres.
-
-Historical backend implementation includes manually invoked, permission-gated source ingestion and private `needs_review` event candidates, plus human review and audit tables. These are inactive and do not gate active Git catalog publication. Former package aliases `sources:refresh` and `events:review` have been removed; do not give them as runnable commands. The active publication path does not require database setup, candidate staging, or human approval.
+The removed catalog importer and former publication workflow are historical setup facts, not current publication contracts. The deployed page reads the Git catalog, not mission/event rows in Postgres. Historical backend ingestion and review paths remain inactive.
 
 ## Historical backend tables
 

@@ -9,23 +9,25 @@
 **Repository:** `https://github.com/sujan-reddy-p/local-lore`
 **Production:** `https://local-lore-five.vercel.app`
 
-## Agentic snapshot baseline — 2026-10-12
+## Manual catalog maintenance — 2026-10-12
 
-- The bundled website catalog now contains 225 records in 178 source groups. Actual local research published 13 new Berkeley/San José/San Francisco activities and occurrences, plus supported refreshes. The original evergreen records remain; dated events have separate IDs.
-- Publication is local OMP research → deterministic stage/apply → Git catalog/state. No mandatory human approval gate, remote research cron, or database catalog importer remains. External access policies, image rights, and source evidence still apply.
-- Default researcher: `openai-codex/gpt-6-luna`; complex initial nearby research used an explicit `openai-codex/gpt-6.1-sol` override. Local credentials and raw research stay outside Git.
-- Map scenes share clustered/grouped anchors, truthful native footprints, small/absent-footprint halos, and source-backed start-first routes. Native event callbacks read current catalog/visibility through React Effect Events; data refreshes preserve the map instance, camera, and selected ID.
-- Actual Chromium checks covered desktop 1440×1000 and mobile 390×844/320×568, grouped secondary selection, new San José event dates, known-free versus unknown-price filtering, failed-photo artwork fallback, and 225-record scene retention through catalog updates.
-- Catalog validation, lint, strict TypeScript, production build, and 26 behavioral tests passed during integration. The share image uses the same local artwork badges rather than unsupported Unicode glyphs.
-- Fixed an observed marker-image startup race by switching to generated native 1×/2× MapLibre sprites. A fresh Chromium load registered all 20 badges with no missing-image warnings; close-zoom artwork rendered and all 225 activities remained in the map scene.
-- Maintained checkout: `~/Projects/local-lore`; future agents should work there, not in the retained `/tmp` clone. Baseline `10f73d6` was pushed to `master`; localhost `http://localhost:4317` remains running from the durable checkout.
-- macOS launchd `com.local-lore.discovery` is installed for 08:17 local time. Both the manual daily command and an actual launchd-triggered run completed research, stage/apply, and catalog validation as no-ops with 225 records retained. Local rotation/check state advanced outside Git; neither run invented findings or changed Git.
-- Daily runs require a clean, up-to-date durable checkout and use isolated Git worktrees. Changed snapshots must pass lint, strict TypeScript, build, and tests before publication; no-ops validate the catalog without rebuilding it. See `docs/local-agent-automation.md` and `docs/content-maintenance.md`.
-- The 350–500 experience range is an ongoing coverage goal, not the current count. Some official pages return 403/404 or lack usable facts/geodata; preserve existing records and record omissions rather than fabricate replacements.
+- Catalog upkeep is an explicitly invoked OMP GPT-6 Luna skill; the user controls when and whether to publish through Git. No JavaScript researcher/publisher, cron, timer, LaunchAgent, automatic commit/push, or human approval gate is active. Ephemeral agent code under ignored `outputs/` may normalize large JSON; it is not an installed pipeline or package command.
+- The offline validator remains available and requires a visitor website separately from API evidence. Manual source outcomes are recorded in `data/discovery-state.json`. Failed reads preserve good records and are not closures; unvisited sources are not failed reads. Further discovery is paused, not complete.
+- Current publication is deliberately smaller than the raw research inventory: incomplete map-only leads and generic park-walk inflation are held in `data/discovery-state.json`, not passed off as finished missions. Coverage remains incomplete. Expansion is paused pending the user's design-quality review; local GPT-6 Luna research also hit `usage_limit_reached`. Use current state's actual coverage rather than historical counts. City minimums never override complete candidates, broad human experiences, real websites, locations, and image research.
+- Explicit five-venue leaf microbatches use literal venue names, coordinates, and distinct output filenames. Parent deduplicates against the full catalog and normalizes typed records. Venue identity/address may be matched to actual geographic data; coordinates need not be printed, and sibling/city-center coordinates are never substitutes. Named POIs are leads, not confirmation of visitor access or live operation.
+- Source Polygon/MultiPolygon geometry with holes, string `map.evidence`, and `sourceUrl` is preferred, then a legitimate matching native outline; every mission retains a 25–100 m ground locator circle fallback, never a physical footprint. Routes are start-first; only exact source course geometry or typed connection with exactly two geocoded actual endpoints can render on focus. Connections are dashed/directed, never claim an area is a course.
+- Scheduled occurrences use canonical `schedule.kind: scheduled`, `startsAt`/`endsAt`; date-only ends are inclusive Bay Area calendar days and timestamps expire at their instant. Evergreen/ongoing recurrence has no TTL. Missing-image research is mandatory on discovery and refresh. Unclear-rights candidates are downloaded into ignored `outputs/image-review/` and manifested in `pendingImages`, but not published or publicly committed until user review.
+- Start a new city by reading `.claude/skills/local-discovery/SKILL.md`: its experience matrix, geography, complete-candidate gate, five-venue worker assignments, image staging, integration, and reporting are the operational contract. Do not substitute a POI dump or a generic-walking quota.
+- Performance boundary: the raw catalog stays server-side; `lib/seed-data.ts` whitelists display fields, and client/map code must not import it. Search indexes are memoized; native outlines are learned only for unresolved visible places at settled camera/filter states. PMTiles remains range-fetched, not downloaded in full for each visitor.
+- Current baseline: 785 display records and 860 held leads; the preliminary Oakland quota no longer passes the stricter visitor-website gate. There are 621 published records awaiting image research and no newly staged unclear-rights images claimed. Resume from current state, not historical output counts; the requested Luna model must become available and the user must clear the expansion pause.
+
+## Historical snapshot baseline — 2026-10-12
+
+- Historical source research and publication facts below describe prior workflows only. They do not describe current manual runs, counts, schedule, or publication.
 
 ## Historical production context — last verified 2026-10-11
 
-Local Lore is a deployed, single-page Next.js map experience. Its catalog is static at runtime: `data/source-catalog.json` is adapted by `lib/seed-data.ts`, rendered over the local regional PMTiles map, and not fetched from sources or AI. The server-only visitor route writes raw-IP visitor records to Neon only when database environment variables are configured.
+The deployed page reads the static `data/source-catalog.json` via `lib/seed-data.ts`. Catalog upkeep is manual OMP research and direct supported edits; the active workflow does not use PostgreSQL.
 
 Local development and Vercel production now use the same native Next.js runtime. The local development server is pinned to port `4317`:
 
@@ -36,7 +38,7 @@ npm run dev
 
 Open `http://127.0.0.1:4317`. Do not reintroduce Vinext, Wrangler, a Cloudflare Worker, or a second local asset server unless the hosting decision changes and this document is updated first.
 
-The 212 existing entries remain static in the site. The maintainer explicitly said to assume the current site content is accurate, so records are `approved_for_display` under that assumption—not an independent source audit. This does not grant automated-fetch or image-reuse permission. All four PostgreSQL migrations are applied, and the catalog importer synchronized 165 sources plus those 212 records. One source group remains `needs_source_review` and disabled; 32 pre-existing published mission rows for that source are retained but excluded by source-review gates. No source passes the current automated-fetch gates; no fetch or scheduler has run, and the deployed page still does not read database event data.
+Existing `approved_for_display` labels and database migration/import details are historical lineage/infrastructure, not evidence of current accuracy, automated-fetch permission, or image reuse permission. The deployed page uses the static catalog and does not read database event data.
 
 ## First reading order
 
@@ -49,25 +51,13 @@ The 212 existing entries remain static in the site. The maintainer explicitly sa
 
 ## What works
 
-- Full-viewport MapLibre map with local `public/maps/san-francisco-region.pmtiles`.
-- Bay Area bounds in `lib/region.ts`, 3D buildings that ramp from flat at zoom 10 to full source height at zoom 12, pan, zoom, rotate, tilt, regional reset, clusters, zones, hover previews, and source links.
-- 212 curated-seed San Francisco missions, map-driven filtering, Any day default, responsive map-first layout, reduced-motion support, and source disclosure.
-- Compact search panel with eight visible interests, bottom Bay Area dates, and budget/activity-time-only refinement (travel excluded). No hamburger, gallery, duplicate category/trait/quick controls, or scrolling interest rows; Reset all clears date and filter constraints.
-- OpenStreetMap/Protomaps attribution is visible on the map.
-- PostHog browser provider: automatic capture and session replay activate only when `NEXT_PUBLIC_POSTHOG_KEY` is configured at build time.
-- Accepted containing PMTiles building/landuse outlines preserve holes, reject oversized/native-tile-clipped fragments, and persist across zooms with size-aware fading. They are basemap context, not independently verified venue boundaries; unknown areas use subject-specific point artwork, never invented circular footprints.
-- React hover previews share truthful image states and short activity explanations with selected cards; no Explore action and no selected-item hover duplicate. Selected cards have readable time/cost/company facts, one website action, and inline Info for source/accessibility/photo provenance. Missing/error photos use a compact artwork fallback. Selection focuses at least zoom 15.5; max camera zoom18 over native zoom14 tiles, with existing gestures unchanged.
+- Full-viewport MapLibre map with local regional PMTiles archive (87.6 MiB), 3D buildings from native zoom 10–12, and camera zoom through 18 over native zoom-14 tiles.
+- Hamburger opens the compact discovery panel, hidden by default desktop/mobile; closed panel remains mounted but inert and preserves filters. Open focuses search; Escape closes; focus returns to trigger. Interests/dates and budget/time sliders only; no duplicate category controls.
+- Every mission has a 25–100 m ground locator-circle fallback. Source polygons require geometry, holes, string evidence, and URL; legitimate matching native outline is second choice. This locator is not a venue footprint. Routes start-first and only typed exact course geometry or actual two-endpoint connections show on focus; connections are dashed/directed.
+- Images use source-authorized event/venue/logo priority; missing/failed photos show UI-owned subject artwork, not stock photos.
 - Deployed secure hosts request browser geolocation and offer retry; localhost/loopback hide the control and never request location. Denial/outside coverage preserve the camera, and late/stale callbacks cannot replace user navigation. No GPS is stored or transmitted.
 
-Frontend verification (2026-10-11, current cutover): lint, strict TypeScript, production build, and all 13 existing catalog/ingestion/audit tests passed. Live production Chromium surfaces were inspected at 1440×1000, 390×844, and 320×568: eight interests and date controls without panel/horizontal scrolling; selected photo/card hierarchy; source/photo provenance hidden by default and available through Info; no selected hover duplicate. Native sliders at Free/1h matched exactly 26 catalog records. Zero-match filtering removed both sources, reset restored all 212 points, and a native input/change date scenario selected 2026-12-31 and reset correctly.
-
-Map smoke retained the same nine-vertex Ina Coolbrith outline through zoom14→13→16→18, with 11 learned shapes retained and zero activity-zone source events over 2.5 seconds of settled idle. Artwork images for vinyl/running/garden were loaded. Actual map clicks exercised hover and selected cards; a deliberately blocked Asian Art photo used a 96px fallback, and direct selection of Amoeba recovered its real 190px photo and concise explanation.
-
-Location smoke used a secure HTTPS fixture reverse-proxied to local production assets, native Chromium permission overrides/device coordinates, and no visitor API writes: allowed location centered at zoom12.5, native denial retained the effective bounded home camera, permission retry recovered, and New York coordinates left that same camera untouched. Separate simulated timeout/stale-callback scenarios preserved an actual Zoom-in interaction and permitted a fresh retry. Localhost made zero GPS calls and rendered no location control. The expected blocked-photo request and fixture transport teardown failures were not product JS exceptions. Physical-device multitouch and a public deployment were not tested.
-
-The deployed-location visual pass also reproduced a status popover covering the search/filter row. Status now flows inside the header with concise denial copy. Final native-permission smoke at 390px and 320px confirmed zero status/search overlap, no horizontal/panel overflow, an operable Filter button, and successful location retry after the fix. Lint, strict TypeScript, production build, and all 13 tests passed after this correction.
-
-Earlier date smoke covered SF day boundaries, Saturday/Sunday weekends, spring/fall DST, year changes, expiry, and malformed dates. This frontend cutover does not alter backend storage, ingestion, catalog, source permissions, or existing photo assets. Dated-event publication and actual routed road trips remain explicit future acceptance in `docs/roadmap-and-decisions.md`, not capabilities of the current static ideas.
+Prior browser/map/location verification details were removed for concision; they were historical results and do not verify this change.
 
 ## Recent runtime cleanup
 
@@ -87,9 +77,9 @@ The unrelated nested portfolio preview project was removed from this repository'
 
 ## Architecture invariants
 
-- Show evidence-based basemap area context where complete and appropriately sized; otherwise keep a restrained visible soft-circle locator (not a boundary).
-- Subject artwork remains centered and viewport-aligned through pan, zoom, rotation, and pitch. `map.kind` distinguishes `area`, `venue`, and `route`; route lines require genuine source geometry and appear only on hover/selection, otherwise start-first.
-- The active publication path is agentic research → deterministic validation → bounded Git snapshot, documented in `docs/content-maintenance.md`. No mandatory human approval queue is required.
+- Keep a visible 25–100 m ground locator circle for every mission unless an authentic geometry is visible; never describe it as a physical boundary.
+- `map.kind` distinguishes area, venue, and route; routes are start-first, and lines render on focus only with actual course geometry or exactly two geocoded actual endpoints for typed connections.
+- Catalog maintenance is a manually invoked OMP skill; the user controls invocation and Git publication. See `docs/content-maintenance.md`. No automatic publisher or schedule exists.
 - Retain source access controls, terms, rights, security, provenance, and no-invention guarantees. Historical `reviewStatus` labels and database review/publication tables are not active gates.
 - The page must keep working without runtime credentials.
 - Never label a `curated-seed` record as live.
@@ -113,7 +103,7 @@ The unrelated nested portfolio preview project was removed from this repository'
 | Catalog contract | `lib/types.ts` |
 | Source-grouped catalog | `data/source-catalog.json` |
 | Catalog UI adapter | `lib/seed-data.ts` |
-| Catalog publisher and maintenance | `scripts/agentic-publisher.mjs`, `docs/content-maintenance.md` |
+| Catalog maintenance | `data/source-catalog.json`, `.claude/skills/local-discovery/SKILL.md`, `docs/content-maintenance.md` |
 | Historical source refresh/review | `scripts/refresh-sources.ts`, `scripts/events.ts`, `lib/ingestion/` |
 | Database repository/schema/migration | `db/repository.ts`, `db/schema.ts`, `drizzle/postgres/0003_parallel_boomer.sql` |
 | Analytics bootstrapping | `components/posthog-provider.tsx` |
@@ -128,16 +118,7 @@ The unrelated nested portfolio preview project was removed from this repository'
 
 Vercel deploys pushes to `master`. Before a risky release run lint, strict TypeScript, `npm run build:vercel`, and tests. Confirm the PMTiles range request returns `206` and inspect desktop/mobile map behavior. See `docs/deployment.md` and `docs/development-and-testing.md`.
 
-The verification result for the current backend restructuring is:
-
-- `npm run lint` passes.
-- `npx tsc --noEmit --incremental false` passes.
-- `npm test` passes: production build plus ten catalog/ingestion tests.
-- `npm run db:generate` reports no schema changes to migrate.
-- `npm run catalog:validate` passes for 165 groups and 212 display-approved records under the maintainer’s assumption.
-- Historical catalog import validated 165 groups and 212 records; the importer has since been removed from the active Git-snapshot publication path.
-- Browser smoke at `http://localhost:4317` confirms the map is ready and all 212 records are visible. The smoke blocked `/api/visitor` intentionally to avoid writing the operator's IP; no application runtime errors were observed.
-- Neon migration/import succeeded locally: four migrations, 165 sources, and 212 catalog rows. No source fetch or human-review command was run during setup; recurring refresh and database-backed UI reads remain inactive.
+The checks below are historical backend/repository results from an earlier catalog snapshot. They are not current record counts and do not verify the manual OMP cutover above. The manual cutover's catalog validator could not be invoked through the available tools.
 
 ### Local startup failure discovered 2026-08-06
 
@@ -164,7 +145,7 @@ Run `npm run dev` in a foreground terminal and leave that terminal open. Do not 
 
 ## Intentionally inactive / historical code
 
-`db/`, `drizzle/`, and `pg` support the optional visitor route, repeatable catalog importer, event candidate workflow, and historical review CLI. They are not the active publication boundary. The active catalog path and maintenance procedure are documented in `docs/content-maintenance.md`.
+`db/`, `drizzle/`, and `pg` support optional visitor capture and historical ingestion/review infrastructure. They are not the active catalog maintenance boundary. Catalog maintenance is manual OMP plus offline validation, as documented in `docs/content-maintenance.md`.
 
 ## Handoff maintenance contract
 

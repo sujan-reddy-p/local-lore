@@ -1,50 +1,37 @@
 # Local catalog agent playbook
 
-## Role and active publication path
+## Ownership
 
-The local agent maintains the versioned catalog and source knowledge in Git. An evidence-bearing researcher produces strict structured findings; a deterministic validator/publisher applies only source-backed changes and creates a bounded Git snapshot. No mandatory human approval or review queue is part of this path. Access controls, rights, security, provenance, and “never invent” rules remain mandatory.
+- `data/source-catalog.json`: complete source-grouped catalog; counts describe the checked-in snapshot.
+- `data/discovery-config.json`: full city/source inventory, Bay Area bounds, 75 km radius, and richness goals.
+- `data/discovery-state.json`: manually recorded source checks and outcomes; no automatic rotation or schedule.
+- `.claude/skills/local-discovery/SKILL.md`: authoritative operational instructions for manual OMP maintenance.
+- `lib/seed-data.ts`: deterministic catalog adapter; do not hand-edit for content.
+- `lib/types.ts`, map geometry/media, and application code: parent-owned, outside routine catalog edits.
+- PostgreSQL schemas, migrations, and `lib/ingestion/`: historical backend ingestion/review; not the active catalog publication path.
 
-## Current data layout
+## Invocation
 
-- `data/source-catalog.json`: source-grouped catalog. Record/source counts describe the checked-in snapshot, not an invariant for future data.
-- `data/discovery-state.json`: publisher rotation and source-observation state.
-- Raw proposals, research evidence, and run outputs are local-only ignored files; never commit them.
-- `lib/seed-data.ts`: deterministic projection of the catalog into the `LoreItem` UI contract. Do not edit it to change content.
-- `scripts/discover-catalog.mjs`: active researcher, strict proposal staging, and deterministic apply flow.
-- `scripts/daily-discovery.mjs`, `scripts/schedule-discovery.mjs`: isolated daily publisher and local macOS launchd management.
-- PostgreSQL schemas, migrations, and `lib/ingestion/`: historical backend candidate/manual-review implementation; not required for catalog publication.
-- `docs/source-and-image-policy.md`: source access and image rights requirements.
-- `docs/catalog-and-data-model.md`: field meanings, lineage states, and QA rules.
+From repository root, explicitly invoke OMP with the skill file included:
 
-Existing catalog records retain historical `approved_for_display` lineage. This is not an independent accuracy audit or permission to fetch sources or reuse images. A source check date is not proof of live status.
-
-## Research and source checks
-
-The active local agentic publisher selects research opportunities, reads permitted public evidence through OMP, and emits strict structured findings. Defaults to `openai-codex/gpt-6-luna`; override with `--model` or `LOCAL_DISCOVERY_MODEL`. Keep raw research proposals, source pages, logs, and generated outputs local-only and ignored. Do not copy these into Git.
-
-1. Research official organizer, venue, agency, institution, or authorized public-feed evidence; retain canonical URL, source identity, applicable access terms, attribution, rate limits, check time, and image-rights basis.
-2. Record only explicit source-backed facts. Never invent date, time, price, coordinates, accessibility, availability, route geometry, organizer identity, or image rights.
-3. Separate evergreen activities, recurring programs, and genuine dated occurrences. A failed fetch or “not seen” result preserves existing good records and does not imply cancellation.
-4. Apply the San Francisco anchor and 75 km geodesic cutoff. Research coverage goals guide work but are not quotas; skip unsupported or incomplete findings.
-5. Stage and apply through `scripts/discover-catalog.mjs`; use `docs/content-maintenance.md` for add/update/remove/retire decisions, validation, publication, and revert.
-
-Source access permission, terms, rate limits, legal restrictions, rights, security, provenance, and no-invention rules remain mandatory. Public visibility, model confidence, or a historical lineage label is not permission.
-
-
-## Historical database boundary
-
-Neon/Postgres schemas, migrations, candidate decisions, and manual review implementation remain historical operational infrastructure. Database setup/import records previous synchronization state; the historical 212-record count is not a fixed-data contract for future snapshots. The active publisher writes validated, source-backed Git snapshots and does not require database setup or human candidate approval. Never expose credentials to browser code.
-
-## Checks and publishing
-
-```bash
-npm run catalog:validate
-npm run catalog:research -- --output outputs/proposal.json
-npm run catalog:stage -- --proposal outputs/proposal.json
-npm run catalog:apply -- --proposal outputs/proposal.json
-npm run lint
-npx tsc --noEmit --incremental false
-npm test
+```sh
+omp --model=openai-codex/gpt-6-luna -p "Read .claude/skills/local-discovery/SKILL.md and perform a bounded manual catalog maintenance run."
 ```
 
-For routine automated publication use `npm run catalog:daily`; the local schedule is managed by `npm run catalog:schedule -- install|remove|status`. See `docs/content-maintenance.md` for prerequisites and bounded publication behavior. Removed `sources:refresh`, `sources:audit`, and `events:review` package aliases are not valid commands. The local dev preview at `http://localhost:4317` hot-reloads UI changes.
+No JavaScript publication workflow, installed schedule/timer/cron/LaunchAgent, automatic commit/push, or human approval gate exists. User controls invocation and Git publication. Research full configured inventory using bounded workers. Explicit five-venue leaf batches use literal names/coordinates and distinct output filenames; parent deduplicates against the full catalog and normalizes typed records. Ephemeral code under ignored `outputs/` may normalize large JSON but is not an installed pipeline or package command. Record checked, failed, unchanged outcomes; failed reads do not close sources, and unvisited is not failed.
+
+## Research rules
+
+Apply both the 75 km geodesic radius and shared region bounds. The coverage goal is 100 distinct evergreen experiences per major city plus supported dated events; dated and ongoing recurring listings do not count, and there is no quota padding. Expansion is paused for user design review. Consult current `data/discovery-state.json` for actual Census-boundary coverage, Pacifica/Half Moon Bay/coastal/South San Francisco gaps, incomplete leads, and worker blockers.
+
+Venue identity/address may be matched to actual geographic data; source coordinates need not be printed. Never copy sibling coordinates or city center. Named POIs are leads, not proof of visitor access/live operation. Failed reads and “not seen” preserve records; expire scheduled occurrences separately; retirement needs explicit sourced evidence. Preserve source identity, URLs/check dates, seed/live status, accessibility, price, canonical schedule, IDs/order, and provenance.
+
+Use primary evidence; honor terms, access controls, rate limits, and security. Every discovery and refresh researches missing images in event-photo, suitable venue-photo, then logo order. Download the best publicly accessible candidate privately to ignored `outputs/image-review/<id>/`, outside `public/`, even when reuse permission is unclear. Record the full provenance manifest in `pendingImages`; do not publish unclear-rights images before user review or invent permission. Preserve licensed photos. The authoritative skill specifies bounded downloads and publication rules.
+
+Prefer source Polygon/MultiPolygon with holes, string `map.evidence`, and `sourceUrl`; then legitimate matching native outline. Every mission retains 25–100 m ground locator circle fallback, never physical footprint. Routes start-first, never area-as-course; only exact sourced course or typed connection with exactly two geocoded actual endpoints renders on focus. Connections dashed/directed.
+
+Canonical schedule kind is `scheduled`, with `startsAt`/`endsAt`. Date-only end is inclusive through Bay Area calendar day; timestamps expire at exact instant. Evergreen and ongoing recurring have no TTL.
+
+## Validation and publishing
+
+Run the offline validator and inspect intended changes. Report current JSON-derived counts only, failures, and unresolved coverage; research is not complete while shortfalls/unvisited sources remain. Historical approval labels/schema are lineage, not an active human gate. Publish only when explicitly requested.

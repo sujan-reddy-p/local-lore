@@ -31,6 +31,12 @@
 
 .mission-media__image--loading { opacity: 0; }
 .mission-media__image--loaded { opacity: 1; }
+.mission-media__image--logo {
+  box-sizing: border-box;
+  object-fit: contain;
+  padding: 16px;
+  background: color-mix(in srgb, var(--mission-accent) 18%, #14201d);
+}
 
 .mission-media__fallback {
   position: absolute;

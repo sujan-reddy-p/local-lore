@@ -6,6 +6,7 @@ import Compass from "lucide-react/dist/esm/icons/compass.mjs";
 import Hammer from "lucide-react/dist/esm/icons/hammer.mjs";
 import Layers3 from "lucide-react/dist/esm/icons/layers-3.mjs";
 import LocateFixed from "lucide-react/dist/esm/icons/locate-fixed.mjs";
+import Menu from "lucide-react/dist/esm/icons/menu.mjs";
 import Moon from "lucide-react/dist/esm/icons/moon.mjs";
 import Music2 from "lucide-react/dist/esm/icons/music-2.mjs";
 import Search from "lucide-react/dist/esm/icons/search.mjs";
@@ -20,11 +21,9 @@ import { LocationControl } from "@/components/map/location-control";
 import { MissionMap } from "@/components/map/mission-map";
 import { missionFormat } from "@/components/missions/mission-media";
 import { MissionDetail } from "@/components/missions/mission-detail";
-import { featuredLore } from "@/lib/activity-zones";
 import { dateChoices, dateKey, discoveryDates, isAvailableOn, isExpired } from "@/lib/availability";
 import { BAY_AREA_HOME } from "@/lib/region";
 import type { LoreItem } from "@/lib/types";
-
 type Interest = "Food ritual" | "Live music" | "Sunset" | "After dark" | "Make something" | "Odd & local" | "Scenic drive";
 const interests = [
   { value: "Food ritual", label: "Food", icon: Utensils },
@@ -47,34 +46,42 @@ function interestMatch(item: LoreItem, interest: Interest | null) {
   return item.traits?.includes("drive") ?? false;
 }
 
-function matches(item: LoreItem, query: string, budget: number | null, duration: number | null, interest: Interest | null, dates: Date[], referenceDate: Date) {
+function matches(item: LoreItem, budget: number | null, duration: number | null, interest: Interest | null, dates: Date[], referenceDate: Date) {
   if (isExpired(item, referenceDate)) return false;
   if (budget !== null && (item.price === null || item.price > budget)) return false;
   if (duration !== null && (item.duration === null || item.duration > duration)) return false;
   if (!interestMatch(item, interest)) return false;
   if (dates.length && !dates.some(date => isAvailableOn(item, date))) return false;
-  const haystack = [item.title, item.kicker, item.description, item.why, item.neighborhood, item.venue, item.category, missionFormat(item), ...item.vibe, ...(item.traits ?? [])].join(" ").toLowerCase();
-  const needles = query.trim().toLowerCase().split(/\s+/).filter(word => word.length > 2 && !["and", "little", "with", "something"].includes(word));
-  return !needles.length || needles.every(needle => haystack.includes(needle));
+  return true;
 }
 
-export function LocalLoreApp({ initialMissions }: { initialMissions?: LoreItem[] }) {
-  const catalog = initialMissions ?? featuredLore;
+export function LocalLoreApp({ initialMissions: catalog }: { initialMissions: LoreItem[] }) {
   const [budgetMax, setBudgetMax] = useState<number | null>(null);
   const [durationMax, setDurationMax] = useState<number | null>(null);
   const [interest, setInterest] = useState<Interest | null>(null);
+  const [refineOpen, setRefineOpen] = useState(false);
+  const [mapViewOpen, setMapViewOpen] = useState(false);
   const [referenceDate, setReferenceDate] = useState(() => new Date());
   const calendar = useMemo(() => dateChoices(referenceDate), [referenceDate]);
   const [selectedDateKey, setSelectedDateKey] = useState("all");
   const [query, setQuery] = useState("");
+  const searchIndex = useMemo(() => new Map(catalog.map(item => [item.id, [item.title, item.kicker, item.description, item.why, item.city, item.neighborhood, item.venue, item.category, missionFormat(item), ...item.vibe, ...(item.traits ?? [])].join(" ").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")])), [catalog]);
+  const searchWords = useMemo(() => query.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(/\s+/).filter(word => word.length > 2 && !["and", "little", "with", "something"].includes(word)), [query]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = selectedId === null ? null : catalog.find(item => item.id === selectedId) ?? null;
-  const [refineOpen, setRefineOpen] = useState(false);
-  const [mapViewOpen, setMapViewOpen] = useState(false);
+  const [discoveryOpen, setDiscoveryOpen] = useState(false);
   const searchNode = useRef<HTMLInputElement>(null);
+  const discoveryToggle = useRef<HTMLButtonElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
+  const discoveryWasOpen = useRef(false);
+
+  useEffect(() => {
+    if (discoveryOpen) searchNode.current?.focus();
+    else if (discoveryWasOpen.current) discoveryToggle.current?.focus();
+    discoveryWasOpen.current = discoveryOpen;
+  }, [discoveryOpen]);
   const selectedDates = useMemo(() => discoveryDates(selectedDateKey, referenceDate), [selectedDateKey, referenceDate]);
-  const visible = useMemo(() => catalog.filter(item => matches(item, query, budgetMax, durationMax, interest, selectedDates, referenceDate)), [catalog, query, budgetMax, durationMax, interest, selectedDates, referenceDate]);
+  const visible = useMemo(() => catalog.filter(item => matches(item, budgetMax, durationMax, interest, selectedDates, referenceDate) && searchWords.every(word => searchIndex.get(item.id)?.includes(word))), [catalog, searchIndex, searchWords, budgetMax, durationMax, interest, selectedDates, referenceDate]);
   const constrained = Boolean(query || interest || budgetMax !== null || durationMax !== null || selectedDateKey !== "all");
   const refinementCount = Number(budgetMax !== null) + Number(durationMax !== null);
   const refinementLabel = [budgetMax === null ? null : budgetMax === 0 ? "Free" : `Up to $${budgetMax}`, durationMax === null ? null : `Up to ${durationMax} h`].filter(Boolean).join(" · ");
@@ -104,12 +111,27 @@ export function LocalLoreApp({ initialMissions }: { initialMissions?: LoreItem[]
     const onKey = (event: KeyboardEvent) => {
       const target = event.target;
       const editing = target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
-      if (event.key === "/" && !editing) { event.preventDefault(); searchNode.current?.focus(); }
-      if (event.key === "Escape") { setRefineOpen(false); setSelectedId(null); setMapViewOpen(false); }
+      if (event.key === "/" && !editing) {
+        event.preventDefault();
+        if (discoveryOpen) searchNode.current?.focus();
+        else setDiscoveryOpen(true);
+      }
+      if (event.key === "Escape") {
+        if (discoveryOpen) {
+          setDiscoveryOpen(false);
+          setRefineOpen(false);
+          setSelectedId(null);
+          setMapViewOpen(false);
+        } else {
+          setRefineOpen(false);
+          setSelectedId(null);
+          setMapViewOpen(false);
+        }
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [discoveryOpen]);
 
   const choose = (item: LoreItem) => {
     const current = catalog.find(candidate => candidate.id === item.id);
@@ -126,8 +148,9 @@ export function LocalLoreApp({ initialMissions }: { initialMissions?: LoreItem[]
     <section className="lore-map" aria-label="Interactive mission map of the San Francisco Bay Area">
       <MissionMap catalog={catalog} visible={visible} selected={selected} mapRef={mapRef} onChoose={choose} />
       <div className="map-vignette" />
-      <section className="discovery-rail" aria-label="Discover things to do">
-        <div className="discovery-heading"><div className="discovery-brand"><Compass aria-hidden="true" /><h1>Local Lore</h1></div><LocationControl mapRef={mapRef} /></div>
+      <button ref={discoveryToggle} className="discovery-menu-toggle" hidden={discoveryOpen} type="button" aria-label="Open discovery panel" aria-expanded={discoveryOpen} aria-controls="discovery-rail" onClick={() => setDiscoveryOpen(true)}><Menu aria-hidden="true" /></button>
+      <section className={`discovery-rail${discoveryOpen ? " open" : ""}`} id="discovery-rail" aria-label="Discover things to do" aria-hidden={!discoveryOpen} inert={!discoveryOpen}>
+        <div className="discovery-heading"><div className="discovery-brand"><Compass aria-hidden="true" /><h1>Local Lore</h1></div><LocationControl mapRef={mapRef} /><button className="discovery-close" type="button" aria-label="Close discovery panel" onClick={() => setDiscoveryOpen(false)}><X aria-hidden="true" /></button></div>
         <div className="discovery-search-row"><label className="discovery-search"><Search aria-hidden="true" /><input ref={searchNode} value={query} onChange={event => setQuery(event.target.value)} placeholder="Search places, music, food…" aria-label="Search things to do" />{query && <button onClick={() => setQuery("")} aria-label="Clear search"><X /></button>}</label><button className={`filter-toggle${refineOpen ? " active" : ""}`} aria-label="Filter ideas" title="Budget and activity time" aria-expanded={refineOpen} aria-controls="discovery-body" onClick={() => setRefineOpen(open => !open)}><SlidersHorizontal />{refinementCount > 0 && <b>{refinementCount}</b>}</button></div>
         <div className="discovery-body" id="discovery-body">
           {refineOpen ? <section className="idea-refinement" aria-label="Budget and activity time">

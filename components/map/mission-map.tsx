@@ -13,8 +13,8 @@ import { BAY_AREA_BOUNDS, BAY_AREA_HOME } from "@/lib/region";
 import type { LoreItem } from "@/lib/types";
 import { MissionMedia } from "@/components/missions/mission-media";
 
-const hoverLayers = ["zone-hover", "zone-hover-edge", "route-hover", "mission-hover"];
-const selectedLayers = ["zone-selected", "zone-selected-edge", "route-selected", "mission-selected"];
+const hoverLayers = ["zone-hover", "zone-hover-edge", "route-hover", "route-hover-direction", "mission-hover"];
+const selectedLayers = ["zone-selected", "zone-selected-edge", "route-selected", "route-selected-direction", "mission-selected"];
 const hitLayers = ["mission-hit", "mission-clusters", "route-hit", "activity-locator", "zone-fill"];
 const outlineCache = new WeakMap<MapLibreMap, Map<string, ActivityOutline>>();
 const visibleIdsCache = new WeakMap<MapLibreMap, string[]>();
@@ -26,9 +26,12 @@ function emphasize(map: MapLibreMap, mode: "hover" | "selected", id: string | nu
   focus[mode] = id;
   focusCache.set(map, focus);
   for (const layer of mode === "hover" ? hoverLayers : selectedLayers) {
-    const filter: maplibregl.FilterSpecification = layer.startsWith("mission-")
+    const focused: maplibregl.FilterSpecification = layer.startsWith("mission-")
       ? ["in", `,${id ?? "__none__"},`, ["coalesce", ["get", "ids"], ""]]
       : ["==", ["get", "id"], id ?? "__none__"];
+    const filter: maplibregl.FilterSpecification = layer.endsWith("-direction")
+      ? ["all", focused, ["==", ["get", "routeType"], "connection"]]
+      : focused;
     if (map.getLayer(layer)) map.setFilter(layer, filter);
   }
   if (map.getLayer("route-hit")) map.setFilter("route-hit", ["any", ["==", ["get", "id"], focus.hover ?? "__none__"], ["==", ["get", "id"], focus.selected ?? "__none__"]]);
@@ -47,7 +50,8 @@ export function MissionMap({ catalog, visible, selected, mapRef, onChoose }: {
   const [preview, setPreview] = useState<{ item: LoreItem; group: LoreItem[]; container: HTMLElement } | null>(null);
   const choose = useEffectEvent(onChoose);
   const selectedId = useEffectEvent(() => selected?.id);
-  const sceneState = useMemo(() => ({ catalog, byId: Object.fromEntries(catalog.map(item => [item.id, item])), ids: visible.map(item => item.id), outlines: outlineCache }), [catalog, visible]);
+  const byId = useMemo(() => Object.fromEntries(catalog.map(item => [item.id, item])), [catalog]);
+  const sceneState = useMemo(() => ({ catalog, byId, ids: visible.map(item => item.id), outlines: outlineCache }), [catalog, byId, visible]);
   const readScene = useEffectEvent(() => sceneState);
   const previousCatalogRef = useRef(catalog);
 
@@ -94,30 +98,35 @@ export function MissionMap({ catalog, visible, selected, mapRef, onChoose }: {
     visibleIdsCache.set(map, allIds);
     catalogCache.set(map, initialCatalog);
     let outlineCatalog: LoreItem[] | null = null;
-    let outlineSignature = "";
+    let outlineIds: string[] | null = null;
+    let outlineView = "";
     const refreshOutlines = () => {
-      if (!map.isStyleLoaded()) return;
+      if (!map.isStyleLoaded() || map.getZoom() < 14) return;
       const latest = readScene();
-      if (outlineCatalog !== latest.catalog) {
-        outlineCatalog = latest.catalog;
-        outlineSignature = "";
-      }
-      const candidates = map.getZoom() < 14 ? [] : (["buildings", "landuse"] as const).flatMap(sourceLayer =>
+      const center = map.getCenter();
+      const view = `${center.lng}:${center.lat}:${map.getZoom()}:${map.getPitch()}:${map.getBearing()}`;
+      if (outlineCatalog === latest.catalog && outlineIds === latest.ids && outlineView === view) return;
+      outlineCatalog = latest.catalog;
+      outlineIds = latest.ids;
+      outlineView = view;
+      const activeIds = new Set(latest.ids);
+      const current = latest.outlines.get(map) ?? new Map<string, ActivityOutline>();
+      const bounds = map.getBounds();
+      const unresolved = latest.catalog.filter(item => activeIds.has(item.id) && bounds.contains(item.coordinates) && !current.has(item.id) && !item.map?.boundary);
+      if (!unresolved.length) return;
+      const candidates = (["buildings", "landuse"] as const).flatMap(sourceLayer =>
         map.querySourceFeatures("san-francisco", { sourceLayer }).flatMap(feature => {
           if (feature.geometry.type !== "Polygon" && feature.geometry.type !== "MultiPolygon") return [];
           const properties = { ...(feature.properties ?? {}), __layer: sourceLayer };
           return [{ type: "Feature", id: feature.id, properties, geometry: feature.geometry } as unknown as OutlineFeature];
         }),
       );
-      const activeIds = new Set(latest.ids);
-      const next = new Map(latest.outlines.get(map));
-      const bounds = map.getBounds();
-      for (const [id, geometry] of matchActivityOutlines(latest.catalog.filter(item => activeIds.has(item.id) && bounds.contains(item.coordinates)), candidates)) next.set(id, geometry);
-      const signature = [...next].map(([id, geometry]) => `${id}:${geometry.type}:${JSON.stringify(geometry.coordinates)}`).join("|");
-      if (signature === outlineSignature) return;
-      outlineSignature = signature;
+      const matches = matchActivityOutlines(unresolved, candidates);
+      if (!matches.size) return;
+      const next = new Map(current);
+      for (const [id, geometry] of matches) next.set(id, geometry);
       latest.outlines.set(map, next);
-      const scene = activityScene(latest.catalog, [...activeIds], next);
+      const scene = activityScene(latest.catalog, latest.ids, next);
       const zones = map.getSource("activity-zones") as GeoJSONSource | undefined;
       const points = map.getSource("mission-points") as GeoJSONSource | undefined;
       if (zones) zones.setData(scene.zones);

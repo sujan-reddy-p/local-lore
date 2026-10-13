@@ -1,13 +1,9 @@
-# Source-owned catalog data
+# Catalog data
 
-`source-catalog.json` is the website’s versioned source registry and catalog. Records stay nested under their source; counts are computed from the current snapshot, not fixed constants.
+`source-catalog.json` is the static source-grouped website catalog. Existing `approved_for_display` labels are historical lineage, not an independent current audit, fetch permission, or image-reuse permission.
 
-Existing curated entries retain `approved_for_display` as historical lineage. It is not an independent live fact-check, automated-fetch permission, or permission to reuse images. Newly researched records carry their own check date, source status, and evidence.
+`discovery-config.json` defines the manual full inventory, San Francisco anchor, 75 km radius, Bay Area bounds, and coverage goals. `discovery-state.json` is manually updated with observed source checks/outcomes; there is no automatic rotation, timer, or scheduler. Failed reads and “not seen” preserve existing records. Expire event occurrences separately and retire only on explicit sourced cancellation, permanent closure, or rights withdrawal.
 
-The local agentic publisher assesses permitted source access without a human approval gate. It reads public primary sources, verifies actual-read quotations and geographic evidence, and publishes only supported processed catalog/state changes. Failed fetches preserve records; expired scheduled occurrences and explicitly sourced permanent closures/cancellations are handled separately. Unknown price/duration remain null. Evergreen activities must not be overwritten by dated occurrences.
+`coverage-boundaries.geojson` contains source-backed Census city boundaries for coverage counting, not browser map assets. `pendingDiscoveryLeads` preserves incomplete discoveries outside the published catalog. `pendingImages` records privately downloaded candidates; binaries belong in ignored `outputs/image-review/`, never `public/` until reviewed. `pendingImageResearch` names missing-image work that has not yet been completed. Empty `pendingImages` means no staged download is claimed.
 
-Keep stable IDs, global `catalogOrder`, source links, provenance, and rights-verified image metadata. `lib/seed-data.ts` adapts this JSON to the UI; never edit that adapter to add website content. Run `npm run catalog:validate` after content changes. The website does not import its catalog into Postgres; `db:setup` only applies migrations for optional visitor storage.
-
-`discovery-config.json` owns the SF anchor, 75 km cutoff, shared regional bounds, coverage goals, research limits, and local schedule. `discovery-state.json` stores the published rotation/check state. Raw research and operational logs remain ignored under `outputs/`, not in Git.
-
-See `docs/content-maintenance.md`, `docs/local-agent-automation.md`, and `.claude/skills/local-discovery/SKILL.md` for add/update/remove commands and the researcher’s complete contract.
+See `docs/content-maintenance.md`, `docs/local-agent-automation.md`, and `.claude/skills/local-discovery/SKILL.md` for manual maintenance and validation. The offline catalog validator remains `npm run catalog:validate`.

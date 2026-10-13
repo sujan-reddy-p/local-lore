@@ -39,14 +39,15 @@ function MissionFallback({ item }: { item: LoreItem }) {
 function MissionMediaBody({ item, variant }: MissionMediaProps) {
   const image = item.image;
   const [status, setStatus] = React.useState<"loading" | "loaded" | "error">(image ? "loading" : "error");
-  const hasPhoto = Boolean(image && status === "loaded");
+  const hasImage = Boolean(image && status === "loaded");
+  const imageKind = image?.kind ?? "event";
 
   return (
     <>
       <div className={`mission-media__frame mission-media__frame--${variant}`} data-photo-state={image ? status : "missing"}>
         {image && status !== "error" ? (
           <Image
-            className={`mission-media__image mission-media__image--${status}`}
+            className={`mission-media__image mission-media__image--${status} mission-media__image--${imageKind}`}
             src={image.url}
             alt={variant === "detail" ? image.alt : ""}
             fill
@@ -56,17 +57,17 @@ function MissionMediaBody({ item, variant }: MissionMediaProps) {
             onError={() => setStatus("error")}
           />
         ) : null}
-        {!hasPhoto && <MissionFallback item={item} />}
+        {!hasImage && <MissionFallback item={item} />}
       </div>
     </>
   );
 }
 
 export function MissionMedia({ item, variant }: MissionMediaProps) {
-  const imageUrl = item.image?.url ?? "fallback";
+  const imageKey = `${item.image?.url ?? "fallback"}:${item.image?.kind ?? "event"}`;
   return (
     <div className={`mission-media mission-media--${variant}`} style={{ "--mission-accent": item.accent } as React.CSSProperties}>
-      <MissionMediaBody key={imageUrl} item={item} variant={variant} />
+      <MissionMediaBody key={imageKey} item={item} variant={variant} />
     </div>
   );
 }

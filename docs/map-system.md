@@ -11,7 +11,7 @@ The map combines four systems:
 
 ## Archive and protocol
 
-`public/maps/san-francisco-region.pmtiles` is a 91,892,255-byte regional archive extracted from the Protomaps 2026-10-11 daily build (basemap v4.15.2), bounded to [-123.1, 36.55, -121.4, 38.5] at zoom levels 0–14. Protomaps distributes its OpenStreetMap-derived basemap as an ODbL Produced Work; keep OpenStreetMap and Protomaps attribution visible. At runtime the client requests `/maps/san-francisco-region.pmtiles?v=20261011-bay-area` using PMTiles range reads.
+`public/maps/san-francisco-region.pmtiles` is an 87.6 MiB regional archive bounded to [-123.1, 36.55, -121.4, 38.5] at native zoom levels 0–14. Keep OpenStreetMap and Protomaps attribution visible. Runtime uses same-origin PMTiles range reads.
 
 PMTiles performs HTTP range requests. The server must return correct `Accept-Ranges`, `Content-Length`, and `Content-Range` behavior. A successful HTML response does not prove the map asset works.
 
@@ -44,15 +44,15 @@ https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf
 ```
 
 Self-host those files if a fully offline or CSP-restricted experience is required.
-At close zoom, `MissionMap` queries the loaded native z14 `buildings` and `landuse` source layers. `matchActivityOutlines` keeps only a relevant polygon containing an area or venue mission point, rejects oversized geometry and polygons clipped at a native tile boundary, and preserves polygon holes. If no honest match is available, every activity remains visibly represented by a restrained soft-circle locator (a locator only, never a claimed boundary). Park/building polygons are not assigned to running, cycling, or route activities.
+At close zoom, `MissionMap` may learn legitimate matching native buildings/landuse outlines. Source Polygon/MultiPolygon with holes, a string `map.evidence`, and `sourceUrl` is preferred. Native outlines are valid secondary context only when they legitimately match. Every mission retains a 25–100 m ground locator circle fallback; it is a locator, never a physical footprint.
 
-`map.kind` supplies context: `area` may use a genuine containing area outline, `venue` may use a matching venue/building context, and `route` starts at its sourced coordinate. A route line is shown only when genuine source geometry exists, and only on hover or selection; otherwise it remains start-first. The point and any outline remain linked by mission ID.
+`map.kind` supplies context: area/venue may have supported geometry; routes are always start-first. Never render an area polygon as a course. A line appears only on focus for exact source-backed course geometry or a typed `connection` with exactly two geocoded actual endpoints; connections are dashed and directed.
 
 ## Layer order and zoom behavior
 
 After basemap layers, Local Lore adds:
 
-- `zone-fill` and `zone-edge`: area/venue-aware matched outlines from zoom 11; unmatched items retain visible soft-circle locators.
+- `zone-fill` and `zone-edge`: supported source/native area or venue outlines; every mission keeps a ground locator circle fallback.
 - `zone-hover` and `zone-hover-edge`: filtered hover emphasis from zoom 12.2.
 - `zone-selected` and `zone-selected-edge`: filtered selected emphasis from zoom 12.2.
 - `mission-clusters` and `mission-cluster-count`: density aggregation through cluster max zoom 13, with same-venue events grouped and a chooser retaining every event.
@@ -85,9 +85,7 @@ MapLibre configuration explicitly enables drag pan, drag rotate, pitch with rota
 
 ## Custom controls
 
-The app intentionally does not add `NavigationControl`. A visible compact control stack contains zoom in, zoom out, map-view options, and (on eligible deployed hosts) the location control. Secondary options rotate by +35°, cycle approximately 46° → 70° → 0° pitch, or restore `BAY_AREA_HOME`. Discovery is separate and always visible.
-
-Map tools move beside the desktop discovery panel; on mobile they hide while browser/detail content is open to avoid covering actions. Direct map gestures and keyboard remain available. All camera easing honors reduced motion.
+The compact discovery panel is opened by a hamburger, hidden by default on desktop and mobile. Closed controls remain mounted but inert and preserve filters. Opening focuses search; Escape closes and restores focus to the trigger. The opened panel keeps interests/dates compact and has budget/time sliders only. Map tools remain separate and responsive.
 
 Interactive hover previews float above discovery controls. They share the mission's specific description and media treatment, have no Explore action, and are dismissed on leaving, Escape, a filter change, or camera movement. A selected mission suppresses its preview.
 
@@ -95,7 +93,10 @@ Interactive hover previews float above discovery controls. They share the missio
 
 Every ~1.2 seconds during rendering, the map element receives a JSON `data-map-health` attribute containing style/source readiness, rendered building/cluster/zone/neighborhood-label counts, and camera values. Map errors are written to `data-map-error` and logged.
 
-This instrumentation exists for local/browser smoke tests. A ready map usually has `styleLoaded: true`, `sourceLoaded: true`, and appropriate feature counts for its zoom and viewport. `zones: 0` is honest when no matching polygon has been learned yet; the mission point and artwork remain the fallback.
+This instrumentation exists for actual browser smoke runs. Readiness and counts depend on zoom and viewport; a clustered regional overview can legitimately have no rendered individual zones. Unclustered places have visible ground-aligned locator halos from zoom 9.5, including when no footprint is known. Do not use an invisible tiny polygon as a substitute for a legible locator.
+
+Native outline learning runs only for unresolved visible places in a settled camera/filter state; accepted geometry persists. Source-induced idle events do not repeat full polygon matching and JSON signatures. The versioned PMTiles URL uses immutable caching and byte ranges: bump the archive URL version whenever replacing the archive, and verify HTTP 206/Content-Range rather than transferring the whole 87.6 MiB asset.
+
 
 ## Blank-map debugging order
 
@@ -112,7 +113,7 @@ This instrumentation exists for local/browser smoke tests. A ready map usually h
 ## Map change checklist
 
 - Test initial, top-down, maximum-pitch, rotated, cluster, and close neighborhood views.
-- Verify matching building/landuse outlines appear only when valid, holes remain open, clipped/oversized candidates fall back to point artwork, and no circle footprint is implied.
+- Verify source/native outlines appear only when supported and matching, holes remain open, clipped/oversized candidates are rejected, and every mission retains its 25–100 m locator circle without implying a physical footprint.
 - Verify all 20 subject badges register from the native sprite before markers render, no missing-image warnings occur on a fresh load, and artwork remains crisp at retina scale.
 - Verify hover/select layer filters, continuous area-aware fades, popup cleanup, and selected-preview suppression.
 - Verify desktop drag/right-drag/wheel and mobile pan/pinch/tilt.

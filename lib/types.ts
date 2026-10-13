@@ -1,3 +1,5 @@
+import type { MultiPolygon, Polygon } from "geojson";
+
 export const categories = ["Outside", "Move", "Make", "Listen", "Eat", "Learn", "Community", "After dark"] as const;
 export type Category = (typeof categories)[number];
 
@@ -20,6 +22,8 @@ export type MissionImage = {
   credit: string;
   sourceUrl: string;
   license?: string;
+  licenseUrl?: string;
+  kind?: "event" | "venue" | "logo";
 };
 
 export type MissionSourceStatus = "curated-seed" | "verified-live" | "agentic-directory";
@@ -33,6 +37,7 @@ export type LoreItem = {
   category: Category;
   neighborhood: string;
   venue: string;
+  city?: string;
   coordinates: [number, number];
   zoneRadiusM: number;
   time: string;
@@ -41,6 +46,7 @@ export type LoreItem = {
   price: number | null;
   vibe: ("solo" | "friends" | "outdoors" | "quiet" | "social")[];
   accessibility: string;
+  websiteUrl?: string;
   source: { name: string; url: string; status: MissionSourceStatus; checkedAt: string };
   accent: string;
   distance: string;
@@ -51,6 +57,9 @@ export type LoreItem = {
     kind: "area" | "venue" | "route";
     route?: [number, number][];
     sourceUrl?: string;
+    boundary?: Polygon | MultiPolygon;
+    evidence?: string;
+    routeType?: "course" | "connection";
   };
   image?: MissionImage;
   hotspot?: boolean;

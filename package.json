@@ -10,17 +10,12 @@
     "build": "next build --webpack",
     "build:vercel": "next build --webpack",
     "start": "next start --port 4317",
-    "test": "npm run build:vercel && tsx --test tests/source-catalog.test.mjs tests/ingestion.test.ts tests/source-audit.test.mjs tests/discovery-publisher.test.mjs",
+    "test": "npm run build:vercel && tsx --test tests/*.test.ts tests/*.test.mjs",
     "lint": "eslint app components lib db scripts types next.config.ts eslint.config.mjs",
     "catalog:validate": "node scripts/validate-source-catalog.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node --env-file-if-exists=.env.local scripts/migrate-postgres.mjs",
-    "db:setup": "npm run db:migrate",
-    "catalog:research": "node scripts/discover-catalog.mjs research",
-    "catalog:stage": "node scripts/discover-catalog.mjs stage",
-    "catalog:apply": "node scripts/discover-catalog.mjs apply",
-    "catalog:daily": "node scripts/daily-discovery.mjs",
-    "catalog:schedule": "node scripts/schedule-discovery.mjs"
+    "db:setup": "npm run db:migrate"
   },
   "dependencies": {
     "@protomaps/basemaps": "^5.7.2",

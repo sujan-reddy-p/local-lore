@@ -6,7 +6,7 @@
 - npm and a modern WebGL-capable browser.
 - Network access for first dependency install and Protomaps label glyphs.
 
-No application environment variables or map tokens are required to run the local preview. Historical database commands use the ignored `.env.local`; do not commit it or expose its values. The active catalog publisher requires locally authenticated OMP.
+No application environment variables or map tokens are required to run the local preview. Catalog research is a manually invoked OMP skill as documented in `docs/content-maintenance.md`; no research scheduler or automatic Git publisher exists.
 
 ## Commands
 
@@ -19,12 +19,7 @@ No application environment variables or map tokens are required to run the local
 | `npm run build` | Produce the native Next/Vercel build using webpack. |
 | `npm run build:vercel` | Alias for the native Vercel build using webpack. |
 | `npm test` | Build with Next, then run catalog and ingestion behavior tests. |
-| `npm run catalog:validate` | Validate source groups, record IDs/order, display/source lineage states, coordinates, and local image paths. |
-| `npm run catalog:research -- --output outputs/proposal.json` | Run the local agentic researcher; requires authenticated OMP. Defaults to `openai-codex/gpt-6-luna`. |
-| `npm run catalog:stage -- --proposal outputs/proposal.json` | Deterministically validate and preview a proposal without applying it. |
-| `npm run catalog:apply -- --proposal outputs/proposal.json` | Apply a validated proposal to the local catalog and discovery state. |
-| `npm run catalog:daily` | Run isolated local research, validation, build/tests, then bounded catalog/state commit and push; requires clean, synchronized checkout and local OMP credentials. |
-| `npm run catalog:schedule -- install|remove|status` | Manage the macOS launchd schedule; local schedule is in `data/discovery-config.json` under `schedule.hour` and `schedule.minute`. |
+| `npm run catalog:validate` | Offline validation of source groups, record IDs/order, display/source lineage states, coordinates, and local image paths. |
 | `npm run db:generate` | Generate a Drizzle migration from historical `db/schema.ts`. |
 | `npm run db:migrate` | Apply historical PostgreSQL migrations using `DATABASE_URL_UNPOOLED` first, then `DATABASE_URL` or `POSTGRES_URL`. |
 | `npm run db:setup` | Apply PostgreSQL migrations for optional visitor storage; requires configured Neon credentials. Catalog publication does not use Postgres. |
@@ -61,11 +56,11 @@ npm run dev
 1. Load the root page and wait for `data-map-health.ready`.
 2. Confirm land, water, roads, parks, and neighborhood labels render.
 3. Confirm 3D buildings are visible at initial/closer zoom.
-4. Confirm the compact panel exposes search, Anything plus the seven subject interests, dates, and Filters without a hamburger or gallery.
+4. Confirm the hamburger opens discovery; it is hidden by default on desktop/mobile. While closed, the panel stays mounted but inert and preserves filters. Opening focuses search; Escape closes and restores focus to trigger. The opened panel has interests/dates and budget/time refinement only.
 5. Drag to pan, wheel/trackpad to zoom, right-drag to rotate/pitch.
 6. Use keyboard zoom/navigation after focusing the map.
 7. Open Map view options, rotate/tilt through all states, then restore Whole region. Zoom beyond 14 to 18 and confirm buildings/tiles remain rendered with no archive errors.
-8. At close zoom, verify valid loaded building/landuse outlines preserve holes; oversized or tile-boundary-clipped candidates remain point artwork rather than becoming circles. Unknown areas are not presented as verified boundaries.
+8. At close zoom, verify supported source/native outlines preserve holes; oversized or tile-boundary-clipped candidates fall back honestly while the 25–100 m ground locator circle remains available. Never present it as a physical footprint.
 9. Hover a mission and verify the preview uses the specific mission sentence, compact media, no Explore action, and disappears when that mission is selected.
 10. Click a cluster and confirm expansion.
 11. Click a mission and confirm the detail has truthful media or subject artwork fallback, venue title, three facts, one website CTA, and Info disclosure for source/schedule/accessibility/photo provenance.
@@ -76,12 +71,12 @@ npm run dev
 
 Test at approximately 390×844 and 360×800:
 
-- visible search and horizontally scrolling interest/date rows;
-- interest labels and Lucide icons remain readable;
+- hamburger-hidden panel opens on activation; closed controls are inert, filters persist, search receives focus, Escape closes and restores trigger focus;
+- interests and dates are legible in compact opened panel; sliders refine budget/time only;
 - camera controls do not cover primary discovery controls;
 - one-finger pan and two-finger zoom/rotate/pitch;
 - detail card fills the available height below the compact panel, closes cleanly, and does not trap the map;
-- detail media uses the larger responsive frame; missing/error photo uses compact subject artwork without duplicate text;
+- detail media uses the larger responsive frame; missing/error photo uses UI-owned subject artwork without duplicate text;
 - Info disclosure and website link are tappable;
 - orientation change recalculates map size correctly.
 
@@ -111,7 +106,7 @@ Check Protomaps label glyph CDN requests and CSP/network. Geometry and local act
 
 ### Activity outline is absent
 
-At least one matching polygon must be loaded from native z14 `buildings` or `landuse` data. Oversized, hole-invalid, or native-tile-boundary-clipped candidates intentionally fall back to the point artwork; this is not a radius failure.
+Matching native z14 `buildings` or `landuse` geometry is optional secondary context. Oversized or tile-boundary-clipped candidates are rejected; every mission retains its 25–100 m ground locator circle, which is not a physical boundary.
 
 ### Location control is absent
 
@@ -125,8 +120,7 @@ Build tools do not validate static-host byte ranges. Test the deployed asset dir
 
 Inspect explicit schedules, editorial Weekend fallback, Bay Area calendar day, selected date key, and whether Any day is active. A filter match is not live confirmation; missing schedules remain explicitly unconfirmed in details.
 
-## Performance notes
-- The current catalog snapshot contains 212 records in the client bundle; that is observed V1 scale, not a fixed contract for later discovery snapshots. A live/database-backed catalog would need an API and map viewport query.
-- MapLibre creates a significant client chunk and build tools may warn above 500 KiB. Lazy loading can improve initial shell cost later.
-- Filtering reconstructs small GeoJSON collections and calls `setData`; acceptable for hundreds of items, but thousands need server/window querying or indexed client state.
+- Expansion is paused for design review; current coverage and incomplete research are recorded in `data/discovery-state.json`. Recompute counts from JSON and actual city boundaries before reporting. Coverage goal is 100 distinct evergreen experiences per major city, without padding.
+- MapLibre remains a substantial client dependency. Inspect actual production transfers; do not equate catalog file size with downloaded JavaScript. The browser receives projected mission fields, not raw research evidence.
+- Search normalization is memoized. Native outline discovery runs only for unresolved visible missions at changed, settled camera states; verify filtering and map interaction in the actual browser.
 - PMTiles dramatically reduces file count but requires efficient range caching.

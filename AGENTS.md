@@ -11,8 +11,7 @@ This is the entry point for any agent continuing the project. Work in this stand
 5. `docs/source-and-image-policy.md` before modifying catalog records, sources, images, or ingestion
 
 - Preserve source URL, source name, source-check date, seed/live status, accessibility, price, and schedule context on every mission.
-- `curated-seed` must never be presented as verified live data.
-- The catalog publisher is agentic: an evidence-bearing researcher proposes strict structured changes and a deterministic validator/publisher writes a bounded Git snapshot. There is no mandatory human approval or review queue in the active publication path.
+- The catalog is maintained only by a manually invoked OMP skill with user-controlled Git publication. No JavaScript researcher/publisher or automatic schedule/commit/push is active. There is no mandatory human approval queue.
 - Retain access controls, source terms, rate limits, image rights, security boundaries, and provenance. Public visibility or model confidence never grants permission.
 - Never invent facts, prices, dates, coordinates, availability, accessibility, event details, or image rights. If evidence is incomplete, omit the field or skip the finding.
 - Human correction/takedown workflows are future work and are not implemented now; preserve enough provenance to support a later correction path.
@@ -21,8 +20,6 @@ This is the entry point for any agent continuing the project. Work in this stand
 - Preserve keyboard support, visible focus, readable contrast, touch gestures, and reduced-motion behavior.
 
 The historical `approved_for_display` and `needs_source_review` labels remain data lineage/eligibility state for existing records and sources. They are not a current human publication gate. The old database review/publication workflow is inactive; Neon/Postgres history remains documented as historical operational infrastructure.
-- Do not generate project images. Add a remote image only when reuse permission is known and every `MissionImage` field can be completed.
-- Preserve keyboard support, visible focus, readable contrast, touch gestures, and reduced-motion behavior.
 
 ## Safe change workflow
 
@@ -61,7 +58,7 @@ For map or responsive changes, inspect the running page at desktop and mobile wi
 - Shared docs are integration points: make small targeted updates and preserve concurrent edits. Do not move backend files as part of a frontend cleanup.
 - Verify successful, missing, loading, and failed photos; switch directly from a failed photo to another selected mission. Selected cards suppress their own hover preview; previews have no action. Check inline Info disclosure, source links, and filter/camera hover dismissal. Never insert catalog strings with `setHTML`.
 - Product direction and upcoming event/road-trip acceptance are in `docs/roadmap-and-decisions.md`. Deliver complete user journeys, not isolated extra controls. Do not expose trip feasibility without real road routing, return-leg accounting, and approved destination facts.
-- Discovery stays visible without a hamburger or scrolling interest/date rows. Filter only refines budget and approximate activity time; avoid duplicate category/trait/quick controls. Keep activity time separate from driving/trip duration.
+- Discovery is hidden by default behind an accessible hamburger. Keep state when closed, remove hidden controls from interaction, focus search on opening, and restore the trigger on closing. The opened panel keeps interests and dates compact; filters only refine budget and approximate activity time.
 - Card descriptions explain the actual activity in one short plain sentence, not a category label. `lib/mission-copy.ts` is frontend wording, not a second facts/schedule catalog. Keep photo, heading, readable time/cost/company facts, and one website action; source/accessibility/rights live behind Info.
 - Follow the practical hierarchy, contrast, and copy review in `docs/design-system.md`; use real content and inspect screenshots rather than installing a generic design pack.
 - `LocationControl` requests permission on deployed secure hosts, never loopback/localhost. Verify denial, outside coverage, retry, timeout, stale callbacks, and navigation preservation; no GPS storage or transmission. Preserve existing map gestures.
@@ -71,7 +68,7 @@ For map or responsive changes, inspect the running page at desktop and mobile wi
 ## Editing catalog data
 
 - The publish boundary is `LoreItem` in `lib/types.ts`.
-- Catalog content lives in `data/source-catalog.json`, grouped by source. `lib/seed-data.ts` adapts those groups to the `LoreItem` UI contract; do not hand-edit the adapter.
+- Catalog content lives in `data/source-catalog.json`, grouped by source. `lib/seed-data.ts` is a server-side display projection: never import it or the raw catalog from client/map modules, and never serialize audit evidence, candidate state, or coordinate-research receipts to the browser.
 - Existing catalog records are `approved_for_display` under the maintainer’s explicit accuracy assumption for current site content. This is not an independent source audit, automated-fetch permission, or image-reuse permission.
 - Preserve `catalogOrder`, source IDs, original seed-check dates, and image metadata. Validate with `npm run catalog:validate`.
 - Neon/Postgres is for server-side operational state; do not require it to serve the current static catalog or expose its credentials to browser code.
@@ -83,25 +80,22 @@ For map or responsive changes, inspect the running page at desktop and mobile wi
 
 ## Local catalog discovery
 
-- The active local workflow is `scripts/discover-catalog.mjs` plus `scripts/daily-discovery.mjs`; there is no GitHub scheduled workflow. The default research model is `openai-codex/gpt-6-luna` using locally authenticated OMP; override with `--model` or `LOCAL_DISCOVERY_MODEL`.
-- Researcher assesses access from actual published terms and technical controls. No human approval queue is required, but access permission, source terms, rate limits, image rights, security, and provenance remain required. Never bypass access controls or invent facts.
-- Raw proposals/evidence and other run outputs are ignored local files. Only final processed `data/source-catalog.json` and `data/discovery-state.json` may be committed by the daily runner.
-- Daily publication requires a clean committed checkout, local branch equal to `origin`, installed dependencies, and authenticated local OMP. Research, validation, and builds run in an isolated ignored Git worktree, not the root `.next`; commits are limited to the two managed catalog/state paths. A push failure leaves the local commit in place and requires a deliberate push before another run.
-- macOS launchd defaults to 08:17 local time. Install only from a durable `~/Projects/local-lore` clone with `npm ci`, then `npm run catalog:schedule -- install`; the installer refuses `/tmp` checkouts. Do not claim installation or a successful run without observed evidence.
-- The baseline has 225 records; derive current counts from the catalog. The 350–500 distinct-experience range and 75 km Bay Area cutoff are research goals/limits, not achieved coverage claims. Route geometry requires actual sourced ordered geometry and is shown only on hover/selection; otherwise show route start-first. Dated events at grouped locations use a chooser.
+- Catalog maintenance is a manually invoked OMP GPT-6 Luna skill in `.claude/skills/local-discovery/SKILL.md`; exact invocation is in README and `docs/content-maintenance.md`. No JavaScript research/publisher runner, automatic schedule, LaunchAgent, automatic commit, or automatic push. The user decides when to trigger and publish.
+- Maintain the full configured inventory with bounded parallel workers; record checked/failed/unchanged outcomes in discovery state. A failed read or not-seen result preserves the good record. Expire dated occurrences separately and retire only on explicit evidence.
+- Apply the 75 km geodesic radius and Bay Area bounds, plus actual city boundaries for city counts. Cover neighborhoods, South San Francisco, Pacifica, Half Moon Bay, nearby coasts and open space—not just city polygons. The 100-evergreen-per-major-city goal never overrides distinctive experiences, broad human needs, usable websites, complete imagery research, or truthful shortfalls.
+- Every discovery/refresh worker researches event image, suitable venue image, then logo. If permission is unclear, download the best public candidate into ignored `outputs/image-review/`, outside `public/`, and record source/credit/hash/status in discovery state's `pendingImages`. Do not publish or commit it until user review; never invent permission. Existing authorized images or owned artwork remain displayed.
+- Derive current city counts from the catalog and actual city boundaries, not historical baseline totals. Ongoing recurrence and dated occurrences do not count toward the evergreen minimum. Route courses use sourced ordered geometry; geocoded A-to-B connections must be marked `routeType: "connection"` and dashed/directed. Show routes only on focus; otherwise show their start. Dated events at grouped locations use a chooser.
+- Expansion is paused pending the user's design-quality review. The experience-led breadth matrix, complete-candidate gate, worker supervision, and reproducible “discover X” procedure in `.claude/skills/local-discovery/SKILL.md` are authoritative. Map-only POIs and generic park walks are leads, not quota-filling published missions.
 
 ## Editing future ingestion
 
-- The active publication path is local-Mac-only agentic research documented in `docs/content-maintenance.md`: research produces strict structured findings, deterministic validation applies only source-backed changes in an isolated copy, and the daily wrapper may commit only processed catalog/state files. A failed fetch or “not seen” result preserves the existing good record; it does not mass-delete content.
-- Source/record `reviewStatus` values describe lineage and eligibility evidence, not a mandatory human approval step. The former database candidate-review/publication commands are inactive historical paths; preserve their schemas and migration history when relevant, but do not route new content through them.
-- AI may propose editorial framing and classification, but may not invent factual fields. Preserve provenance, source checks, rights, and security controls.
-- Preserve event occurrences and source observations where present; expire past occurrences separately, and retire only explicit cancellations/closures with evidence.
-- Do not activate public database reads or a remote scheduler without updating storage, deployment, source-policy, observability, and rollback documentation. macOS launchd scheduling is local and documented in the maintenance guide.
+- `lib/ingestion/` and database candidate-review/publication paths are historical; preserve their schemas and migration history, but do not use them to publish static catalog content. Source/record `reviewStatus` values remain lineage and eligibility evidence, not mandatory approval.
+- No discovery schedule or automation is installed or supported; catalog maintenance occurs only when explicitly invoked by the user.
 
 ## Repository hygiene
 
 - Do not commit `node_modules`, `.next`, `dist`, `.wrangler`, `.env*`, or local recovery folders.
-- The PMTiles archive is intentionally committed and is about 29.5 MiB.
+- The committed regional PMTiles archive is about 87.6 MiB. Preserve its source attribution and license; do not replace it with the older city-only archive.
 - Preserve unrelated work in a dirty working tree.
 - Keep documentation aligned with implemented behavior. If code and docs disagree, fix both in the same change.
 - Do not deploy or configure external services unless the user explicitly requests it.

@@ -29,9 +29,10 @@ export function MissionDetail({ item, onClose }: { item: LoreItem | null; onClos
       <div><dt><Users aria-hidden="true" />Company</dt><dd>{item.vibe.includes("social") ? "Social" : item.vibe.includes("solo") ? "Solo OK" : "Any"}</dd></div>
     </dl>
     <div className="card-actions">
-      <a className="card-source-link" href={item.source.url} target="_blank" rel="noreferrer">Visit website <ArrowUpRight /></a>
+      <a className="card-source-link" href={item.websiteUrl ?? item.source.url} target="_blank" rel="noreferrer">{item.websiteUrl ? "Visit website" : "View source"} <ArrowUpRight /></a>
       <details key={item.id} className="card-information"><summary aria-label="Source, accessibility, and photo information" title="Source and photo information"><Info /></summary><div className="card-information-body">
         <MissionStatus item={item} />
+        <p><a href={item.source.url} target="_blank" rel="noreferrer">{item.source.name}</a></p>
         {item.accessibility && <p>{item.accessibility}</p>}
         {item.image && <p>Photo: {item.image.credit}{item.image.sourceUrl && <> · <a href={item.image.sourceUrl} target="_blank" rel="noreferrer">Source</a></>}{item.image.license && <> · {item.image.license}</>}</p>}
       </div></details>

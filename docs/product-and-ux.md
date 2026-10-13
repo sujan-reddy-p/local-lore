@@ -11,7 +11,7 @@ The unit of value is a **mission**: a place or event plus a small way to engage 
 1. **Map first.** The city remains visible while every other interface appears as an overlay.
 2. **Low friction.** No login, profile, saved-list ceremony, or airplane-cockpit control bank.
 3. **Editorial before exhaustive.** A mission needs a specific reason to exist.
-4. **Geographic honesty.** A zone must correspond to its real location and plausible footprint.
+4. **Geographic honesty.** Supported geometry represents its actual location; the 25–100 m ground circle is only a locator fallback, never a claimed physical footprint.
 5. **Curiosity over directory search.** Prompts like Sunset and Odd & local are more inviting than a blank search field alone.
 6. **Source trust.** The organizer remains the authority for schedule, price, rules, and booking.
 7. **Progressive density.** At city scale, clusters communicate possibility; at neighborhood scale, zones become distinct.
@@ -27,11 +27,10 @@ The unit of value is a **mission**: a place or event plus a small way to engage 
 
 ## Discovery controls
 
-- **Visible discovery rail:** search, one compact interest grid, and dates are visible without a hamburger. The rail is designed to remain compact and non-scrolling at the normal 360px panel width.
-- **Interests:** Anything, Food, Music, Drives, Sunsets, After dark, Make, and Unusual. One interest may be active at a time; selecting it filters the current catalog and selecting it again clears it. “Drives” is an editorial interest, not route feasibility.
-- **Dates:** Any day, Today, Tomorrow, Weekend, and a native picker for arbitrary dates. Use `America/Los_Angeles` calendar days. Weekend means the upcoming Saturday/Sunday or the remaining Sunday when already Sunday. Any day is inspiration without a date constraint; stored mission schedule filtering does not prove live availability.
-- **Refinement:** the Filters control replaces the interest body with only Budget and Time for an activity sliders. Time is approximate, measured in hours, and excludes travel. Reset all clears search, interest, date, budget, and time.
-- **Map filtering:** search, interest, date, budget, and time use AND semantics and filter both mission points and learned activity areas. A selected detail is cleared when it is no longer eligible. Empty results state the problem and offer reset.
+- **Discovery:** a hamburger opens the panel, hidden by default on desktop and mobile. The closed panel remains mounted but inert and preserves filters. Opening focuses search; Escape closes and restores focus to the trigger.
+- **Interests and dates:** the opened panel keeps the eight interests and Bay Area date choices compact. One interest may be active; selecting it again clears it. Dates include Any day, Today, Tomorrow, Weekend, and arbitrary native-picker dates. These are schedule filters, not live confirmation.
+- **Refinement:** Filters replaces interests with only Budget and approximate activity-time sliders; time is in hours and excludes travel. No duplicate category/trait controls. Reset all clears search, interest, date, budget, and time.
+- **Map filtering:** search, interest, date, budget, and time use AND semantics. A selected detail clears when ineligible; empty results offer reset.
 - **Trust:** the selected card’s Info disclosure retains known schedule/source status, accessibility text, and image credit/license/source. The organizer remains the authority for current schedule, price, rules, and booking; a historical check date or source link is not a live refresh.
 - **Search:** lower-cased token AND match over title, kicker, description, why, neighborhood, venue, category, format, vibes, and traits. Words shorter than three characters and a small stop-word list are ignored.
 
@@ -53,14 +52,13 @@ Review each journey for a clear visual hierarchy (image → venue/title → spec
 
 ## Desktop layout
 
-- The map occupies `100dvh`.
-- The compact upper-left rail remains visible over the map; it contains search, the eight-interest grid, dates, and (when opened) only budget/time refinement.
+- The hamburger opens discovery; it is hidden by default. Closed controls stay mounted but inert and preserve state. The compact open panel contains search, interests, dates, and only budget/time refinement.
 - The selected mission card opens in the lower-left corner so map context remains visible. It is not a gallery or a second map surface.
 
 ## Mobile layout
 
 - The map remains full-screen and touch-first.
-- The same compact rail remains above the map/detail; the eight interests and date choices stay legible without requiring a hidden menu. The panel may use its existing narrow responsive treatment, but controls must not be silently dropped.
+- The hamburger opens the same compact panel, hidden by default on mobile. While closed, controls are inert and state persists; opening focuses search, Escape closes and restores focus. Do not silently remove controls when open.
 - Selecting a mission opens the selected card; its content scrolls within the available viewport when needed. Native Info disclosure preserves source/schedule, accessibility, and photo provenance.
 - Map tools hide while the selected mobile detail is open so they cannot cover its actions; attribution remains visible.
 
@@ -74,7 +72,7 @@ Review each journey for a clear visual hierarchy (image → venue/title → spec
 ## Accessibility
 
 - All custom controls are native buttons or links with accessible names.
-- `/` opens and focuses search; Escape closes overlays and selection.
+- `/` opens discovery and focuses search; Escape closes overlays and selection and restores discovery-trigger focus when applicable.
 - MapLibre keyboard navigation remains enabled.
 - `:focus-visible` receives a clear mint outline.
 - Text and panels maintain high contrast over the map.

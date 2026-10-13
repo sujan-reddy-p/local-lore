@@ -32,14 +32,13 @@ If changing type, test actual macOS, Windows, iOS, and Android fallback metrics 
 ## Spatial hierarchy
 
 - Full viewport map establishes context.
-- A compact 360px upper-left rail keeps search, eight interests, and dates visible. Filter refinement replaces the interest body and contains only budget and approximate activity time; no duplicated quick/category/trait controls.
-- Applied refinement is summarized unobtrusively; Reset all includes search, interest, date, budget, and time.
+- The hamburger opens discovery, hidden by default desktop/mobile. Closed panel stays mounted but inert and preserves filters. Open focuses search; Escape closes and focus returns to trigger. Open interests and dates are compact; refinement has budget/time sliders only.
 - The selected card occupies one corner/sheet and never replaces the map. The preview and selected card are distinct states, not a gallery.
 - Card hierarchy is image → venue/title → specific activity sentence → three fact rows with 20px Lucide icons and legible 16px values → one website CTA. Source, schedule, accessibility, and image rights/provenance remain behind native inline Info disclosure.
 
 ## Shape language
-- Activity areas are smooth geographic fills with thin edges only when a matching native PMTiles building/relevant landuse polygon is loaded. Preserve holes, reject oversized or native-tile-boundary-clipped geometry, and do not invent circle footprints. Unknown area remains an honest point artwork.
-- Learned shapes persist across zooms and synchronize to visible IDs; fades are continuous and area-aware. These are basemap context, not independently verified official venue boundaries.
+- Every mission keeps a visible 25–100 m ground locator circle when authentic geometry is unavailable or visually tiny. This is not a physical footprint. Prefer sourced Polygon/MultiPolygon with holes, string evidence and URL; then a legitimate matching native outline.
+- Routes are start-first; only exact sourced course geometry or typed `connection` with exactly two geocoded actual endpoints can render on focus. Connections are dashed/directed. Areas are never courses.
 - Controls use 10–13px radii; the primary rail/card uses 19–22px radii. Use one restrained elevation rather than stacked floating slabs.
 - Pills are reserved for compact date/refinement states; interests are compact rounded-square grid buttons.
 
@@ -66,9 +65,8 @@ Panels use dark green translucency and `backdrop-filter` to remain legible over 
 
 At 980px and below:
 
-- the compact discovery rail remains visible above the map/detail, with all eight interests and dates legible; native responsive treatment may allow horizontal date overflow but must not introduce a hidden gallery;
-- budget/time refinement remains inline and limited to those two sliders;
-- selected cards scroll within the available viewport; Info disclosure retains source/schedule, accessibility, and photo rights;
+- hamburger-hidden discovery panel; opened state keeps interests and dates compact and exposes budget/time refinement only;
+- selected cards scroll within available viewport; Info disclosure retains source/schedule, accessibility, and image rights;
 - map tools hide while mobile selected detail is open; attribution remains available.
 
 ## Dark and light themes
@@ -79,9 +77,9 @@ V1 declares `color-scheme: dark` and implements only the dark theme. A future li
 
 - The city remains the largest visual object.
 - UI does not overlap map controls at supported widths.
-- The eight interests and date choices are readable at the compact rail width.
+- hamburger is keyboard accessible; closed controls are inert, opening focuses search, Escape closes and restores trigger focus;
 - Preview has title/description only, no Explore action; selected preview is suppressed.
 - Selected card hierarchy is image, venue/title, specific sentence, three legible fact values/icons, one website CTA, then optional Info.
-- Missing/error media uses compact activity artwork, never stock imagery or duplicate fallback text; image credits/licenses remain available.
-- Activity areas match accepted native geometry, preserve holes, and never become unjustified circles; unknown areas remain point artwork.
+- Missing/error media uses UI-owned subject artwork, never stock or newly generated catalog photos; authorized imagery priority is event, venue, logo, with credit/rights evidence.
+- Authentic areas retain holes; every mission has a ground locator-circle fallback that is never claimed as a footprint.
 - Focus states are visible but not fluorescent; reduced motion is respected.

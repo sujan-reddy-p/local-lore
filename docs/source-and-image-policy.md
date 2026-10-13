@@ -14,24 +14,11 @@ Local Lore earns trust by connecting people to original organizers while adding 
 
 Search results, social reposts, unattributed aggregators, and copied calendars are not canonical sources.
 
-## Automation permission
+## Access controls and manual research
 
-Before recurring automated fetching, record source kind, canonical URL, attribution, relevant terms/robots or feed documentation, whether automation is allowed, rate limits, refresh cadence, and whether media reuse is allowed.
+Catalog maintenance is an explicitly invoked OMP skill, not an automated fetch or publication pipeline. Manual research must still honor published terms, robots/feed documentation, rate limits, authentication, legal restrictions, attribution, security, and source access controls. Public visibility, an accessible URL, or model confidence never grants permission. Never bypass authentication, CAPTCHA, bot protection, rate limits, paywalls, robots controls, or other technical restrictions.
 
-Public visibility is not permission to scrape. An organizer webpage with no documented permitted feed or page access remains unavailable to automated research; the local researcher must verify access terms, policy/robots/feed evidence, rate limits, and attribution before use. Do not bypass authentication, CAPTCHAs, bot protection, rate limits, paywalls, or technical access controls.
-
-## Agentic publication and access controls
-
-The active catalog path is an agentic researcher followed by deterministic validation and a bounded Git snapshot. A mandatory human approval/review queue is not required. This does not weaken source access controls: each source must have a documented canonical URL, permitted access method, relevant terms/robots or feed documentation, attribution, rate limits, refresh boundary, and media-rights basis before it is used.
-
-The 2026-10-11 one-time read-only audit authorization is historical audit scope, not a recurring fetch requirement or publication gate. `approved_for_display` and `needs_source_review` remain lineage/eligibility labels. Public visibility, an accessible URL, or model confidence never grants permission. Do not bypass authentication, CAPTCHAs, bot protection, rate limits, paywalls, or technical controls.
-
-Agents must preserve provenance and security boundaries, and must not invent factual fields or image rights. Human correction, takedown, and manual review workflows are not implemented now; retain evidence so a later correction path can be added.
-
-## Privacy
-
-This source policy concerns the provenance and permitted use of public source material; it is not a visitor privacy policy. The website separately collects visitor data as documented in `docs/visitor-capture.md` and `docs/analytics.md`.
-
+The active publication flow is a user-invoked manual catalog edit followed by offline validation; Git commit/push occurs only when explicitly requested. Historical `approved_for_display` and `needs_source_review` labels remain lineage/eligibility state, not an independent fact audit or current human approval gate. Human correction/takedown workflows are future work; retain provenance for later correction.
 
 ## Content usage
 
@@ -45,73 +32,28 @@ This source policy concerns the provenance and permitted use of public source ma
 
 ## Existing catalog versus live status
 
-The maintainer explicitly directed that the records already displayed on the website be treated as accurate and retained. They are marked `approved_for_display` on that basis; this is an assumption for existing catalog display, not an independent fact-check. It does not approve automated fetching or image reuse.
-
-`curated-seed` means an existing Local Lore record assembled from historical source evidence on its stored check date. It does not mean the activity is available now or that the source is currently approved for automated access.
-
-Future status language should distinguish:
-
-- verified live in the latest successful source run;
-- needs review because facts changed or confidence is low;
-- expired or unavailable for the selected date;
-- manually curated and awaiting recheck.
-
-Never infer “live” merely from an accessible URL.
+Existing visible records are retained under the maintainer’s historical accuracy assumption; this is not independent fact-checking and does not permit fetching or image reuse. `curated-seed` means an existing Local Lore record assembled from historical source evidence on its stored check date. It does not mean the activity is available now or that the source is currently approved for automated access. Never infer “live” merely from an accessible URL.
 
 ## Image rule
 
-Do not generate images for Local Lore. Do not copy an image because it appears on an organizer page or in page metadata. Use an image only if an explicit license, public-domain status, or organizer permission allows this display.
+Website publication requires explicit license, public-domain status, existing owner confirmation, or supported permission. Downloading a publicly accessible image for local review is a separate operation and does not establish reuse rights.
 
-Every image record must preserve:
+On every discovery/refresh run, an item missing a suitable image must trigger event-image, venue-image, then logo research. Preserve direct original URL, proposed alt, known creator/owner credit (or explicitly unknown), original source page, and any license evidence. Prefer an existing authorized venue image over a new unclear-rights image.
 
-- direct display URL;
-- useful alt text;
-- creator/owner credit;
-- original source page URL;
-- license or explicit permission basis.
+If permission is unclear, download the best suitable publicly accessible candidate into ignored `outputs/image-review/<record-or-lead-id>/`, outside `public/`. Record its local path, source, MIME type, byte size, content hash, and `awaiting-image-review` status in discovery state's `pendingImages`. Do not publish it, commit the binary to a public repository, change the catalog image URL, set `allowsImageReuse: true`, or claim a license. User review applies only to this unclear-rights publication decision, not as a general human catalog gate.
 
-The source registry’s `allowsImageReuse` must be independently true for automated media collection. Even then, preserve per-image metadata and comply with hotlinking/download/transform requirements.
+The currently authorized image or UI-owned artwork remains on the website. A failed or inaccessible download remains a named incomplete task. Staged files are machine-local; a fresh checkout must reproduce the download from the manifest before claiming the asset is ready. The complete worker steps are in `.claude/skills/local-discovery/SKILL.md`.
 
-When rights are unclear, omit the image. Hover, gallery, and detail use the shared `MissionMedia` venue/glyph/source-name fallback for missing, loading, or failed photos. It contains only stored facts and Local Lore styling, not copied page content, an embedded third-party page, or a simulated website screenshot. Successful photos expose stored credit, source-page link, and license in mission details. Do not generate or search for a visually similar substitute.
+Existing local primary images may remain displayed under the project owner’s confirmation. Metadata lives on each record’s `image` field in `data/source-catalog.json`; files are served from `public/images/missions/`. This does not grant automated fetching or reuse of new images. Recheck Commons source pages before public launch and remove image metadata if rights cannot be confirmed.
 
-## Current images
+## Geography and map evidence
 
-The project owner has confirmed that the existing local primary images may remain displayed. Their image metadata is stored on each mission’s `image` field in `data/source-catalog.json`; files are served from `public/images/missions/`. This permission does not grant automated fetching or reuse of new images.
+Apply both the 75 km geodesic radius from the San Francisco anchor and shared Bay Area bounds in `lib/region.ts`. Source-backed boundary GeoJSON belongs at `record.map.boundary`, with `kind` `area` or `venue`, `sourceUrl`, and concise evidence. Never infer a venue/activity boundary from basemap outlines. Route geometry must be actual source-backed ordered course geometry; without it, retain start-first point behavior. Preserve useful point halo fallback.
 
-Three legacy seed missions reference Wikimedia Commons through `Special:Redirect/file` and store a Commons file page, credit, license, and alt text:
+## AI and trust
 
-- Ferry Building — CC BY-SA 2.5.
-- 16th Avenue Tiled Steps — CC BY 4.0.
-- Wave Organ — CC BY 2.5.
-
-Recheck each source page before a public launch because attribution and file status can change. If a source cannot be confirmed, remove the image field; the mission remains fully usable.
-
-## Local-agent source checks
-
-The SF Recreation & Parks Golden Gate Bandshell iCalendar feed remains an unreviewed source lead. Its historical one-time audit instruction does not establish recurring access conditions: keep it disabled until a permitted feed method, terms, rate limits, and rights basis are documented; no human approval queue is required.
-
-## AI and source trust
-
-AI is the local research worker and may summarize only rendered, source-backed facts into strict structured proposals. Deterministic validation/publishing applies those proposals to the static Git catalog. AI cannot create provenance, permissions, licenses, dates, prices, coordinates, accessibility facts, or image rights.
+The local OMP worker summarizes only source-backed facts. It cannot create provenance, permissions, licenses, dates, prices, coordinates, accessibility facts, or image rights. Record checked, failed, and unchanged outcomes; failed reads and “not seen” preserve known-good catalog records. Expire event occurrences separately and retire only with explicit sourced cancellation, permanent closure, or rights withdrawal.
 
 ## Takedown and correction design
 
-Before accepting public submissions or live ingestion, add:
-
-- visible contact/correction channel;
-- source/mission audit trail;
-- disable/unpublish action that does not erase evidence;
-- response process for organizer corrections and image takedowns;
-- license-expiry/removal handling;
-- logs of who approved or changed a record.
-
-## Pre-publication checklist
-
-- Canonical source is primary, HTTPS, and reachable.
-- Organizer/venue/title/location refer to the same activity.
-- Automation basis is documented if fetched.
-- Editorial copy is original and concise.
-- Date/time/price/access facts are traceable to the source.
-- Seed/live label is accurate.
-- Image permission and attribution are complete or the image is omitted.
-- Expiry and refresh behavior are defined.
+Before accepting public submissions or live ingestion, add a visible contact/correction channel, source/mission audit trail, disable/unpublish action that preserves evidence, response process for organizer corrections and image takedowns, license-expiry/removal handling, and logs of who approved or changed records.

@@ -1,88 +1,31 @@
-# Local agent automation runbook
+# Local catalog maintenance
 
 ## System boundary
 
-| System | Holds | Writer |
-|---|---|---|
-| GitHub repository | `data/source-catalog.json`, `data/discovery-state.json`, source policy, code, docs, and image assets | Active local agentic publisher creates bounded catalog/state snapshots |
-| PostgreSQL | Historical source observations, ingestion runs, event candidates, decisions, revisions; optional visitor records | Historical local CLI/server-only app |
-| PostHog | Browser analytics and session replay | Browser SDK only |
+The website bundles `data/source-catalog.json` through `lib/seed-data.ts`; catalog maintenance is a manually invoked OMP GPT-6 Luna skill. PostgreSQL ingestion, observations, candidates, decisions, and revisions remain historical infrastructure; they are not the active catalog publication path. PostHog remains browser analytics only.
 
-PostHog is analytics, not the Local Lore catalog database. Do not store organizer or mission facts there.
+## Manual procedure
 
-## Current activity
+From the repository root, include the complete skill file in the invocation:
 
-The website bundles its catalog from `data/source-catalog.json` through `lib/seed-data.ts`; it does not query Postgres for catalog or event data. The active publication path is an agentic researcher plus deterministic validator/publisher that writes a bounded Git snapshot. Existing Neon/Postgres migrations, observations, candidates, decisions, and revisions remain historical operational infrastructure.
-
-Source and record review labels preserve lineage and eligibility evidence; they are not a mandatory human approval gate. Access controls, rights, security, provenance, and source terms remain mandatory. Human correction/takedown workflows are not implemented now.
-
-The runner must retain good records on failed fetches or “not seen”, expire past occurrences separately, retire only explicit sourced cancellations/closures, deduplicate genuine experiences/venues/times, and never invent facts.
-
-On the maintainer's Mac, the maintained checkout is `~/Projects/local-lore`, and the development server remains at `http://localhost:4317`. Work in that checkout rather than the retained temporary clone. LaunchAgent `com.local-lore.discovery` is installed for 08:17 local time. A manual daily run and an actual launchd-triggered run completed with 225 records retained and no publishable catalog changes; local rotation/check state advanced outside Git.
-
-## Active publication flow
-
-```text
-local Mac: node scripts/daily-discovery.mjs [--limit N] [--model MODEL]
-→ isolated Git worktree and local OMP research/processing
-→ deterministic validation and build/tests
-→ copy only processed catalog/state into the clean checkout
-→ commit and push only `data/source-catalog.json` and `data/discovery-state.json`
+```sh
+omp --model=openai-codex/gpt-6-luna -p "Read .claude/skills/local-discovery/SKILL.md and perform a bounded manual catalog maintenance run."
 ```
 
-Manual runner commands:
-
-```text
-node scripts/discover-catalog.mjs research --output outputs/proposal.json [--model MODEL]
-node scripts/discover-catalog.mjs stage --proposal outputs/proposal.json
-node scripts/discover-catalog.mjs apply --proposal outputs/proposal.json --catalog outputs/isolated-catalog.json --state outputs/isolated-state.json --output outputs/alternate-catalog.json
-```
-
-For `apply`, `--output` is an alternate catalog destination, not a report. For `research`, it is the local proposal file. Package aliases are `catalog:research`, `catalog:stage`, `catalog:apply`, and `catalog:daily`. OMP credentials stay local; the default model is `openai-codex/gpt-6-luna`, overridable by `LOCAL_DISCOVERY_MODEL` or `--model`. Raw proposals, source pages, logs, and generated research outputs are local-only and ignored; never commit them. Source access permission, terms, rate limits, image rights, security, evidence, provenance, and no-invention requirements remain mandatory.
-
-Before isolated `apply`, copy `data/source-catalog.json` and `data/discovery-state.json` to the chosen `--catalog` and `--state` input paths. Use ignored `outputs/` for proposals and intermediate files. Routine publication should use `catalog:daily` instead: it prepares the isolated inputs itself. Unchanged catalogs only need catalog validation; changed snapshots also run lint, strict TypeScript, build, and tests before copying back.
-
-`scripts/schedule-discovery.mjs install|remove|status` manages macOS launchd at the configured local time (default `08:17`) from `data/discovery-config.json` fields `schedule.hour` and `schedule.minute`. Install only from a durable checkout, not `/tmp`; the daily wrapper refuses a dirty checkout or branch that differs from `origin`. A failed push leaves the local bounded commit in place for deliberate synchronization.
+There is no JavaScript researcher/publisher, installed schedule, timer, cron, LaunchAgent, automatic commit/push, or human approval gate. User decides invocation and Git publication. Ephemeral processing code under ignored `outputs/` may normalize large JSON; it is not an installed pipeline/package command. Explicit five-venue batches use literal names/coordinates and distinct output filenames; parent deduplicates full catalog and normalizes typed records. Failed reads do not close sources; unvisited are not failed.
 
 ## Source and catalog rules
 
-- Source/record status is lineage and eligibility evidence; it is not a mandatory publication approval.
-- Automated fetching still requires documented permitted access, terms, rate limits, and rights. Source registry presence or public visibility is not permission.
-- Do not bypass robots, authentication, CAPTCHA, paywalls, rate limits, or anti-bot controls.
-- Preserve existing records and `catalogOrder` unless evidence-backed maintenance changes them; current record counts are snapshot state, not a permanent contract.
-- `lib/seed-data.ts` is an adapter only; do not hand-edit it to change content.
-- Coordinates are `[longitude, latitude]`; map bounds live in `lib/region.ts`.
-- Keep editorial framing distinct from sourced event facts.
+- Preserve good records on failed fetch or “not seen”; expire scheduled occurrences separately; retire only on explicit sourced cancellation, permanent closure, or rights withdrawal.
+- Deduplicate experiences, venues, and occurrence times against the full catalog.
+- Coverage goal: at least 100 distinct evergreen experiences per configured major city, plus supported dated events; no quota padding or duplicate experiences. Expansion is paused until the user reviews design quality. `data/discovery-state.json` records actual Census-boundary coverage, coastal gaps, incomplete leads, and the Luna usage-limit blocker. Recompute counts rather than copying a historical snapshot.
+- Preserve source URL/name/check date, seed/live status, accessibility, price, canonical schedule, stable IDs/order, and provenance. Unknown facts remain unknown.
+- Source terms, access controls, rate limits, security, attribution, image rights, and no-invention rules remain mandatory.
+- Every discovery and refresh checks missing images: event photo, suitable venue photo, then logo. Download the best publicly accessible candidate to ignored `outputs/image-review/<id>/`, outside `public/`, and record provenance in `pendingImages`. Unclear rights do not prohibit local staging, but the candidate must not appear on the website before user review. Preserve licensed current photos; missing/failed photos use owned subject artwork. Follow the authoritative skill for bounded downloads and manifest fields.
+- Venue identity/address may be matched against actual geodata; coordinate prose is unnecessary. Never copy sibling coordinates or city center. Named POI leads do not prove visitor access/live operation.
+- Prefer source Polygon/MultiPolygon with holes, string `map.evidence`, and source URL, then legitimate matching native outline. Every mission retains a 25–100 m ground locator circle, never a physical footprint. Routes start-first; exact sourced course or typed connection with exactly two geocoded actual endpoints only; connection is dashed/directed and focused. Never use area as course.
+- Canonical scheduled kind uses `startsAt`/`endsAt`. Date-only end is inclusive Bay Area day; timestamp expires at its instant. Evergreen and ongoing recurring have no TTL.
 
-## Operator commands
+## Review and publication
 
-```bash
-npm run catalog:validate
-npm run catalog:research -- --output outputs/proposal.json
-npm run catalog:stage -- --proposal outputs/proposal.json
-npm run catalog:apply -- --proposal outputs/proposal.json
-npm run lint
-npx tsc --noEmit --incremental false
-npm test
-```
-
-Historical `db:*` commands operate on PostgreSQL structures but are not publication steps. Removed package aliases `sources:refresh`, `sources:audit`, and `events:review` are not runnable commands. Database credentials remain server/local-only.
-
-Inspect `http://localhost:4317` after UI or catalog changes. The daily data job must not modify UI code.
-
-
-## Git publishing
-
-The daily runner commits and pushes its two managed data paths after validation. For manual catalog publication, use the repository's configured Git workflow and inspect the bounded diff. Never commit `.env*`, `node_modules`, build output, credentials, raw proposals, source pages, or local scheduler logs.
-
-## Run summary template
-
-```text
-Date:
-Sources researched and evidence:
-Access terms/rights retained:
-Catalog IDs changed:
-Validation result:
-Bounded Git commit:
-Notes:
-```
+Run catalog validation and inspect intended changes. Report counts from current JSON and actual city boundaries, plus failures and unresolved work. Commit/push only when explicitly requested; never commit raw source pages, secrets, or staged unclear-rights images. Consult `.claude/skills/local-discovery/SKILL.md` before every discovery or refresh.

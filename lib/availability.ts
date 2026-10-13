@@ -81,15 +81,29 @@ export function isAvailableOn(item: LoreItem, date: Date) {
 export function isExpired(item: LoreItem, referenceDate: Date) {
   const today = calendarDay(referenceDate);
   const schedule = missionSchedule(item);
-  const expiresAt = validCalendarDay(schedule.expiresAt);
-  if (expiresAt && expiresAt < today) return true;
-
-  const endsAtValue = schedule.endsAt;
-  if (endsAtValue && !DAY_PATTERN.test(endsAtValue)) {
-    const endsAt = Date.parse(endsAtValue);
-    if (!Number.isNaN(endsAt) && endsAt < referenceDate.getTime()) return true;
+  const expiresAt = schedule.expiresAt;
+  if (expiresAt) {
+    if (DAY_PATTERN.test(expiresAt)) {
+      const expiresDay = validCalendarDay(expiresAt);
+      if (expiresDay && expiresDay < today) return true;
+    } else {
+      const expirationTime = Date.parse(expiresAt);
+      if (!Number.isNaN(expirationTime) && referenceDate.getTime() >= expirationTime) return true;
+    }
   }
 
+  const endsAt = schedule.endsAt;
+  if (endsAt) {
+    if (DAY_PATTERN.test(endsAt)) {
+      const endDay = validCalendarDay(endsAt);
+      if (endDay && endDay < today) return true;
+    } else {
+      const endTime = Date.parse(endsAt);
+      if (!Number.isNaN(endTime) && referenceDate.getTime() >= endTime) return true;
+    }
+  }
+
+  if (schedule.kind !== "scheduled") return false;
   const dates = schedule.dates;
   return Boolean(dates?.length && dates.every(date => {
     const validDate = validCalendarDay(date);

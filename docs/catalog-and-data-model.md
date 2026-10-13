@@ -2,11 +2,7 @@
 
 ## Current catalog
 
-`data/source-catalog.json` stores the catalog grouped by its 165 source entries. The 212 records are nested under the source that owns their canonical URL; the separate `lib/seed-data.ts` adapter reconstructs the existing `LoreItem` UI contract. `catalogOrder` preserves the prior display order.
-
-The maintainer explicitly asked that every item already shown on the site be treated as accurate and retained. All 212 records are therefore marked `approved_for_display` under `approvalBasis: maintainer_assumed_accurate_for_existing_site_content`. This records the maintainer’s assumption, not an independent factual audit. The prior shared `lastCatalogCheckedAt: 2026-08-02` remains historical, not a live check. Display approval, automated-fetch permission, and image-reuse permission remain separate.
-
-These records are mostly editorial missions and venue/organizer references, not a feed of 212 dated events. The Postgres `missions` table preserves this catalog representation. A separate `event_occurrences` model now stores dated, source-derived event candidates and published occurrences.
+`data/source-catalog.json` stores display-eligible source-grouped records. The server adapter explicitly projects `LoreItem`; it does not send source audit evidence, coordinate research, or discovery state to the browser. `websiteUrl` is the usable venue/organizer action, while `source.url` remains the traceable evidence link. Incomplete map-only leads and generic walk inflation belong in `data/discovery-state.json`, not publication. Expansion is paused for user design review. Current coverage and gaps live in discovery state; count directly from current records and `data/coverage-boundaries.geojson`, never stale intermediate totals. The 100-evergreen-per-major-city target remains a goal, not permission to pad or publish unfinished candidates.
 
 The catalog spans eight categories: Outside, Move, Make, Listen, Eat, Learn, Community, and After dark. Formats provide a second axis: Adventure, Class, Culture, Food, Live, Market, Meetup, and Volunteer.
 
@@ -19,7 +15,7 @@ Each source group in `data/source-catalog.json` contains:
 - `lastCatalogCheckedAt`: the historical seed stamp, or `null` when the group has no seed record.
 - `records`: source-owned records with a stable `id`, `catalogOrder`, and `reviewStatus: approved_for_display`.
 
-Do not infer source-specific fetch instructions or permission from a URL or public visibility. Automated collection additionally requires `allowsAutomatedFetch: true` and `enabled: true`. Do not create a separate file per mission.
+Never infer fetch permission from a URL or public visibility. Historical approval/review labels are lineage and eligibility state, not current human approval gates or evidence of accuracy, access permission, or rights.
 
 ## `LoreItem` publish contract
 
@@ -34,8 +30,7 @@ Do not infer source-specific fetch instructions or permission from a URL or publ
 | `neighborhood` | Human-readable map context. |
 | `venue` | Specific place or organizer venue. |
 | `coordinates` | `[longitude, latitude]` numeric tuple. |
-| `zoneRadiusM` | Legacy hint retained in catalog data; never treated as a physical boundary. |
-| `map` | Optional context: `kind` is `area`, `venue`, or `route`; `route` may contain a genuine sourced `[longitude, latitude][]` line and `sourceUrl`. Without genuine geometry, route rendering is start-first. |
+| `map` | Optional context: source-backed Polygon/MultiPolygon including holes, with string evidence and source URL; legitimate matching native outline is secondary. Every mission retains a 25–100 m ground locator circle fallback, never a physical footprint. Routes are start-first; typed exact source course or exactly two geocoded actual connection endpoints only. |
 | `time` | Human-readable schedule guidance shown in cards. |
 | `timeSlot` | Coarse `Now`, `Tonight`, or `Weekend` filter value. |
 | `duration` | Approximate hours, or `null` when the source does not state one; render as “Time varies”. |
@@ -47,13 +42,11 @@ Do not infer source-specific fetch instructions or permission from a URL or publ
 
 ## Schedule model and limitation
 
-`MissionSchedule` supports evergreen, recurring, scheduled, seasonal, and conditions-based availability, with optional weekdays, explicit dates, and start/end/expiry bounds. If no schedule is present, Weekend missions default to recurring Saturday/Sunday; other missions default to evergreen. This is an app display rule, not evidence that an event is currently happening.
-
-`lib/availability.ts` now uses `America/Los_Angeles` calendar days for date choices, weekend selection, weekdays, and schedule bounds, including timestamp bounds and DST/year transitions. This makes filtering consistent across visitor timezones, not live: `MissionStatus` uses only the explicit schedule, otherwise reports it unconfirmed. Real live events still require distinct published occurrences, source observations, and expiry/cancellation facts.
+`MissionSchedule.kind` uses canonical values including `scheduled`, not `dated`; scheduled occurrences use `startsAt` and `endsAt`, not `start`/`end`. `lib/availability.ts` uses `America/Los_Angeles` calendar days for date choices and schedule bounds. A date-only end is inclusive through its Bay Area calendar day; timestamp expiry is at the exact instant, including offset timestamps. Evergreen and ongoing recurring activities have no arbitrary TTL. These are filtering rules, not live confirmation.
 
 ## Event dates and rendering
 
-An explicit source-backed event occurrence may carry a genuine start/end date and source timezone. Render that occurrence’s date as sourced; do not derive a date from a recurring idea, browser timezone, or a missing field. Past occurrences expire independently. “Not seen” or a failed fetch preserves the last good record and is not cancellation evidence. Retire an occurrence only for explicit, sourced cancellation or closure.
+Scheduled occurrences carry source-backed dates and finite expiry/end data. Date-only end dates remain valid through their Bay Area calendar day; timestamps expire at their exact instant. A failed fetch or “not seen” preserves the last good record and is not cancellation evidence. Retire only with explicit sourced cancellation or closure.
 
 ## Data checks and editing
 
@@ -66,12 +59,12 @@ For a source review:
 1. Open the canonical source and record the source’s actual event/venue facts separately from Local Lore’s editorial framing.
 2. Check whether a record describes an evergreen experience, a recurring program, or one dated occurrence.
 3. Confirm coordinates, schedule, price, accessibility, and image rights independently where applicable.
-4. Record the human decision and evidence in that source group; retain rejected or uncertain legacy records in the archive with a status rather than deleting their provenance.
+4. Record supported evidence and retain uncertain legacy records with their provenance and existing lineage state; historical review labels are not a current approval gate.
 5. Validate the data and inspect the local map before publishing.
 
 ## Image record and fallback
 
-`MissionImage` stores URL, alt text, credit, original source URL, and optional license. The migrated file carries the existing image metadata inside each mission record; `lib/mission-images.ts` is no longer a second source of truth. The catalog validator checks local image paths. If reuse permission is unclear, omit the image and use the venue-and-neighborhood visual treatment.
+`MissionImage` stores URL, alt text, credit, source URL, and optional license. Image preference is authorized event image, suitable venue image, then logo; require direct URL and explicit reuse evidence. Image state is keyed by URL and image kind so switching between photo/logo resets failures. Missing/failed photos use UI-owned subject artwork; do not substitute stock or generate catalog photos.
 
 ## Database boundary
 

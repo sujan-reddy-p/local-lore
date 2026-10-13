@@ -1,8 +1,8 @@
 # Roadmap and decision record
 
-## Current phase: polished static V1 with local operations backend
+## Current phase: polished static V1; historical operations backend
 
-The map remains the product surface with a compact visible discovery rail: search, eight interests, dates, and optional budget/time refinement. The 212-record catalog is frontend content; no source fetch or live event display is active. The gallery, duplicated quick/category/trait filters, Unicode category glyphs, and hamburger discovery paths are not part of the current UI.
+Catalog research is continuing through manually invoked OMP skill runs. The hamburger discovery panel is hidden by default on desktop/mobile; its opened panel keeps interests/dates compact and refinement to budget/time sliders. There is no JavaScript researcher/publisher, installed schedule, or human approval gate.
 
 ## Phase 1 — hosting confidence
 
@@ -47,7 +47,7 @@ The map remains the product surface with a compact visible discovery rail: searc
 
 ## Product direction — local days and road trips
 
-The product should answer two different questions on the same map: **what is worth doing on this date?** and **what is a realistic trip for the time I have?** The current release implements compact visible idea discovery, Bay Area calendar dates, budget and activity-time filters, honest source timing, and camera zoom through 18. It does not implement road-trip routing, a public dated-event feed, or trip feasibility; Drives is an editorial interest only and must not imply those capabilities.
+The current release implements hamburger-hidden discovery, Bay Area calendar-date filtering, budget and activity-time filters, honest source timing, and camera zoom through 18. It does not implement road-trip routing, a public dated-event feed, or trip feasibility; Drives is an editorial interest only and must not imply those capabilities.
 
 ### Next delivery: dated events, distinct from place ideas
 
@@ -89,7 +89,7 @@ Chosen for an open, token-free renderer and portable hosting. It supports the ne
 
 ### Local PMTiles over remote raster tiles
 
-Chosen for visual control and removal of fragile third-party tile dependencies. Trade-off: the host must support range requests and the repository carries a ~29.5 MiB binary.
+Chosen for visual control and independence from remote raster tiles. The checked-in regional archive is 87.6 MiB; the host must support range requests.
 
 ### OpenStreetMap/Protomaps 3D instead of photorealism
 
@@ -97,15 +97,15 @@ Chosen for an aesthetic, legible city model that supports discovery without the 
 
 ### Native geometry context, not official boundaries
 
-Activity areas are derived only from matching buildings/relevant landuse polygons in loaded native zoom-14 PMTiles tiles. The implementation preserves holes, rejects oversized or native-tile-boundary-clipped geometry, learns shapes across zooms, synchronizes visible IDs, and uses continuous area-aware fades. Unknown areas stay point artwork. These shapes are basemap context, not independently verified official venue boundaries.
+Activity geometry must be authentic, not inferred from an arbitrary radius. Prefer source-backed Polygon/MultiPolygon with holes, string evidence, and source URL; a legitimate matching native outline is secondary. Every mission retains a 25–100 m ground locator circle fallback, never a claimed footprint. Routes are start-first; exact source course geometry or typed connection with exactly two actual geocoded endpoints is required for focused lines. Connections are dashed/directed; areas are not courses.
 
 ### Clusters and subject-specific badges
 
 Clusters support a large catalog without an unreadable carpet of halos. Individual activity symbols use viewport-aligned Lucide/custom rounded-square badges rather than Unicode category glyphs or purpose labels.
 
-### Visible discovery, secondary refinement
+### Hamburger-hidden discovery, compact open panel
 
-Search, the eight interests (Anything, Food, Music, Drives, Sunsets, After dark, Make, Unusual), and dates are visible in a compact non-scrolling rail. Filters replaces the interest body with only budget and approximate activity-time sliders; time excludes travel. Reset all clears every constraint, including date. There is no gallery, duplicate quick/category/trait filter set, or hamburger discovery path.
+The hamburger is available on desktop and mobile; the panel is hidden by default, remains mounted but inert while closed, and preserves filter state. Opening focuses search; Escape closes and restores focus to the trigger. Open state keeps interests and dates compact; refinement shows only budget and approximate activity-time sliders. No duplicate category controls.
 
 ### Deeper zoom and explicit camera controls
 
