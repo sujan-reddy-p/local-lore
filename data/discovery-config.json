@@ -3,7 +3,7 @@
   "origin": [-122.42, 37.78],
   "radiusKm": 75,
   "bounds": [[-123.1, 36.55], [-121.4, 38.5]],
-  "targets": {"minimum": 1100, "evergreenPerMajorCity": 100, "eventsDays": 30},
+  "targets": {"minimum": 1100, "thingsPerMajorCity": 100, "eventsDays": 30},
   "majorCities": ["San Francisco", "Oakland", "Berkeley", "San Jose", "Richmond", "Redwood City", "Palo Alto", "San Mateo", "Fremont", "Hayward", "Sunnyvale"],
   "cities": [
     {"name":"San Francisco","coordinates":[-122.42,37.78],"target":100,"areas":["Outside","Move","Make","Listen","Eat","Learn","Community","After dark"]},

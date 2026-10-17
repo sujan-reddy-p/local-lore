@@ -10,6 +10,8 @@ export type MissionTrait = "dog-friendly" | "photogenic" | "date-idea" | "family
 export type MissionSchedule = {
   kind: AvailabilityKind;
   daysOfWeek?: number[];
+  /** One-based occurrences of this weekday within a month, combined with weekly days by OR. */
+  monthly?: { dayOfWeek: number; weeks: number[] }[];
   dates?: string[];
   startsAt?: string;
   endsAt?: string;

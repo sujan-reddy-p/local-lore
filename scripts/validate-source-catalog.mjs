@@ -122,6 +122,13 @@ function validateSchedule(record, issues) {
     && (!Array.isArray(schedule.daysOfWeek) || !schedule.daysOfWeek.every((day) => Number.isInteger(day) && day >= 0 && day <= 6))) {
     issues.push(`Invalid recurring weekdays: ${label}`);
   }
+  if (schedule.monthly !== undefined && (schedule.kind !== "recurring"
+    || !Array.isArray(schedule.monthly) || !schedule.monthly.length
+    || !schedule.monthly.every((rule) => rule && Number.isInteger(rule.dayOfWeek) && rule.dayOfWeek >= 0 && rule.dayOfWeek <= 6
+      && Array.isArray(rule.weeks) && rule.weeks.length
+      && rule.weeks.every((week) => Number.isInteger(week) && week >= 1 && week <= 5)))) {
+    issues.push(`Invalid monthly weekday recurrence: ${label}`);
+  }
   if (schedule.kind === "scheduled") {
     const datesValid = schedule.dates !== undefined && Array.isArray(schedule.dates)
       && schedule.dates.length > 0 && schedule.dates.every((date) => DATE_PATTERN.test(date) && parseFiniteDate(date) !== null);

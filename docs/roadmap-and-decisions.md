@@ -1,8 +1,8 @@
 # Roadmap and decision record
 
-## Current phase: polished static V1; historical operations backend
+## Current phase: data quality and regional discovery
 
-Catalog research is continuing through manually invoked OMP skill runs. The hamburger discovery panel is hidden by default on desktop/mobile; its opened panel keeps interests/dates compact and refinement to budget/time sliders. There is no JavaScript researcher/publisher, installed schedule, or human approval gate.
+The user approved 100 worthwhile things per major city, broad nearby/coastal coverage, resumed local Luna research, and private image staging. Finish sources/data/quality first, then performance and the final UI/highlight pass. Road-trip planning is deferred. Maintenance is manually invoked; no JavaScript discovery publisher, installed schedule, or general human content gate is active. Historical backend phases below are not instructions to reactivate them.
 
 ## Phase 1 — hosting confidence
 
@@ -56,7 +56,7 @@ The current release implements hamburger-hidden discovery, Bay Area calendar-dat
 - Show last successful source observation separately from last attempted fetch. A failed request never advances freshness. Use a source-defined freshness deadline, not an arbitrary global “stale after X days” heuristic. Missing from one snapshot does not mean cancelled.
 - Acceptance: one approved real feed produces a real dated result; an empty calendar produces no upcoming-event card; a failed refresh retains the last known facts with uncertainty; date changes update both map and cards; historical records remain auditable.
 
-### Next delivery: a real 1-day / 2-day trip planner
+### Deferred delivery: a real 1-day / 2-day trip planner
 
 Start within the existing Bay Area tile footprint, including Napa/Sonoma approaches, Santa Cruz, and Monterey. Expansion beyond that boundary needs matching basemap coverage and permitted destination data; widening the UI bounds alone is not expansion.
 

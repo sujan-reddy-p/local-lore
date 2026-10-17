@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-13
+
+- Resumed local GPT-6 Luna research after the user reported the quota reset. Confirmed 100 worthwhile things to do per major city, not 100 upcoming events; data/source quality precedes the final design and performance pass, and road-trip planning is deferred.
+- Fixed timeline filtering for scheduled start/end ranges without explicit date lists. Smoke verification now includes an ongoing exhibition during its range and excludes dates before and after it; added boundary, explicit-date, and weekday regression coverage.
+- Clarified private image staging, actual byte/hash/dimension verification, address-geocoder provenance, map-center versus destination distinction, and independently complete candidates. Unknown image rights do not block publishing factual records with owned fallback artwork; new researched images remain private.
+
 ## 2026-10-12
 
 - Replaced the JavaScript discovery/publication pipeline with a manually invoked OMP GPT-6 Luna skill. Removed automated research, scheduling, LaunchAgent management, and automatic Git publication; the user decides invocation and publish. Offline catalog validation remains active. Documented full inventory, evidence/outcomes, geography, rights, and failure preservation.

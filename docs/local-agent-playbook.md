@@ -22,7 +22,7 @@ No JavaScript publication workflow, installed schedule/timer/cron/LaunchAgent, a
 
 ## Research rules
 
-Apply both the 75 km geodesic radius and shared region bounds. The coverage goal is 100 distinct evergreen experiences per major city plus supported dated events; dated and ongoing recurring listings do not count, and there is no quota padding. Expansion is paused for user design review. Consult current `data/discovery-state.json` for actual Census-boundary coverage, Pacifica/Half Moon Bay/coastal/South San Francisco gaps, incomplete leads, and worker blockers.
+Apply both the 75 km geodesic radius and shared region bounds. GPT-6 Luna research is authorized, but eleven latest workers returned `usage_limit_reached` again after the earlier reset. Preserve partial evidence and pending assignments; do not silently change models. Complete data/source quality before the final UI/performance pass. Target 100 worthwhile things per major city, not 100 upcoming events; report places/activities, ongoing programs, and upcoming events separately without padding. Consult `data/discovery-state.json` for actual boundary coverage, coastal gaps, source outcomes, and held leads.
 
 Venue identity/address may be matched to actual geographic data; source coordinates need not be printed. Never copy sibling coordinates or city center. Named POIs are leads, not proof of visitor access/live operation. Failed reads and “not seen” preserve records; expire scheduled occurrences separately; retirement needs explicit sourced evidence. Preserve source identity, URLs/check dates, seed/live status, accessibility, price, canonical schedule, IDs/order, and provenance.
 

@@ -6,9 +6,9 @@ import { Protocol } from "pmtiles";
 import { useEffect, useEffectEvent, useMemo, useRef, useState, type RefObject } from "react";
 import { createPortal } from "react-dom";
 import { activityScene, matchActivityOutlines, type ActivityOutline, type OutlineFeature } from "@/lib/activity-zones";
-import { missionDescription } from "@/lib/mission-copy";
 import { missionWhen } from "@/lib/mission-presentation";
 import { createMapStyle } from "@/lib/map-style";
+import { MAP_ARCHIVE_PATH, MAP_ARCHIVE_SHA256 } from "@/lib/map-archive";
 import { BAY_AREA_BOUNDS, BAY_AREA_HOME } from "@/lib/region";
 import type { LoreItem } from "@/lib/types";
 import { MissionMedia } from "@/components/missions/mission-media";
@@ -69,7 +69,7 @@ export function MissionMap({ catalog, visible, selected, mapRef, onChoose }: {
     const protocol = new Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
     const allIds = initialCatalog.map(item => item.id);
-    const archiveUrl = new URL("/maps/san-francisco-region.pmtiles?v=20261011-bay-area", window.location.href).href;
+    const archiveUrl = new URL(`${MAP_ARCHIVE_PATH}?v=${MAP_ARCHIVE_SHA256}`, window.location.href).href;
     const scene = activityScene(initialCatalog, allIds);
     const map = new maplibregl.Map({
       container: mapNode.current,
@@ -313,7 +313,7 @@ export function MissionMap({ catalog, visible, selected, mapRef, onChoose }: {
         <MissionMedia key={preview.item.id} item={preview.item} variant="preview" />
         <div className="mission-preview-copy">
           <h2>{preview.item.schedule?.kind === "scheduled" ? preview.item.title : preview.item.venue}</h2>
-          <p className="mission-preview-kicker">{missionDescription(preview.item)}</p>
+          <p className="mission-preview-kicker">{preview.item.description}</p>
           <div className="mission-preview-facts"><span>{preview.item.schedule?.kind === "scheduled" ? missionWhen(preview.item) : preview.item.duration == null ? "Time varies" : `~${preview.item.duration} h`}</span><strong>{preview.item.price == null ? "Not listed" : preview.item.price === 0 ? "Free" : `$${preview.item.price}`}</strong></div>
         </div>
       </>}

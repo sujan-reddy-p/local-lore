@@ -120,7 +120,7 @@ Build tools do not validate static-host byte ranges. Test the deployed asset dir
 
 Inspect explicit schedules, editorial Weekend fallback, Bay Area calendar day, selected date key, and whether Any day is active. A filter match is not live confirmation; missing schedules remain explicitly unconfirmed in details.
 
-- Expansion is paused for design review; current coverage and incomplete research are recorded in `data/discovery-state.json`. Recompute counts from JSON and actual city boundaries before reporting. Coverage goal is 100 distinct evergreen experiences per major city, without padding.
+- Research has resumed; complete data/source quality before the final UI and performance pass. The user-confirmed goal is 100 worthwhile things to do per major city, with places/activities, ongoing programs, and upcoming events reported separately and no padding. Recompute coverage from JSON and actual city boundaries; `data/discovery-state.json` distinguishes completed, incomplete, failed, and unvisited work.
 - MapLibre remains a substantial client dependency. Inspect actual production transfers; do not equate catalog file size with downloaded JavaScript. The browser receives projected mission fields, not raw research evidence.
 - Search normalization is memoized. Native outline discovery runs only for unresolved visible missions at changed, settled camera states; verify filtering and map interaction in the actual browser.
 - PMTiles dramatically reduces file count but requires efficient range caching.

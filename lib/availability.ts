@@ -12,6 +12,7 @@ const weekdayFormatter = new Intl.DateTimeFormat("en-US", {
   timeZone: TIME_ZONE,
   weekday: "short",
 });
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 type CalendarParts = { year: number; month: number; day: number };
 
@@ -33,7 +34,7 @@ function calendarDay(date: Date) {
 
 function calendarDayOfWeek(date: Date) {
   const weekday = weekdayFormatter.format(date);
-  return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(weekday);
+  return WEEKDAYS.indexOf(weekday);
 }
 
 function validCalendarDay(value: string | undefined) {
@@ -74,7 +75,20 @@ export function isAvailableOn(item: LoreItem, date: Date) {
   if (expiresAt && day > expiresAt) return false;
   if (startsAt && day < startsAt) return false;
   if (endsAt && day > endsAt) return false;
-  if (schedule.kind === "scheduled") return schedule.dates?.includes(day) ?? false;
+  if (schedule.kind === "scheduled") {
+    if (schedule.dates) return schedule.dates.includes(day);
+    if (!startsAt || (!endsAt && !expiresAt)) return false;
+  }
+  if (schedule.monthly?.length) {
+    const weekday = calendarDayOfWeek(date);
+    if (schedule.daysOfWeek?.includes(weekday)) return true;
+    const week = Math.ceil(Number(day.slice(-2)) / 7);
+    for (let index = 0; index < schedule.monthly.length; index += 1) {
+      const rule = schedule.monthly[index];
+      if (rule.dayOfWeek === weekday && rule.weeks.includes(week)) return true;
+    }
+    return false;
+  }
   if (schedule.daysOfWeek?.length) return schedule.daysOfWeek.includes(calendarDayOfWeek(date));
   return true;
 }

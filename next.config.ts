@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { MAP_ARCHIVE_PATH, MAP_ARCHIVE_SHA256 } from "./lib/map-archive";
 
 const nextConfig: NextConfig = {
   distDir: process.env.LOCAL_LORE_DIST_DIR ?? ".next",
@@ -9,8 +10,11 @@ const nextConfig: NextConfig = {
   allowedDevOrigins:["127.0.0.1"],
   async headers() {
     return [{
-      source: "/maps/:archive.pmtiles",
-      headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      source: MAP_ARCHIVE_PATH,
+      headers: [
+        { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        { key: "ETag", value: `"${MAP_ARCHIVE_SHA256}"` },
+      ],
     }];
   },
 };

@@ -8,7 +8,6 @@ import Users from "lucide-react/dist/esm/icons/users.mjs";
 import Wallet from "lucide-react/dist/esm/icons/wallet.mjs";
 import X from "lucide-react/dist/esm/icons/x.mjs";
 import type { CSSProperties } from "react";
-import { missionDescription } from "@/lib/mission-copy";
 import { missionWhen } from "@/lib/mission-presentation";
 import type { LoreItem } from "@/lib/types";
 import { MissionMedia } from "./mission-media";
@@ -22,7 +21,7 @@ export function MissionDetail({ item, onClose }: { item: LoreItem | null; onClos
     <button className="card-close" onClick={onClose} aria-label="Close activity"><X /></button>
     <h2>{scheduled ? item.title : item.venue}</h2>
     {scheduled && <p className="card-venue">{item.venue}</p>}
-    <p className="card-purpose">{missionDescription(item)}</p>
+    <p className="card-purpose">{item.description}</p>
     <dl className="card-facts">
       <div><dt><Clock3 aria-hidden="true" />{scheduled ? "When" : "Visit time"}</dt><dd title={scheduled ? "Event time in America/Los_Angeles" : "Approximate activity time; travel excluded"}>{scheduled ? missionWhen(item) : item.duration === null ? "Time varies" : `~${item.duration} h`}</dd></div>
       <div><dt><Wallet aria-hidden="true" />Cost</dt><dd>{item.price === null ? "Not listed" : item.price === 0 ? "Free" : `$${item.price}`}</dd></div>

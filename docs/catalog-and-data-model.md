@@ -2,7 +2,7 @@
 
 ## Current catalog
 
-`data/source-catalog.json` stores display-eligible source-grouped records. The server adapter explicitly projects `LoreItem`; it does not send source audit evidence, coordinate research, or discovery state to the browser. `websiteUrl` is the usable venue/organizer action, while `source.url` remains the traceable evidence link. Incomplete map-only leads and generic walk inflation belong in `data/discovery-state.json`, not publication. Expansion is paused for user design review. Current coverage and gaps live in discovery state; count directly from current records and `data/coverage-boundaries.geojson`, never stale intermediate totals. The 100-evergreen-per-major-city target remains a goal, not permission to pad or publish unfinished candidates.
+`data/source-catalog.json` stores display-eligible source-grouped records. The server projects `LoreItem`, excluding raw audit evidence and discovery state. `websiteUrl` is the visitor action; `source.url` is evidence. Incomplete leads and generic filler are not published. Research is resumed, data first and final UI/design afterward. Target 100 distinct worthwhile things per major city, reporting places/activities, programs, and upcoming events separately without duplicates. Derive current coverage from records and Census boundaries, not historical totals.
 
 The catalog spans eight categories: Outside, Move, Make, Listen, Eat, Learn, Community, and After dark. Formats provide a second axis: Adventure, Class, Culture, Food, Live, Market, Meetup, and Volunteer.
 
@@ -24,7 +24,7 @@ Never infer fetch permission from a URL or public visibility. Historical approva
 | `id` | Stable unique string used by React, GeoJSON features, selection, and future persistence. |
 | `title` | Editorial mission instruction, not merely a venue name. |
 | `kicker` | Short atmospheric or practical hook. |
-| `description` | What the visitor should do. |
+| `description` | Canonical plain-language visitor action, rendered directly by hover and selected cards. No frontend ID-based wording override. |
 | `why` | Why the mission is distinctive or worth the time. |
 | `category` | One of the eight product categories. |
 | `neighborhood` | Human-readable map context. |
@@ -43,6 +43,10 @@ Never infer fetch permission from a URL or public visibility. Historical approva
 ## Schedule model and limitation
 
 `MissionSchedule.kind` uses canonical values including `scheduled`, not `dated`; scheduled occurrences use `startsAt` and `endsAt`, not `start`/`end`. `lib/availability.ts` uses `America/Los_Angeles` calendar days for date choices and schedule bounds. A date-only end is inclusive through its Bay Area calendar day; timestamp expiry is at the exact instant, including offset timestamps. Evergreen and ongoing recurring activities have no arbitrary TTL. These are filtering rules, not live confirmation.
+
+Scheduled ranges with a valid start and end/expiry match their inclusive Bay Area days even without an explicit `dates` list. An explicit date list takes precedence; weekday restrictions still apply to ranges. An expiry alone does not establish a start date or invent availability.
+
+Recurring monthly weekdays use `monthly: [{ dayOfWeek: 0, weeks: [1, 3] }]` for first/third Sundays. Weekdays are 0–6 (Sunday–Saturday); occurrence numbers are 1–5 within each month. Multiple monthly rules and `daysOfWeek` are alternatives, not intersections: Monday/Thursday plus second Sunday is `{ kind: "recurring", daysOfWeek: [1, 4], monthly: [{ dayOfWeek: 0, weeks: [2] }] }`. Preserve the actual recurrence; never replace a monthly program with every week or a finite invented date list. A scheduled event with only a sourced start time may use date-only `expiresAt` without inventing its end time.
 
 ## Event dates and rendering
 
@@ -65,6 +69,8 @@ For a source review:
 ## Image record and fallback
 
 `MissionImage` stores URL, alt text, credit, source URL, and optional license. Image preference is authorized event image, suitable venue image, then logo; require direct URL and explicit reuse evidence. Image state is keyed by URL and image kind so switching between photo/logo resets failures. Missing/failed photos use UI-owned subject artwork; do not substitute stock or generate catalog photos.
+
+During the current data-first round, all newly researched image candidates are staged privately without chasing reuse permission. A verified record may be published with existing authorized media or UI-owned artwork while its private image awaits review; image review is not a general content approval gate.
 
 ## Database boundary
 

@@ -1,6 +1,6 @@
 # Local Lore
 
-Local Lore is a map-first Bay Area discovery experience: **what is a memorable way to spend my time nearby?** Discovery uses manually invoked, source-supported research. Further expansion is paused for design-quality review; current coverage and unfinished leads are recorded in `data/discovery-state.json`.
+Local Lore is a map-first Bay Area discovery experience: **what is a memorable way to spend my time nearby?** Discovery uses manually invoked, source-supported research. Research is resumed with data/source quality first and the final interface pass afterward; current coverage and unfinished leads are recorded in `data/discovery-state.json`.
 
 The map is the product. There are no accounts, feeds, or calendar dashboards. A visitor can pan, pinch, scroll, rotate, tilt, browse visually, choose a date, select an interest, or open a mission. Every recommendation links to its original organizer or authoritative source.
 > Data status: the existing catalog is maintained manually through an explicitly invoked OMP GPT-6 Luna skill. Existing `approved_for_display` labels are historical lineage; source access, rights, security, and provenance remain required.
@@ -46,7 +46,7 @@ npm test
 
 ## Local catalog discovery
 
-Manual maintenance runs only when explicitly invoked. **Further expansion is paused pending the user's design-quality review.** The reusable “discover X” experience matrix, city/coast/countryside coverage, complete-candidate gate, worker supervision, source/geometry rules, and private missing-image staging procedure are in [.claude/skills/local-discovery/SKILL.md](.claude/skills/local-discovery/SKILL.md).
+Manual maintenance runs only when explicitly invoked. **Current scope: 100 worthwhile things per major city, broad nearby/coastal coverage, private image staging, then the final performance/interface pass. Road-trip planning is deferred.** The reusable experience matrix, complete-candidate gate, worker supervision, source/geometry rules, and staging procedure are in [.claude/skills/local-discovery/SKILL.md](.claude/skills/local-discovery/SKILL.md).
 
 From the repository root, invoke OMP with the skill file included:
 

@@ -49,6 +49,8 @@ A future Content Security Policy must include these exact needs or self-host the
 
 - Fingerprinted JS/CSS: long immutable cache.
 - PMTiles versioned query/archive: long cache with immutable content; update the version when the archive changes.
+  - Run `shasum -a 256 public/maps/san-francisco-region.pmtiles` after replacing its bytes; update `MAP_ARCHIVE_SHA256` in `lib/map-archive.ts`. The browser query and strong HTTP ETag share that digest. Never retain an old immutable URL for changed bytes or use a modification-time-only validator that changes across identical deployments.
+  - Smoke both cold and warm browser map loads. Check actual archive requests, not only a standalone curl: each needed range should return 206 with bounded bytes. A stale `If-Range` can turn a 16 KB request into the entire 91.9 MB archive even when a fresh curl passes.
 - HTML: standard revalidation appropriate for releases.
 - Glyphs: follow upstream caching or self-host with long immutable cache.
 
